@@ -70,6 +70,7 @@ case "$FF_TARGET" in
             fi
         done
         rm -rf ./android/build/ffmpeg-*
+        rm -rf ./build/ffmpeg-*
     ;;
     check)
         echo_archs FF_ACT_ARCHS_ALL

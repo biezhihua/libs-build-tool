@@ -198,10 +198,12 @@ if [[ ! -d ${FF_FFMPEG_SOURCE_PATH} ]]; then
 fi
 
 FF_OUTPUT_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/output
+FF_SHARED_OUTPUT_PATH=${FF_BUILD_ROOT}/../build/${FF_BUILD_NAME}
 FF_TOOLCHAIN_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/toolchain
 FF_TOOLCHAIN_SYSROOT_PATH=${FF_TOOLCHAIN_PATH}/sysroot
 
 mkdir -p ${FF_OUTPUT_PATH}
+mkdir -p ${FF_SHARED_OUTPUT_PATH}
 
 echo "FF_FFMPEG_SOURCE_PATH = $FF_FFMPEG_SOURCE_PATH"
 echo ""
@@ -409,6 +411,12 @@ ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAG
     ${FF_LINK_ASM_OBJ_FILES} \
     -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME 
 
+echo ""
+echo "--------------------"
+echo "${RED}[*] create files for shared ffmpeg ${NC}"
+echo "--------------------"
+echo ""
+
 mysedi() {
     f=$1
     exp=$2
@@ -421,39 +429,32 @@ mysedi() {
     # echo "${f}    ${exp}    ${n}"
 }
 
-echo ""
-echo "--------------------"
-echo "${RED}[*] create files for shared ffmpeg${NC}"
-echo "--------------------"
-echo ""
+rm -rf ${FF_SHARED_OUTPUT_PATH}
+mkdir -p ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig
+ln -s ${FF_OUTPUT_PATH}/include ${FF_SHARED_OUTPUT_PATH}/include
+ln -s ${FF_OUTPUT_PATH}/${FF_SPLAYER_SO_NAME} ${FF_SHARED_OUTPUT_PATH}/lib/${FF_SPLAYER_SO_NAME}
+cp ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig
 
-rm -rf ${FF_OUTPUT_PATH}/shared
-mkdir -p ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
-ln -s ${FF_OUTPUT_PATH}/include ${FF_OUTPUT_PATH}/shared/include
-ln -s ${FF_OUTPUT_PATH}/${FF_SPLAYER_SO_NAME} ${FF_OUTPUT_PATH}/shared/lib/${FF_SPLAYER_SO_NAME}
-cp ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
-
-echo "FF_OUTPUT_SHARE = ${FF_OUTPUT_PATH}/shared"
-echo "FF_OUTPUT_SHARE_INCLUDE = ${FF_OUTPUT_PATH}/shared/include"
-echo "FF_OUTPUT_SHARE_LIB = ${FF_OUTPUT_PATH}/shared/lib"
+echo "FF_OUTPUT_SHARE = ${FF_SHARED_OUTPUT_PATH}"
+echo "FF_OUTPUT_SHARE_INCLUDE = ${FF_SHARED_OUTPUT_PATH}/include"
+echo "FF_OUTPUT_SHARE_LIB = ${FF_SHARED_OUTPUT_PATH}/lib"
 echo ""
 
-for f in ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
+for f in ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     # in case empty dir
     if [[ ! -f ${f} ]]; then
         continue
     fi
-    cp ${f} ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
-    f=${FF_OUTPUT_PATH}/shared/lib/pkgconfig/`basename ${f}`
-    echo "process share lib${f}"
+    f=${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
+    echo "process share lib ${f}"
     # OSX sed doesn't have in-place(-i)
-    mysedi ${f} 's/\/output/\/output\/shared/g'
-    mysedi ${f} 's/-lavcodec/-lsffmpeg/g'
-    mysedi ${f} 's/-lavfilter/-lsffmpeg/g'
-    mysedi ${f} 's/-lavformat/-lsffmpeg/g'
-    mysedi ${f} 's/-lavutil/-lsffmpeg/g'
-    mysedi ${f} 's/-lswresample/-lsffmpeg/g'
-    mysedi ${f} 's/-lswscale/-lsffmpeg/g'
+    mysedi ${f} 's/android\/build\/'${FF_BUILD_NAME}'\/output/build\/'${FF_BUILD_NAME}'/g'
+    mysedi ${f} 's/-lavcodec/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavfilter/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavformat/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavutil/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lswresample/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lswscale/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
 done
 
 echo ""
