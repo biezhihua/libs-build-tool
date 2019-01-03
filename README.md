@@ -4,6 +4,11 @@ Android FFmepg fully automatic build tool.
 
 Help you quickly build your own FFmpeg static library.
 
+# My Environment
+
+* MacOS 10.14.2 
+* NDK android-ndk-r16b (only support)
+
 # Setup The Environment
 
 ```
