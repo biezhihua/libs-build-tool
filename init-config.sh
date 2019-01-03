@@ -19,7 +19,7 @@ fi
 
 echo_usage() {
     echo "Usage:"
-    echo "  init-config.sh all|default|lite|min"
+    echo "  init-config.sh all|default|lite|min|litehevc"
     echo "  init-config.sh clean"
     exit 1
 }
@@ -42,6 +42,11 @@ case "$FF_TARGET" in
     ;;
     lite)
         cp config/module-lite.sh config/module.sh
+        cat config/module.sh
+        echo "config complete"
+    ;;
+    litehevc)
+        cp config/module-lite-hevc.sh config/module.sh
         cat config/module.sh
         echo "config complete"
     ;;
