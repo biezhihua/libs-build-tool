@@ -34,12 +34,12 @@ function pull_fork()
     echo -e "${RED}[*] pull ffmpeg fork ffmpeg-$1 ${NC}"
     echo "--------------------"
     
-    if [[ -d android/contrib/ffmpeg-$1 ]]; then
-        rm -rf android/contrib/ffmpeg-$1
+    if [[ -d android/ffmpeg-$1 ]]; then
+        rm -rf android/ffmpeg-$1
     fi
 
-    sh tools/pull-repo-ref.sh $FFMPEG_UPSTREAM android/contrib/ffmpeg-$1 ${FFMPEG_LOCAL_REPO}
-    cd android/contrib/ffmpeg-$1
+    sh tools/pull-repo-ref.sh $FFMPEG_UPSTREAM android/ffmpeg-$1 ${FFMPEG_LOCAL_REPO}
+    cd android/ffmpeg-$1
     git checkout -b build_tools ${FFMPEG_BRANCH}
     cd -
 }

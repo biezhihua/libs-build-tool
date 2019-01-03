@@ -43,11 +43,11 @@ echo_nextstep_help() {
 case "$FF_TARGET" in
     "")
         echo_archs armv7a
-        sh tools/do-compile-ffmpeg.sh armv7a
+        sh ./android/do-compile-android-ffmpeg.sh armv7a
     ;;
     armv7a|armv8a|x86|x86_64)
         echo_archs $FF_TARGET $FF_TARGET_EXTRA
-        sh tools/do-compile-ffmpeg.sh $FF_TARGET $FF_TARGET_EXTRA
+        sh ./android/do-compile-android-ffmpeg.sh $FF_TARGET $FF_TARGET_EXTRA
         echo_nextstep_help
     ;;
     all)
@@ -56,7 +56,7 @@ case "$FF_TARGET" in
         for ARCH in $FF_ACT_ARCHS_ALL
         do
             echo "$ARCH $FF_TARGET_EXTRA"
-            sh ./tools/do-compile-ffmpeg.sh $ARCH $FF_TARGET_EXTRA
+            sh ./android/do-compile-android-ffmpeg.sh $ARCH $FF_TARGET_EXTRA
         done
         echo_nextstep_help
     ;;
@@ -69,7 +69,7 @@ case "$FF_TARGET" in
                 cd ffmpeg-$ARCH && git clean -xdf && cd -
             fi
         done
-        rm -rf ./build/ffmpeg-*
+        rm -rf ./android/build/ffmpeg-*
     ;;
     check)
         echo_archs FF_ACT_ARCHS_ALL

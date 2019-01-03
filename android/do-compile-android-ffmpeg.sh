@@ -30,17 +30,13 @@ if [[ -z "$FF_ARCH" ]]; then
     exit 1
 fi
 
-FF_BUILD_ROOT=`pwd`
+FF_BUILD_ROOT=`pwd`/android
+
 FF_ANDROID_PLATFORM=android-21
 
 FF_BUILD_NAME=
 FF_FFMPEG_SOURCE_PATH=
 FF_CROSS_PREFIX_NAME=
-FF_DEP_OPENSSL_INC_PATH=
-FF_DEP_OPENSSL_LIB_PATH=
-
-FF_DEP_LIBSOXR_INC_PATH=
-FF_DEP_LIBSOXR_LIB_PATH=
 
 FF_CFG_FLAGS=
 
@@ -202,18 +198,8 @@ if [[ ! -d ${FF_FFMPEG_SOURCE_PATH} ]]; then
 fi
 
 FF_OUTPUT_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/output
-
 FF_TOOLCHAIN_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/toolchain
-
 FF_TOOLCHAIN_SYSROOT_PATH=${FF_TOOLCHAIN_PATH}/sysroot
-
-FF_DEP_OPENSSL_INC_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_OPENSSL}/output/include
-
-FF_DEP_OPENSSL_LIB_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_OPENSSL}/output/lib
-
-FF_DEP_LIBSOXR_INC_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_LIBSOXR}/output/include
-
-FF_DEP_LIBSOXR_LIB_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_LIBSOXR}/output/lib
 
 mkdir -p ${FF_OUTPUT_PATH}
 
@@ -233,11 +219,6 @@ echo ""
 echo "FF_OUTPUT_PATH = $FF_OUTPUT_PATH"
 echo "FF_TOOLCHAIN_PATH = $FF_TOOLCHAIN_PATH"
 echo "FF_TOOLCHAIN_SYSROOT_PATH = $FF_TOOLCHAIN_SYSROOT_PATH"
-echo "FF_DEP_OPENSSL_INC_PATH = $FF_DEP_OPENSSL_INC_PATH"
-echo "FF_DEP_OPENSSL_LIB_PATH = $FF_DEP_OPENSSL_LIB_PATH"
-echo "FF_DEP_LIBSOXR_INC_PATH = $FF_DEP_LIBSOXR_INC_PATH"
-echo "FF_DEP_LIBSOXR_LIB_PATH = $FF_DEP_LIBSOXR_LIB_PATH"
-
 
 echo ""
 echo "--------------------"
@@ -298,23 +279,6 @@ FF_CFLAGS="-O3 -fPIC -Wall -pipe \
     -Wno-psabi -Wa,--noexecstack \
     -DANDROID -DNDEBUG"
 
-# with ffmpeg openssl
-# if [[ -f "${FF_DEP_OPENSSL_LIB_PATH}/libssl.a" ]]; then
-#     echo "OpenSSL detected"
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-nonfree"
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
-
-#     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC_PATH}"
-#     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB_PATH} -lssl -lcrypto"
-# fi
-# if [[ -f "${FF_DEP_LIBSOXR_LIB_PATH}/libsoxr.a" ]]; then
-#     echo "libsoxr detected"
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-libsoxr"
-
-#     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_LIBSOXR_INC_PATH}"
-#     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_LIBSOXR_LIB_PATH} -lsoxr"
-# fi
-
 # with ffmpeg standard options:
 FF_CFG_FLAGS="$FF_CFG_FLAGS --prefix=$FF_OUTPUT_PATH"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --sysroot=$FF_TOOLCHAIN_SYSROOT_PATH"
@@ -348,7 +312,7 @@ esac
 
 # with ffmpeg config module
 export COMMON_FF_CFG_FLAGS=
-. ${FF_BUILD_ROOT}/../../config/module.sh
+. ${FF_BUILD_ROOT}/../config/module.sh
 
 FF_CFG_FLAGS="$FF_CFG_FLAGS $COMMON_FF_CFG_FLAGS"
 
