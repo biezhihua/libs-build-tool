@@ -77,17 +77,19 @@ fi
 NDK_REL=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2>/dev/null | sed 's/[[:space:]]*//g' | cut -d "=" -f 2)
 
 case "$NDK_REL" in
-    11*|12*|13*|14*|16*)
+    16*)
         if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
         then
             echo "NDK VERSION = r$NDK_REL"
         else
-            echo "You need the NDKr10e or later"
+            echo "You need the NDKr16b"
+            echo "https://developer.android.com/ndk/downloads/"
             exit 1
         fi
     ;;
     *)
-        echo "You need the NDKr10e or later"
+        echo "You need the NDKr16b"
+        echo "https://developer.android.com/ndk/downloads/"
         exit 1
     ;;
 esac
