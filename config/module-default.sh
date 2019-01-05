@@ -4,8 +4,6 @@
 # Standard options:
 export COMMON_FF_CFG_FLAGS=
 
-# Fix Bug
-# https://github.com/Bilibili/ijkplayer/issues/4093
 export COMMON_FF_CFG_FLAGS="$COMMON_FF_CFG_FLAGS --disable-linux-perf"
 
 # Licensing options:

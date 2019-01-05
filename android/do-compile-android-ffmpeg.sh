@@ -26,7 +26,7 @@ echo "FF_BUILD_OPT=$FF_BUILD_OPT"
 
 # -z 字符串	字符串的长度为零则为真
 if [[ -z "$FF_ARCH" ]]; then
-    echo "You must specific an architecture 'arm, armv7a, x86, ...'."
+    echo "You must specific an architecture 'armv8a, armv7a, x86, ...'."
     exit 1
 fi
 
@@ -345,15 +345,15 @@ cd ${FF_FFMPEG_SOURCE_PATH}
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 # which $CC
 # which ${CLANG}
-if [ -f "./config.h" ]; then
-    echo 'Reuse configure'
-else
+# if [ -f "./config.h" ]; then
+    # echo 'Reuse configure'
+# else
     ./configure ${FF_CFG_FLAGS} \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
     
     make clean
-fi
+# fi
 
 echo ""
 echo "--------------------"
