@@ -345,15 +345,15 @@ cd ${FF_FFMPEG_SOURCE_PATH}
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 # which $CC
 # which ${CLANG}
-# if [ -f "./config.h" ]; then
-    # echo 'Reuse configure'
-# else
+if [ -f "./config.h" ]; then
+    echo 'Reuse configure'
+else
     ./configure ${FF_CFG_FLAGS} \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
     
     make clean
-# fi
+fi
 
 echo ""
 echo "--------------------"
