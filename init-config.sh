@@ -19,17 +19,17 @@ fi
 
 echo_usage() {
     echo "Usage:"
-    echo "  init-config.sh all|default|lite|min|litehevc"
+    echo "  init-config.sh default|lite|min|litehevc"
     echo "  init-config.sh clean"
     exit 1
 }
 
 case "$FF_TARGET" in
-    all)
-        cp config/module-all.sh config/module.sh
-        cat config/module.sh
-        echo "config complete"
-    ;;
+    # all)
+    #     cp config/module-all.sh config/module.sh
+    #     cat config/module.sh
+    #     echo "config complete"
+    # ;;
     min)
         cp config/module-min.sh config/module.sh
         cat config/module.sh
