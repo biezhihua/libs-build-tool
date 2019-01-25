@@ -20,9 +20,11 @@ echo "--------------------"
 
 FF_ARCH=$1
 FF_BUILD_OPT=$2
+FF_REAL_OUTPUT_PATH=$3
 
 echo "FF_ARCH=$FF_ARCH"
 echo "FF_BUILD_OPT=$FF_BUILD_OPT"
+echo "FF_REAL_OUTPUT_PATH=$FF_REAL_OUTPUT_PATH"
 
 # -z 字符串	字符串的长度为零则为真
 if [[ -z "$FF_ARCH" ]]; then
@@ -77,7 +79,7 @@ fi
 NDK_REL=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2>/dev/null | sed 's/[[:space:]]*//g' | cut -d "=" -f 2)
 
 case "$NDK_REL" in
-    16*)
+    16*|17*)
         if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
         then
             echo "NDK VERSION = r$NDK_REL"
@@ -238,16 +240,16 @@ echo "FF_STANDALONE_TOOLCHAIN_ARCH = $FF_STANDALONE_TOOLCHAIN_ARCH"
 echo "FF_STANDALONE_TOOLCHAIN_CLANG = $FF_STANDALONE_TOOLCHAIN_CLANG"
 echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
 
-FF_TOOLCHAIN_TOUCH="$FF_TOOLCHAIN_PATH/touch"
-if [[ ! -f "$FF_TOOLCHAIN_TOUCH" ]]; then
+# FF_TOOLCHAIN_TOUCH="$FF_TOOLCHAIN_PATH/touch"
+# if [[ ! -f "$FF_TOOLCHAIN_TOUCH" ]]; then
 
     ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
         ${FF_STANDALONE_TOOLCHAIN_FLAGS} \
         --platform=${FF_ANDROID_PLATFORM} \
         --toolchain=${FF_STANDALONE_TOOLCHAIN_NAME} 
 
-    touch ${FF_TOOLCHAIN_TOUCH}
-fi
+    # touch ${FF_TOOLCHAIN_TOUCH}
+# fi
 
 
 echo ""
@@ -345,15 +347,15 @@ cd ${FF_FFMPEG_SOURCE_PATH}
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 # which $CC
 # which ${CLANG}
-if [ -f "./config.h" ]; then
-    echo 'Reuse configure'
-else
+# if [ -f "./config.h" ]; then
+    # echo 'Reuse configure'
+# else
     ./configure ${FF_CFG_FLAGS} \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
     
     make clean
-fi
+# fi
 
 echo ""
 echo "--------------------"
