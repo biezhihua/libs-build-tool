@@ -51,7 +51,6 @@ FF_ASSEMBLER_SUB_DIRS=
 
 FF_STANDALONE_TOOLCHAIN_FLAGS=
 FF_STANDALONE_TOOLCHAIN_NAME=
-FF_STANDALONE_TOOLCHAIN_STL=gnustl
 FF_STANDALONE_TOOLCHAIN_ARCH=arm
 FF_STANDALONE_TOOLCHAIN_CLANG=clang3.6
 
@@ -77,6 +76,8 @@ if [[ -z "$ANDROID_NDK" ]]; then
 fi
 
 NDK_REL=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2>/dev/null | sed 's/[[:space:]]*//g' | cut -d "=" -f 2)
+
+echo "NDK_REL = $NDK_REL"
 
 case "$NDK_REL" in
     16*|17*|18*)
@@ -168,7 +169,14 @@ elif [ "$FF_ARCH" = "x86_64" ]; then
     
     FF_BUILD_NAME=ffmpeg-x86_64
 
-    FF_ANDROID_PLATFORM=android-21
+    case "$NDK_REL" in
+    18*)
+        FF_ANDROID_PLATFORM=android-23
+    ;;
+    16*|17*)
+        FF_ANDROID_PLATFORM=android-21
+    ;;
+    esac
 
     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
 
@@ -235,22 +243,16 @@ FF_STANDALONE_TOOLCHAIN_FLAGS="$FF_STANDALONE_TOOLCHAIN_FLAGS --install-dir=$FF_
 
 echo "FF_STANDALONE_TOOLCHAIN_NAME = $FF_STANDALONE_TOOLCHAIN_NAME"
 echo "FF_STANDALONE_TOOLCHAIN_FLAGS = $FF_STANDALONE_TOOLCHAIN_FLAGS"
-echo "FF_STANDALONE_TOOLCHAIN_STL = $FF_STANDALONE_TOOLCHAIN_STL"
+
 echo "FF_STANDALONE_TOOLCHAIN_ARCH = $FF_STANDALONE_TOOLCHAIN_ARCH"
 echo "FF_STANDALONE_TOOLCHAIN_CLANG = $FF_STANDALONE_TOOLCHAIN_CLANG"
 echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
 
-FF_TOOLCHAIN_TOUCH="$FF_TOOLCHAIN_PATH/touch"
-if [[ ! -f "$FF_TOOLCHAIN_TOUCH" ]]; then
-
-    ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
-        ${FF_STANDALONE_TOOLCHAIN_FLAGS} \
-        --platform=${FF_ANDROID_PLATFORM} \
-        --toolchain=${FF_STANDALONE_TOOLCHAIN_NAME} 
-
-    touch ${FF_TOOLCHAIN_TOUCH}
-fi
-
+${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
+    ${FF_STANDALONE_TOOLCHAIN_FLAGS} \
+    --platform=${FF_ANDROID_PLATFORM} \
+    --toolchain=${FF_STANDALONE_TOOLCHAIN_NAME} \
+    --force
 
 echo ""
 echo "--------------------"
@@ -347,15 +349,11 @@ cd ${FF_FFMPEG_SOURCE_PATH}
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 # which $CC
 # which ${CLANG}
-if [ -f "./config.h" ]; then
-    echo 'Reuse configure'
-else
-    ./configure ${FF_CFG_FLAGS} \
-        --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
-        --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
-    
-    make clean
-fi
+./configure ${FF_CFG_FLAGS} \
+    --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
+    --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
+
+make clean
 
 echo ""
 echo "--------------------"
