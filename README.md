@@ -7,7 +7,7 @@ Help you quickly build your own FFmpeg static library.
 # My Environment
 
 * MacOS 10.14.2 
-* NDK **android-ndk-r16b** **android-ndk-r17c** **android-ndk-r18b** **android-ndk-r19**
+* NDK ***r15c** **r16b** **r17c** **r18b** **r19**
 * Arch - armv7a/armv8a/x86/x86_64 (only support)
 
 NDK Download URL：https://developer.android.com/ndk/downloads/revision_history
@@ -84,7 +84,7 @@ Android下FFmpeg自动构建工具。
 # 我的环境
 
 * MacOS 10.14.2 
-* NDK **android-ndk-r16b** **android-ndk-r17c** **android-ndk-r18b** **android-ndk-r19**
+* NDK ***r15c** **r16b** **r17c** **r18b** **r19**
 * 架构 - armv7a/armv8a/x86/x86_64 (目前仅支持这些）
 
 NDK下载地址：https://developer.android.com/ndk/downloads/revision_history
