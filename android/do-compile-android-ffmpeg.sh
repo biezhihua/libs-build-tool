@@ -80,7 +80,7 @@ NDK_REL=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2
 echo "NDK_REL = $NDK_REL"
 
 case "$NDK_REL" in
-    15*|16*|17*|18*|19*)
+    14*|15*|16*|17*|18*|19*)
         if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
         then
             echo "NDK VERSION = r$NDK_REL"
@@ -173,7 +173,7 @@ elif [ "$FF_ARCH" = "x86_64" ]; then
     18*|19*)
         FF_ANDROID_PLATFORM=android-23
     ;;
-    15*|16*|17*)
+    14*|15*|16*|17*)
         FF_ANDROID_PLATFORM=android-21
     ;;
     esac
