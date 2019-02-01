@@ -433,8 +433,8 @@ mysedi() {
 
 rm -rf ${FF_SHARED_OUTPUT_PATH}
 mkdir -p ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig
-ln -s ${FF_OUTPUT_PATH}/include ${FF_SHARED_OUTPUT_PATH}/include
-ln -s ${FF_OUTPUT_PATH}/${FF_SPLAYER_SO_NAME} ${FF_SHARED_OUTPUT_PATH}/lib/${FF_SPLAYER_SO_NAME}
+cp -r ${FF_OUTPUT_PATH}/include ${FF_SHARED_OUTPUT_PATH}/include
+cp ${FF_OUTPUT_PATH}/${FF_SPLAYER_SO_NAME} ${FF_SHARED_OUTPUT_PATH}/lib/${FF_SPLAYER_SO_NAME}
 cp ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig
 
 echo "FF_OUTPUT_SHARE = ${FF_SHARED_OUTPUT_PATH}"
