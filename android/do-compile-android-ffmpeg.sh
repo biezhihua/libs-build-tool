@@ -27,7 +27,7 @@ echo "FF_BUILD_OPT=$FF_BUILD_OPT"
 echo "FF_REAL_OUTPUT_PATH=$FF_REAL_OUTPUT_PATH"
 
 # -z 字符串	字符串的长度为零则为真
-if [[ -z "$FF_ARCH" ]]; then
+if [ -z "$FF_ARCH" ]; then
     echo "You must specific an architecture 'armv8a, armv7a, x86, ...'."
     exit 1
 fi
@@ -68,7 +68,7 @@ UNAME_SM=$(uname -sm)
 echo "BUILD PLATFORM = $UNAME_SM"
 echo "ANDROID_NDK = $ANDROID_NDK"
 
-if [[ -z "$ANDROID_NDK" ]]; then
+if [ -z "$ANDROID_NDK" ]; then
     echo "You must define ANDROID_NDK before starting."
     echo "They must point to your NDK directories."
     echo ""
@@ -102,7 +102,7 @@ echo "--------------------"
 echo "${RED}[*] make params${NC}"
 echo "--------------------"
 
-if [[ "$FF_ARCH" = "armv7a" ]]; then
+if [ "$FF_ARCH" = "armv7a" ]; then
 
     FF_BUILD_NAME=ffmpeg-armv7a
 
@@ -200,7 +200,7 @@ else
     exit 1
 fi
 
-if [[ ! -d ${FF_FFMPEG_SOURCE_PATH} ]]; then
+if [ ! -d ${FF_FFMPEG_SOURCE_PATH} ]; then
     echo ""
     echo "!! ERROR"
     echo "!! Can not find FFmpeg directory for $FF_BUILD_NAME"
@@ -298,7 +298,7 @@ FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-cross-compile"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --target-os=linux"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-pic"
 
-if [[ "$FF_ARCH" = "x86" ]]; then
+if [ "$FF_ARCH" = "x86" ]; then
     FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-asm"
 else
     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-asm"
@@ -444,7 +444,7 @@ echo ""
 
 for f in ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     # in case empty dir
-    if [[ ! -f ${f} ]]; then
+    if [ ! -f ${f} ]; then
         continue
     fi
     f=${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
