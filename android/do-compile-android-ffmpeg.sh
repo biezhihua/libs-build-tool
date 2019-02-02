@@ -284,7 +284,7 @@ FF_CFLAGS="-O3 -fPIC -Wall -pipe \
     -std=c99 \
     -ffast-math \
     -fstrict-aliasing -Werror=strict-aliasing \
-    -Wno-psabi -Wa,--noexecstack \
+    -Wa,--noexecstack \
     -DANDROID -DNDEBUG"
 
 # with ffmpeg standard options:
