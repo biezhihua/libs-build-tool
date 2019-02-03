@@ -20,6 +20,12 @@ export ANDROID_SDK=<your sdk path>
 export ANDROID_NDK=<your ndk path>
 ```
 
+# Init FFmpeg Repository Setting
+
+```
+./init-android all (armv7a armv8a x86 x86_64)
+```
+
 # Init FFmpeg Configure Module
 
 * If you prefer more codec/format
@@ -95,6 +101,12 @@ NDK下载地址：https://developer.android.com/ndk/downloads/revision_history
 # 添加下面内容到你的 ~/.bash_profile or ~/.profile 文件中
 export ANDROID_SDK=<your sdk path>
 export ANDROID_NDK=<your ndk path>
+```
+
+# 初始化FFmpeg仓库设置
+
+```
+./init-android all (armv7a armv8a x86 x86_64)
 ```
 
 # 初始化FFmpeg配置模块
