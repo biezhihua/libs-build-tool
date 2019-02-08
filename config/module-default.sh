@@ -52,7 +52,7 @@ export COMMON_FF_CFG_FLAGS="$COMMON_FF_CFG_FLAGS --disable-avresample"
 # libavformat/udp.c:295:29: error: member reference base type '__be32' (aka 'unsigned int') is not a structure or union
 #         mreqs.imr_sourceaddr.s_addr = ((struct sockaddr_in *)&sources[i])->sin_addr.s_addr;
 #         ~~~~~~~~~~~~~~~~~~~~^~~~~~~
-export COMMON_FF_CFG_FLAGS="$COMMON_FF_CFG_FLAGS --disable-network"
+export COMMON_FF_CFG_FLAGS="$COMMON_FF_CFG_FLAGS --enable-network"
 
 # Hardware accelerators:
 export COMMON_FF_CFG_FLAGS="$COMMON_FF_CFG_FLAGS --disable-dxva2"
