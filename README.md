@@ -80,6 +80,9 @@ cd FFmpegBuildTool
 
 ----------------
 
+# 前言
+
+有问题请在Gihub上提ISSUE，邮件问题恕不能一一回复。
 
 # FFmpegBuildTool (中文)
 
