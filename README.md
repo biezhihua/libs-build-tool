@@ -78,6 +78,10 @@ cd FFmpegBuildTool
 ./build/ffmpeg-x86_64/
 ```
 
+# Note
+
+Part of the main structure from the IJKPlayer (https://github.com/bilibili/ijkplayer)
+
 ----------------
 
 # 前言
@@ -163,6 +167,10 @@ cd FFmpegBuildTool
 
 ./build/ffmpeg-x86_64/
 ```
+
+# 注意
+
+部分主体结构借鉴自IJKPlayer (https://github.com/bilibili/ijkplayer)
 
 
 
