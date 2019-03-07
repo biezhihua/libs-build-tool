@@ -1,0 +1,14 @@
+prefix=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-x86
+exec_prefix=${prefix}
+libdir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-x86/lib
+includedir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-x86/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.22.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lsffmpeg -pthread -lm
+Libs.private: 
+Cflags: -I${includedir}
