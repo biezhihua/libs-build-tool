@@ -4,6 +4,12 @@ Android FFmepg fully automatic build tool.
 
 Help you quickly build your own FFmpeg static library.
 
+
+# Support OS Platform
+  
+ * MacOS (Need Install Python)
+ * Ubuntu (Need Install Ptyhon)
+
 # My Environment
 
 * MacOS 10.14.2 
@@ -93,6 +99,11 @@ Part of the main structure from the IJKPlayer (https://github.com/bilibili/ijkpl
 Android下FFmpeg自动构建工具。
 
 帮助你快速构建自己的FFmpeg静态库。
+
+# 支持平台
+  
+ * MacOS (请提前安装Python)
+ * Ubuntu (请提前安装Ptyhon)
 
 # 我的环境
 
