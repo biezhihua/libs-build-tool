@@ -1,0 +1,14 @@
+prefix=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-armv7a
+exec_prefix=${prefix}
+libdir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-armv7a/lib
+includedir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-armv7a/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 58.20.100
+Requires: libavcodec >= 58.35.100, libavutil >= 56.22.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lsffmpeg -lm -lz
+Libs.private: 
+Cflags: -I${includedir}

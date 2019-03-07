@@ -1,0 +1,14 @@
+prefix=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-x86_64
+exec_prefix=${prefix}
+libdir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-x86_64/lib
+includedir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-x86_64/include
+
+Name: libavfilter
+Description: FFmpeg audio/video filtering library
+Version: 7.40.101
+Requires: libavutil >= 56.22.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lsffmpeg -pthread -lm
+Libs.private: 
+Cflags: -I${includedir}

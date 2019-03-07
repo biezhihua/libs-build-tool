@@ -1,0 +1,14 @@
+prefix=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-armv8a
+exec_prefix=${prefix}
+libdir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-armv8a/lib
+includedir=/Users/biezhihua/StudySpace/FFmpegBuildTool/build/ffmpeg-armv8a/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.22.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lsffmpeg -pthread -lm
+Libs.private: 
+Cflags: -I${includedir}
