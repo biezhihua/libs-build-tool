@@ -19,7 +19,7 @@ fi
 
 echo_usage() {
     echo "Usage:"
-    echo "  init-config.sh default|lite|min|litehevc|mp3"
+    echo "  init-config.sh default|lite|min|litehevc|mp3|mp4"
     echo "  init-config.sh clean"
     exit 1
 }
@@ -37,6 +37,11 @@ case "$FF_TARGET" in
     ;;
     mp3)
         cp config/module-mp3.sh config/module.sh
+        cat config/module.sh
+        echo "config complete"
+    ;;
+    mp4)
+        cp config/module-mp4.sh config/module.sh
         cat config/module.sh
         echo "config complete"
     ;;
