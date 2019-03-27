@@ -113,7 +113,7 @@ if [ "$SSL_ARCH" = "armv7a" ]; then
 
     SSL_STANDALONE_TOOLCHAIN_NAME=arm-linux-android-${SSL_STANDALONE_TOOLCHAIN_CLANG}
 
-    SSL_PLATFORM_CFG_FLAGS="android-armv7"
+    SSL_PLATFORM_CFG_FLAGS="android-arm"
 
 elif [ "$SSL_ARCH" = "armv8a" ]; then
     SSL_BUILD_NAME=openssl-armv8a
@@ -230,26 +230,13 @@ echo "${RED}[*] check openssl env${NC}"
 echo "--------------------"
 
 export PATH=${SSL_TOOLCHAIN_PATH}/bin:$PATH
-export CLANG=${SSL_CROSS_PREFIX_NAME}-clang
-export CXX=${SSL_CROSS_PREFIX_NAME}-clang++
-export LD=${SSL_CROSS_PREFIX_NAME}-ld
-export AR=${SSL_CROSS_PREFIX_NAME}-ar
-export STRIP=${SSL_CROSS_PREFIX_NAME}-strip
-
 
 # with openssl standard options:
-SSL_CFG_FLAGS="$SSL_CFG_FLAGS zlib-dynamic"
-SSL_CFG_FLAGS="$SSL_CFG_FLAGS no-shared"
-SSL_CFG_FLAGS="$SSL_CFG_FLAGS --openssldir=$SSL_OUTPUT_PATH"
-SSL_CFG_FLAGS="$SSL_CFG_FLAGS --cross-compile-prefix=${SSL_TOOLCHAIN_PATH}/bin/${SSL_CROSS_PREFIX_NAME}-"
+SSL_CFG_FLAGS="$SSL_CFG_FLAGS --prefix=$SSL_OUTPUT_PATH"
 
-SSL_CFG_FLAGS="$SSL_CFG_FLAGS $SSL_PLATFORM_CFG_FLAGS"
+SSL_CFG_FLAGS="$SSL_PLATFORM_CFG_FLAGS $SSL_CFG_FLAGS"
 
 echo "PATH = $PATH"
-echo "CLANG = $CLANG"
-echo "LD = $LD"
-echo "AR = $AR"
-echo "STRIP = $STRIP"
 echo ""
 echo "SSL_CFLAGS = $SSL_CFLAGS"
 echo "SSL_EXTRA_CFLAGS = $SSL_EXTRA_CFLAGS"
@@ -266,8 +253,11 @@ echo "--------------------"
 
 cd ${SSL_OPENSSL_SOURCE_PATH}
 
+echo ""
+
+echo "Enter Dir : ${SSL_OPENSSL_SOURCE_PATH}"
+echo "SSL_CFG_FLAGS : ${SSL_CFG_FLAGS} "
+
 ./Configure ${SSL_CFG_FLAGS}
-
-make clean
+make
 make install
-

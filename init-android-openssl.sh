@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 TARGET=$1
 
 UPSTREAM=https://github.com/openssl/openssl
-TAG=OpenSSL_1_1_1
+TAG=OpenSSL_1_1_1b
 BRANCH=$TAG
 LOCAL_REPO=repository/openssl-$TAG
 
