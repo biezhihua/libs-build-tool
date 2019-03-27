@@ -1,0 +1,31 @@
+From 8cfa3a43feda99144516f688061b8c805d824915 Mon Sep 17 00:00:00 2001
+From: biezhihua <biezhihua@gmail.com>
+Date: Wed, 27 Mar 2019 12:56:11 +0800
+Subject: [PATCH] fix: Build
+
+---
+ Configurations/15-android.conf | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Configurations/15-android.conf b/Configurations/15-android.conf
+index 7b496a4529..d8998481b1 100644
+--- a/Configurations/15-android.conf
++++ b/Configurations/15-android.conf
+@@ -120,10 +120,10 @@
+             } elsif ($user{CC} eq "clang") {
+                 die "no NDK clang on \$PATH";
+             } else {
+-                if (which("$triarch-gcc") !~ m|^$ndk/.*/prebuilt/([^/]+)/|) {
+-                    die "no NDK $triarch-gcc on \$PATH";
+-                }
+-                $cflags .= " -mandroid";
++                # if (which("$triarch-gcc") !~ m|^$ndk/.*/prebuilt/([^/]+)/|) {
++                #     die "no NDK $triarch-gcc on \$PATH";
++                # }
++                # $cflags .= " -mandroid";
+                 $user{CROSS_COMPILE} = "$triarch-";
+             }
+ 
+-- 
+2.19.1
+

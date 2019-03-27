@@ -126,7 +126,7 @@ elif [ "$SSL_ARCH" = "armv8a" ]; then
 
     SSL_STANDALONE_TOOLCHAIN_NAME=aarch64-linux-android-${SSL_STANDALONE_TOOLCHAIN_CLANG}
 
-    SSL_PLATFORM_CFG_FLAGS="linux-aarch64"
+    SSL_PLATFORM_CFG_FLAGS="android-arm64"
 
 elif [ "$SSL_ARCH" = "x86" ]; then
     
@@ -163,7 +163,7 @@ elif [ "$SSL_ARCH" = "x86_64" ]; then
 
     SSL_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${SSL_STANDALONE_TOOLCHAIN_CLANG}
 
-    SSL_PLATFORM_CFG_FLAGS="linux-x86_64"
+    SSL_PLATFORM_CFG_FLAGS="android-x86_64"
 
 else
     echo "unknown architecture $SSL_ARCH";
@@ -230,10 +230,11 @@ echo "${RED}[*] check openssl env${NC}"
 echo "--------------------"
 
 export PATH=${SSL_TOOLCHAIN_PATH}/bin:$PATH
+export ANDROID_NDK_HOME=${SSL_TOOLCHAIN_PATH}
+export PATH=${ANDROID_NDK_HOME}/bin:$PATH
 
 # with openssl standard options:
 SSL_CFG_FLAGS="$SSL_CFG_FLAGS --prefix=$SSL_OUTPUT_PATH"
-
 SSL_CFG_FLAGS="$SSL_PLATFORM_CFG_FLAGS $SSL_CFG_FLAGS"
 
 echo "PATH = $PATH"
@@ -257,6 +258,8 @@ echo ""
 
 echo "Enter Dir : ${SSL_OPENSSL_SOURCE_PATH}"
 echo "SSL_CFG_FLAGS : ${SSL_CFG_FLAGS} "
+
+git am ${SSL_BUILD_ROOT}/patch/0001-fix-Build.patch
 
 ./Configure ${SSL_CFG_FLAGS}
 make
