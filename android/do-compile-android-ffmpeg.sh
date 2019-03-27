@@ -37,6 +37,7 @@ FF_BUILD_ROOT=`pwd`/android
 FF_ANDROID_PLATFORM=android-21
 
 FF_BUILD_NAME=
+FF_BUILD_NAME_OPENSSL=
 FF_FFMPEG_SOURCE_PATH=
 FF_CROSS_PREFIX_NAME=
 
@@ -106,6 +107,8 @@ if [ "$FF_ARCH" = "armv7a" ]; then
 
     FF_BUILD_NAME=ffmpeg-armv7a
 
+    FF_BUILD_NAME_OPENSSL=openssl-armv7a
+
     FF_ANDROID_PLATFORM=android-21
 
     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
@@ -127,7 +130,10 @@ if [ "$FF_ARCH" = "armv7a" ]; then
     FF_ASSEMBLER_SUB_DIRS="arm"
 
 elif [ "$FF_ARCH" = "armv8a" ]; then
+    
     FF_BUILD_NAME=ffmpeg-armv8a
+
+    FF_BUILD_NAME_OPENSSL=openssl-armv8a
 
     FF_ANDROID_PLATFORM=android-21
 
@@ -149,6 +155,8 @@ elif [ "$FF_ARCH" = "x86" ]; then
     
     FF_BUILD_NAME=ffmpeg-x86
 
+    FF_BUILD_NAME_OPENSSL=openssl-x86
+
     FF_ANDROID_PLATFORM=android-21
 
     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
@@ -168,6 +176,8 @@ elif [ "$FF_ARCH" = "x86" ]; then
 elif [ "$FF_ARCH" = "x86_64" ]; then
     
     FF_BUILD_NAME=ffmpeg-x86_64
+
+    FF_BUILD_NAME_OPENSSL=openssl-x86_64
 
     case "$NDK_REL" in
     18*|19*)
@@ -214,6 +224,12 @@ FF_SHARED_OUTPUT_PATH=${FF_BUILD_ROOT}/../build/${FF_BUILD_NAME}
 FF_TOOLCHAIN_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/toolchain
 FF_TOOLCHAIN_SYSROOT_PATH=${FF_TOOLCHAIN_PATH}/sysroot
 
+FF_OUTPUT_PATH_OPENSSL=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_OPENSSL}/output
+FF_TOOLCHAIN_PATH_OPENSSL=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_OPENSSL}/toolchain
+FF_TOOLCHAIN_SYSROOT_PATH_OPENSSL=${FF_TOOLCHAIN_PATH_OPENSSL}/sysroot
+FF_DEP_OPENSSL_INC=${FF_OUTPUT_PATH_OPENSSL}/include
+FF_DEP_OPENSSL_LIB=${FF_OUTPUT_PATH_OPENSSL}/lib
+
 mkdir -p ${FF_OUTPUT_PATH}
 mkdir -p ${FF_SHARED_OUTPUT_PATH}
 
@@ -233,6 +249,12 @@ echo ""
 echo "FF_OUTPUT_PATH = $FF_OUTPUT_PATH"
 echo "FF_TOOLCHAIN_PATH = $FF_TOOLCHAIN_PATH"
 echo "FF_TOOLCHAIN_SYSROOT_PATH = $FF_TOOLCHAIN_SYSROOT_PATH"
+echo ""
+echo "FF_OUTPUT_PATH_OPENSSL = $FF_OUTPUT_PATH_OPENSSL"
+echo "FF_TOOLCHAIN_PATH_OPENSSL = $FF_TOOLCHAIN_PATH_OPENSSL"
+echo "FF_TOOLCHAIN_SYSROOT_PATH_OPENSSL = $FF_TOOLCHAIN_SYSROOT_PATH_OPENSSL"
+echo "FF_DEP_OPENSSL_INC = $FF_DEP_OPENSSL_INC"
+echo "FF_DEP_OPENSSL_LIB = $FF_DEP_OPENSSL_LIB"
 
 echo ""
 echo "--------------------"
@@ -322,6 +344,14 @@ esac
 export COMMON_FF_CFG_FLAGS=
 . ${FF_BUILD_ROOT}/../config/module.sh
 
+
+# with openssl
+if [ -f "${FF_DEP_OPENSSL_LIB}/libssl.a" ]; then
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
+    FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC}"
+    FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB} -lssl -lcrypto"
+fi
+
 FF_CFG_FLAGS="$FF_CFG_FLAGS $COMMON_FF_CFG_FLAGS"
 
 echo "PATH = $PATH"
@@ -354,6 +384,8 @@ cd ${FF_FFMPEG_SOURCE_PATH}
     --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
 
 make clean
+
+exit 1
 
 echo ""
 echo "--------------------"
@@ -411,6 +443,7 @@ ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAG
     -Wl,-soname,$FF_SPLAYER_SO_NAME \
     ${FF_LINK_C_OBJ_FILES} \
     ${FF_LINK_ASM_OBJ_FILES} \
+    ${FF_DEP_LIBS} \
     -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME 
 
 echo ""

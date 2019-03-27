@@ -259,8 +259,6 @@ echo ""
 echo "Enter Dir : ${SSL_OPENSSL_SOURCE_PATH}"
 echo "SSL_CFG_FLAGS : ${SSL_CFG_FLAGS} "
 
-git am ${SSL_BUILD_ROOT}/patch/0001-fix-Build.patch
-
 ./Configure ${SSL_CFG_FLAGS}
 make
 make install
