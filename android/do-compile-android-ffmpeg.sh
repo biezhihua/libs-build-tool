@@ -347,7 +347,11 @@ export COMMON_FF_CFG_FLAGS=
 
 # with openssl
 if [ -f "${FF_DEP_OPENSSL_LIB}/libssl.a" ]; then
+    export PKG_CONFIG_PATH=${FF_DEP_OPENSSL_LIB}/pkgconfig
+    echo "PKG_CONFIG_PATH = ${PKG_CONFIG_PATH}"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-protocol=https"
     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --pkg-config=pkg-config"
     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC}"
     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB} -lssl -lcrypto"
 fi
@@ -375,6 +379,11 @@ echo "--------------------"
 
 cd ${FF_FFMPEG_SOURCE_PATH}
 
+# path configure openssl
+git add -A
+git stash
+patch -p0 ./configure ${FF_BUILD_ROOT}/patch/ffmpeg-configure-patch.patch
+
 # http://www.runoob.com/linux/linux-comm-which.html
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 # which $CC
@@ -384,8 +393,6 @@ cd ${FF_FFMPEG_SOURCE_PATH}
     --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
 
 make clean
-
-exit 1
 
 echo ""
 echo "--------------------"
