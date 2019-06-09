@@ -383,7 +383,7 @@ cd ${FF_FFMPEG_SOURCE_PATH}
 # path configure openssl
 git add -A
 git stash
-patch -p0 ./configure ${FF_BUILD_ROOT}/patch/ffmpeg-configure-patch.patch
+patch -p0 ./configure ${FF_BUILD_ROOT}/patch/onfigure-patch.patch
 
 # http://www.runoob.com/linux/linux-comm-which.html
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
