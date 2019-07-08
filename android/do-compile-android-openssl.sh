@@ -9,7 +9,7 @@
 # Purple       0;35     Light Purple  1;35
 # Cyan         0;36     Light Cyan    1;36
 # Light Gray   0;37     White         1;37
-
+# biezhihua
 RED='\033[0;31m'
 Green='\033[0;33m'
 NC='\033[0m' # No Color
