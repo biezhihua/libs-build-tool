@@ -9,6 +9,8 @@ repository
 .DS_Store
 .idea
 .vscode
+mac/ffmpeg-*
+mac/openssl-*
 
 
 # built application files
