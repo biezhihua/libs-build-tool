@@ -18,47 +18,47 @@ echo "--------------------"
 echo "${RED}[*] check env ing $1 ${NC}"
 echo "--------------------"
 
-FF_ARCH=$1
-FF_BUILD_OPT=$2
-FF_REAL_OUTPUT_PATH=$3
+ARCH=$1
+BUILD_OPT=$2
+REAL_OUTPUT_PATH=$3
 
-echo "FF_ARCH=$FF_ARCH"
-echo "FF_BUILD_OPT=$FF_BUILD_OPT"
-echo "FF_REAL_OUTPUT_PATH=$FF_REAL_OUTPUT_PATH"
+echo "ARCH=$ARCH"
+echo "BUILD_OPT=$BUILD_OPT"
+echo "REAL_OUTPUT_PATH=$REAL_OUTPUT_PATH"
 
 # -z 字符串	字符串的长度为零则为真
-if [ -z "$FF_ARCH" ]; then
+if [ -z "$ARCH" ]; then
     echo "You must specific an architecture 'armv8a, armv7a, x86, ...'."
     exit 1
 fi
 
-FF_BUILD_ROOT=`pwd`/tools
+BUILD_ROOT=`pwd`/tools
 
-FF_ANDROID_PLATFORM=android-21
+ANDROID_PLATFORM=android-21
 
-FF_BUILD_NAME=
-FF_BUILD_NAME_OPENSSL=
-FF_FFMPEG_SOURCE_PATH=
-FF_CROSS_PREFIX_NAME=
+BUILD_NAME=
+BUILD_NAME_OPENSSL=
+FFMPEG_SOURCE_PATH=
+CROSS_PREFIX_NAME=
 
-FF_CFG_FLAGS=
+CFG_FLAGS=
 
-FF_EXTRA_CFLAGS=
-FF_EXTRA_LDFLAGS=
-FF_DEP_LIBS=
+EXTRA_CFLAGS=
+EXTRA_LDFLAGS=
+DEP_LIBS=
 
-FF_LINK_MODULE_DIRS="compat libavcodec libavfilter libavformat libavutil libswresample libswscale"
-FF_ASSEMBLER_SUB_DIRS=
+LINK_MODULE_DIRS="compat libavcodec libavfilter libavformat libavutil libswresample libswscale"
+ASSEMBLER_SUB_DIRS=
 
-FF_STANDALONE_TOOLCHAIN_FLAGS=
-FF_STANDALONE_TOOLCHAIN_NAME=
-FF_STANDALONE_TOOLCHAIN_ARCH=arm
-FF_STANDALONE_TOOLCHAIN_CLANG=clang3.6
+STANDALONE_TOOLCHAIN_FLAGS=
+STANDALONE_TOOLCHAIN_NAME=
+STANDALONE_TOOLCHAIN_ARCH=arm
+STANDALONE_TOOLCHAIN_CLANG=clang3.6
 
-FF_SPLAYER_SO_SIMPLE_NAME=sffmpeg
-FF_SPLAYER_SO_NAME=lib${FF_SPLAYER_SO_SIMPLE_NAME}.so
+SPLAYER_SO_SIMPLE_NAME=sffmpeg
+SPLAYER_SO_NAME=lib${SPLAYER_SO_SIMPLE_NAME}.so
 
-FF_PRODUCT=product
+PRODUCT=product
 
 echo ""
 echo "--------------------"
@@ -105,178 +105,178 @@ echo "--------------------"
 echo "${RED}[*] make params${NC}"
 echo "--------------------"
 
-if [ "$FF_ARCH" = "armv7a" ]; then
+if [ "$ARCH" = "armv7a" ]; then
 
-    FF_BUILD_NAME=ffmpeg-armv7a
+    BUILD_NAME=ffmpeg-armv7a
 
-    FF_BUILD_NAME_OPENSSL=openssl-armv7a
+    BUILD_NAME_OPENSSL=openssl-armv7a
 
-    FF_ANDROID_PLATFORM=android-21
+    ANDROID_PLATFORM=android-21
 
-    FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
-    FF_CROSS_PREFIX_NAME=arm-linux-androideabi
+    CROSS_PREFIX_NAME=arm-linux-androideabi
 
-    FF_STANDALONE_TOOLCHAIN_NAME=arm-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+    STANDALONE_TOOLCHAIN_NAME=arm-linux-android-${STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=arm --cpu=cortex-a8"
+    CFG_FLAGS="$CFG_FLAGS --arch=arm --cpu=cortex-a8"
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-neon"
+    CFG_FLAGS="$CFG_FLAGS --enable-neon"
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-thumb"
+    CFG_FLAGS="$CFG_FLAGS --enable-thumb"
 
-    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=armv7-a -mcpu=cortex-a8 -mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb"
+    EXTRA_CFLAGS="$EXTRA_CFLAGS -march=armv7-a -mcpu=cortex-a8 -mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb"
 
-    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS -march=armv7-a -Wl,--fix-cortex-a8"
+    EXTRA_LDFLAGS="$EXTRA_LDFLAGS -march=armv7-a -Wl,--fix-cortex-a8"
 
-    FF_ASSEMBLER_SUB_DIRS="arm"
+    ASSEMBLER_SUB_DIRS="arm"
 
-elif [ "$FF_ARCH" = "armv8a" ]; then
+elif [ "$ARCH" = "armv8a" ]; then
     
-    FF_BUILD_NAME=ffmpeg-armv8a
+    BUILD_NAME=ffmpeg-armv8a
 
-    FF_BUILD_NAME_OPENSSL=openssl-armv8a
+    BUILD_NAME_OPENSSL=openssl-armv8a
 
-    FF_ANDROID_PLATFORM=android-21
+    ANDROID_PLATFORM=android-21
 
-    FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
-    FF_CROSS_PREFIX_NAME=aarch64-linux-android
+    CROSS_PREFIX_NAME=aarch64-linux-android
 
-    FF_STANDALONE_TOOLCHAIN_NAME=aarch64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+    STANDALONE_TOOLCHAIN_NAME=aarch64-linux-android-${STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=aarch64"
+    CFG_FLAGS="$CFG_FLAGS --arch=aarch64"
 
-    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=armv8-a"
+    EXTRA_CFLAGS="$EXTRA_CFLAGS -march=armv8-a"
 
-    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
+    EXTRA_LDFLAGS="$EXTRA_LDFLAGS"
 
-    FF_ASSEMBLER_SUB_DIRS="aarch64 neon"
+    ASSEMBLER_SUB_DIRS="aarch64 neon"
 
-elif [ "$FF_ARCH" = "x86" ]; then
+elif [ "$ARCH" = "x86" ]; then
     
-    FF_BUILD_NAME=ffmpeg-x86
+    BUILD_NAME=ffmpeg-x86
 
-    FF_BUILD_NAME_OPENSSL=openssl-x86
+    BUILD_NAME_OPENSSL=openssl-x86
 
-    FF_ANDROID_PLATFORM=android-21
+    ANDROID_PLATFORM=android-21
 
-    FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
-    FF_CROSS_PREFIX_NAME=i686-linux-android
+    CROSS_PREFIX_NAME=i686-linux-android
 
-    FF_STANDALONE_TOOLCHAIN_NAME=x86-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+    STANDALONE_TOOLCHAIN_NAME=x86-linux-android-${STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=x86 --cpu=i686"
+    CFG_FLAGS="$CFG_FLAGS --arch=x86 --cpu=i686"
 
-    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32"
+    EXTRA_CFLAGS="$EXTRA_CFLAGS -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32"
 
-    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
+    EXTRA_LDFLAGS="$EXTRA_LDFLAGS"
 
-    FF_ASSEMBLER_SUB_DIRS="x86"
+    ASSEMBLER_SUB_DIRS="x86"
 
-elif [ "$FF_ARCH" = "x86_64" ]; then
+elif [ "$ARCH" = "x86_64" ]; then
     
-    FF_BUILD_NAME=ffmpeg-x86_64
+    BUILD_NAME=ffmpeg-x86_64
 
-    FF_BUILD_NAME_OPENSSL=openssl-x86_64
+    BUILD_NAME_OPENSSL=openssl-x86_64
 
     case "$NDK_REL" in
     18*|19*)
-        FF_ANDROID_PLATFORM=android-23
+        ANDROID_PLATFORM=android-23
     ;;
     13*|14*|15*|16*|17*)
-        FF_ANDROID_PLATFORM=android-21
+        ANDROID_PLATFORM=android-21
     ;;
     esac
 
-    FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
-    FF_CROSS_PREFIX_NAME=x86_64-linux-android
+    CROSS_PREFIX_NAME=x86_64-linux-android
 
-    FF_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+    STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64"
+    CFG_FLAGS="$CFG_FLAGS  --arch=x86_64"
 
-    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
+    EXTRA_CFLAGS="$EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
 
     # https://blog.csdn.net/cjf_iceking/article/details/25825569
     # 其中Wl表示将紧跟其后的参数，传递给连接器ld。Bsymbolic表示强制采用本地的全局变量定义，
     # 这样就不会出现动态链接库的全局变量定义被应用程序/动态链接库中的同名定义给覆盖了！
-    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS -Wl,-Bsymbolic"
+    EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,-Bsymbolic"
 
-    FF_ASSEMBLER_SUB_DIRS="x86"
+    ASSEMBLER_SUB_DIRS="x86"
 
 else
-    echo "unknown architecture $FF_ARCH";
+    echo "unknown architecture $ARCH";
     exit 1
 fi
 
-if [ ! -d ${FF_FFMPEG_SOURCE_PATH} ]; then
+if [ ! -d ${FFMPEG_SOURCE_PATH} ]; then
     echo ""
     echo "!! ERROR"
-    echo "!! Can not find FFmpeg directory for $FF_BUILD_NAME"
+    echo "!! Can not find FFmpeg directory for $BUILD_NAME"
     echo "!! Run 'sh init-android.sh' first"
     echo ""
     exit 1
 fi
 
-FF_OUTPUT_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/output
-FF_SHARED_OUTPUT_PATH=${FF_BUILD_ROOT}/../${FF_PRODUCT}/${FF_BUILD_NAME}
-FF_TOOLCHAIN_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/toolchain
-FF_TOOLCHAIN_SYSROOT_PATH=${FF_TOOLCHAIN_PATH}/sysroot
+OUTPUT_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/output
+SHARED_OUTPUT_PATH=${BUILD_ROOT}/../${PRODUCT}/${BUILD_NAME}
+TOOLCHAIN_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/toolchain
+TOOLCHAIN_SYSROOT_PATH=${TOOLCHAIN_PATH}/sysroot
 
-FF_OUTPUT_PATH_OPENSSL=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_OPENSSL}/output
-FF_TOOLCHAIN_PATH_OPENSSL=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME_OPENSSL}/toolchain
-FF_TOOLCHAIN_SYSROOT_PATH_OPENSSL=${FF_TOOLCHAIN_PATH_OPENSSL}/sysroot
-FF_DEP_OPENSSL_INC=${FF_OUTPUT_PATH_OPENSSL}/include
-FF_DEP_OPENSSL_LIB=${FF_OUTPUT_PATH_OPENSSL}/lib
+OUTPUT_PATH_OPENSSL=${BUILD_ROOT}/build/${BUILD_NAME_OPENSSL}/output
+TOOLCHAIN_PATH_OPENSSL=${BUILD_ROOT}/build/${BUILD_NAME_OPENSSL}/toolchain
+TOOLCHAIN_SYSROOT_PATH_OPENSSL=${TOOLCHAIN_PATH_OPENSSL}/sysroot
+DEP_OPENSSL_INC=${OUTPUT_PATH_OPENSSL}/include
+DEP_OPENSSL_LIB=${OUTPUT_PATH_OPENSSL}/lib
 
-rm -rf ${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}
-mkdir -p ${FF_OUTPUT_PATH}
-mkdir -p ${FF_SHARED_OUTPUT_PATH}
+rm -rf ${BUILD_ROOT}/build/${BUILD_NAME}
+mkdir -p ${OUTPUT_PATH}
+mkdir -p ${SHARED_OUTPUT_PATH}
 
-echo "FF_FFMPEG_SOURCE_PATH = $FF_FFMPEG_SOURCE_PATH"
+echo "FFMPEG_SOURCE_PATH = $FFMPEG_SOURCE_PATH"
 echo ""
-echo "FF_BUILD_NAME = $FF_BUILD_NAME"
-echo "FF_BUILD_NAME_OPENSSL = $FF_BUILD_NAME_OPENSSL"
-echo "FF_BUILD_NAME_LIBSOXR = $FF_BUILD_NAME_LIBSOXR"
-echo "FF_CROSS_PREFIX_NAME = $FF_CROSS_PREFIX_NAME"
-echo "FF_STANDALONE_TOOLCHAIN_NAME = $FF_STANDALONE_TOOLCHAIN_NAME"
+echo "BUILD_NAME = $BUILD_NAME"
+echo "BUILD_NAME_OPENSSL = $BUILD_NAME_OPENSSL"
+echo "BUILD_NAME_LIBSOXR = $BUILD_NAME_LIBSOXR"
+echo "CROSS_PREFIX_NAME = $CROSS_PREFIX_NAME"
+echo "STANDALONE_TOOLCHAIN_NAME = $STANDALONE_TOOLCHAIN_NAME"
 echo ""
-echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
-echo "FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
-echo "FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
-echo "FF_ASSEMBLER_SUB_DIRS = $FF_ASSEMBLER_SUB_DIRS"
+echo "CFG_FLAGS = $CFG_FLAGS"
+echo "EXTRA_CFLAGS = $EXTRA_CFLAGS"
+echo "EXTRA_LDFLAGS = $EXTRA_LDFLAGS"
+echo "ASSEMBLER_SUB_DIRS = $ASSEMBLER_SUB_DIRS"
 echo ""
-echo "FF_OUTPUT_PATH = $FF_OUTPUT_PATH"
-echo "FF_TOOLCHAIN_PATH = $FF_TOOLCHAIN_PATH"
-echo "FF_TOOLCHAIN_SYSROOT_PATH = $FF_TOOLCHAIN_SYSROOT_PATH"
+echo "OUTPUT_PATH = $OUTPUT_PATH"
+echo "TOOLCHAIN_PATH = $TOOLCHAIN_PATH"
+echo "TOOLCHAIN_SYSROOT_PATH = $TOOLCHAIN_SYSROOT_PATH"
 echo ""
-echo "FF_OUTPUT_PATH_OPENSSL = $FF_OUTPUT_PATH_OPENSSL"
-echo "FF_TOOLCHAIN_PATH_OPENSSL = $FF_TOOLCHAIN_PATH_OPENSSL"
-echo "FF_TOOLCHAIN_SYSROOT_PATH_OPENSSL = $FF_TOOLCHAIN_SYSROOT_PATH_OPENSSL"
-echo "FF_DEP_OPENSSL_INC = $FF_DEP_OPENSSL_INC"
-echo "FF_DEP_OPENSSL_LIB = $FF_DEP_OPENSSL_LIB"
+echo "OUTPUT_PATH_OPENSSL = $OUTPUT_PATH_OPENSSL"
+echo "TOOLCHAIN_PATH_OPENSSL = $TOOLCHAIN_PATH_OPENSSL"
+echo "TOOLCHAIN_SYSROOT_PATH_OPENSSL = $TOOLCHAIN_SYSROOT_PATH_OPENSSL"
+echo "DEP_OPENSSL_INC = $DEP_OPENSSL_INC"
+echo "DEP_OPENSSL_LIB = $DEP_OPENSSL_LIB"
 
 echo ""
 echo "--------------------"
 echo "${RED}[*] make NDK standalone toolchain${NC}"
 echo "--------------------"
 
-FF_STANDALONE_TOOLCHAIN_FLAGS="$FF_STANDALONE_TOOLCHAIN_FLAGS --install-dir=$FF_TOOLCHAIN_PATH"
+STANDALONE_TOOLCHAIN_FLAGS="$STANDALONE_TOOLCHAIN_FLAGS --install-dir=$TOOLCHAIN_PATH"
 
-echo "FF_STANDALONE_TOOLCHAIN_NAME = $FF_STANDALONE_TOOLCHAIN_NAME"
-echo "FF_STANDALONE_TOOLCHAIN_FLAGS = $FF_STANDALONE_TOOLCHAIN_FLAGS"
+echo "STANDALONE_TOOLCHAIN_NAME = $STANDALONE_TOOLCHAIN_NAME"
+echo "STANDALONE_TOOLCHAIN_FLAGS = $STANDALONE_TOOLCHAIN_FLAGS"
 
-echo "FF_STANDALONE_TOOLCHAIN_ARCH = $FF_STANDALONE_TOOLCHAIN_ARCH"
-echo "FF_STANDALONE_TOOLCHAIN_CLANG = $FF_STANDALONE_TOOLCHAIN_CLANG"
-echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
+echo "STANDALONE_TOOLCHAIN_ARCH = $STANDALONE_TOOLCHAIN_ARCH"
+echo "STANDALONE_TOOLCHAIN_CLANG = $STANDALONE_TOOLCHAIN_CLANG"
+echo "ANDROID_PLATFORM = $ANDROID_PLATFORM"
 
 ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
-    ${FF_STANDALONE_TOOLCHAIN_FLAGS} \
-    --platform=${FF_ANDROID_PLATFORM} \
-    --toolchain=${FF_STANDALONE_TOOLCHAIN_NAME} \
+    ${STANDALONE_TOOLCHAIN_FLAGS} \
+    --platform=${ANDROID_PLATFORM} \
+    --toolchain=${STANDALONE_TOOLCHAIN_NAME} \
     --force
 
 echo ""
@@ -284,12 +284,12 @@ echo "--------------------"
 echo "${RED}[*] check ffmpeg env${NC}"
 echo "--------------------"
 
-export PATH=${FF_TOOLCHAIN_PATH}/bin:$PATH
-export CLANG=${FF_CROSS_PREFIX_NAME}-clang
-export CXX=${FF_CROSS_PREFIX_NAME}-clang++
-export LD=${FF_CROSS_PREFIX_NAME}-ld
-export AR=${FF_CROSS_PREFIX_NAME}-ar
-export STRIP=${FF_CROSS_PREFIX_NAME}-strip
+export PATH=${TOOLCHAIN_PATH}/bin:$PATH
+export CLANG=${CROSS_PREFIX_NAME}-clang
+export CXX=${CROSS_PREFIX_NAME}-clang++
+export LD=${CROSS_PREFIX_NAME}-ld
+export AR=${CROSS_PREFIX_NAME}-ar
+export STRIP=${CROSS_PREFIX_NAME}-strip
 
 # https://blog.csdn.net/m0_37170593/article/details/78892913
 # example: --extra-cflags=-I/xxxx/include 
@@ -305,7 +305,7 @@ export STRIP=${FF_CROSS_PREFIX_NAME}-strip
 # -Wa,<arg>               Pass the comma separated arguments in <arg> to the assembler
 # -fPIC https://blog.csdn.net/a_ran/article/details/41943749
 # -std=c99 https://blog.csdn.net/u012075739/article/details/26516007/
-FF_CFLAGS="-O3 -fPIC -Wall -pipe \
+CFLAGS="-O3 -fPIC -Wall -pipe \
     -std=c99 \
     -ffast-math \
     -fstrict-aliasing -Werror=strict-aliasing \
@@ -313,53 +313,53 @@ FF_CFLAGS="-O3 -fPIC -Wall -pipe \
     -DANDROID -DNDEBUG"
 
 # with ffmpeg standard options:
-FF_CFG_FLAGS="$FF_CFG_FLAGS --prefix=$FF_OUTPUT_PATH"
-FF_CFG_FLAGS="$FF_CFG_FLAGS --sysroot=$FF_TOOLCHAIN_SYSROOT_PATH"
-FF_CFG_FLAGS="$FF_CFG_FLAGS --cc=clang --host-cflags= --host-ldflags="
+CFG_FLAGS="$CFG_FLAGS --prefix=$OUTPUT_PATH"
+CFG_FLAGS="$CFG_FLAGS --sysroot=$TOOLCHAIN_SYSROOT_PATH"
+CFG_FLAGS="$CFG_FLAGS --cc=clang --host-cflags= --host-ldflags="
 
 # with ffmpeg Advanced options (experts only):
-FF_CFG_FLAGS="$FF_CFG_FLAGS --cross-prefix=${FF_TOOLCHAIN_PATH}/bin/${FF_CROSS_PREFIX_NAME}-"
-FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-cross-compile"
-FF_CFG_FLAGS="$FF_CFG_FLAGS --target-os=android"
-FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-pic"
+CFG_FLAGS="$CFG_FLAGS --cross-prefix=${TOOLCHAIN_PATH}/bin/${CROSS_PREFIX_NAME}-"
+CFG_FLAGS="$CFG_FLAGS --enable-cross-compile"
+CFG_FLAGS="$CFG_FLAGS --target-os=android"
+CFG_FLAGS="$CFG_FLAGS --enable-pic"
 
-if [ "$FF_ARCH" = "x86" ]; then
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-asm"
+if [ "$ARCH" = "x86" ]; then
+    CFG_FLAGS="$CFG_FLAGS --disable-asm"
 else
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-asm"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-inline-asm"
+    CFG_FLAGS="$CFG_FLAGS --enable-asm"
+    CFG_FLAGS="$CFG_FLAGS --enable-inline-asm"
 fi
 
-case "$FF_BUILD_OPT" in
+case "$BUILD_OPT" in
     debug)
-        FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-optimizations"
-        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-debug"
-        FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-small"
+        CFG_FLAGS="$CFG_FLAGS --disable-optimizations"
+        CFG_FLAGS="$CFG_FLAGS --enable-debug"
+        CFG_FLAGS="$CFG_FLAGS --disable-small"
     ;;
     *)
-        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-optimizations"
-        FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-debug"
-        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-small"
+        CFG_FLAGS="$CFG_FLAGS --enable-optimizations"
+        CFG_FLAGS="$CFG_FLAGS --disable-debug"
+        CFG_FLAGS="$CFG_FLAGS --enable-small"
     ;;
 esac
 
 # with ffmpeg config module
-export COMMON_FF_CFG_FLAGS=
-. ${FF_BUILD_ROOT}/../config/module.sh
+export COMMON_CFG_FLAGS=
+. ${BUILD_ROOT}/../config/module.sh
 
 
 # with openssl
-if [ -f "${FF_DEP_OPENSSL_LIB}/libssl.a" ]; then
-    export PKG_CONFIG_PATH=${FF_DEP_OPENSSL_LIB}/pkgconfig
+if [ -f "${DEP_OPENSSL_LIB}/libssl.a" ]; then
+    export PKG_CONFIG_PATH=${DEP_OPENSSL_LIB}/pkgconfig
     echo "PKG_CONFIG_PATH = ${PKG_CONFIG_PATH}"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-protocol=https"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --pkg-config=pkg-config"
-    FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC}"
-    FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB} -lssl -lcrypto"
+    CFG_FLAGS="$CFG_FLAGS --enable-protocol=https"
+    CFG_FLAGS="$CFG_FLAGS --enable-openssl"
+    CFG_FLAGS="$CFG_FLAGS --pkg-config=pkg-config"
+    CFLAGS="$CFLAGS -I${DEP_OPENSSL_INC}"
+    DEP_LIBS="$DEP_LIBS -L${DEP_OPENSSL_LIB} -lssl -lcrypto"
 fi
 
-FF_CFG_FLAGS="$FF_CFG_FLAGS $COMMON_FF_CFG_FLAGS"
+CFG_FLAGS="$CFG_FLAGS $COMMON_CFG_FLAGS"
 
 echo "PATH = $PATH"
 echo "CLANG = $CLANG"
@@ -367,33 +367,33 @@ echo "LD = $LD"
 echo "AR = $AR"
 echo "STRIP = $STRIP"
 echo ""
-echo "FF_CFLAGS = $FF_CFLAGS"
-echo "FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
+echo "CFLAGS = $CFLAGS"
+echo "EXTRA_CFLAGS = $EXTRA_CFLAGS"
 echo ""
-echo "FF_DEP_LIBS = $FF_DEP_LIBS"
-echo "FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
+echo "DEP_LIBS = $DEP_LIBS"
+echo "EXTRA_LDFLAGS = $EXTRA_LDFLAGS"
 echo ""
-echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
+echo "CFG_FLAGS = $CFG_FLAGS"
 echo ""
 
 echo "--------------------"
 echo "${RED}[*] configurate ffmpeg${NC}"
 echo "--------------------"
 
-cd ${FF_FFMPEG_SOURCE_PATH}
+cd ${FFMPEG_SOURCE_PATH}
 
 # path configure openssl
 git add -A
 git stash
-patch -p0 ./configure ${FF_BUILD_ROOT}/patch/configure-patch.patch
+patch -p0 ./configure ${BUILD_ROOT}/patch/configure-patch.patch
 
 # http://www.runoob.com/linux/linux-comm-which.html
 # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 # which $CC
 # which ${CLANG}
-./configure ${FF_CFG_FLAGS} \
-    --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
-    --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
+./configure ${CFG_FLAGS} \
+    --extra-cflags="$CFLAGS $EXTRA_CFLAGS" \
+    --extra-ldflags="$DEP_LIBS $EXTRA_LDFLAGS" 
 
 make clean
 
@@ -401,16 +401,16 @@ echo ""
 echo "--------------------"
 echo "${RED}[*] compile ffmpeg${NC}"
 echo "--------------------"
-echo "FF_OUTPUT_PATH = $FF_OUTPUT_PATH"
+echo "OUTPUT_PATH = $OUTPUT_PATH"
 
-cp config.* ${FF_OUTPUT_PATH}
+cp config.* ${OUTPUT_PATH}
 
 make install > /dev/null
 
-mkdir -p FF_OUTPUT_PATH/include/libffmpeg
-cp -f config.h FF_OUTPUT_PATH/include/libffmpeg/config.h
+mkdir -p OUTPUT_PATH/include/libffmpeg
+cp -f config.h OUTPUT_PATH/include/libffmpeg/config.h
 
-echo "FF_LIB_CONFIG = $FF_OUTPUT_PATH/include/libffmpeg/config.h"
+echo "LIB_CONFIG = $OUTPUT_PATH/include/libffmpeg/config.h"
 echo "FFmpeg install success"
 
 
@@ -419,42 +419,42 @@ echo "--------------------"
 echo "${RED}[*] link ffmpeg${NC}"
 echo "--------------------"
 
-FF_LINK_C_OBJ_FILES=
-FF_LINK_ASM_OBJ_FILES=
-for MODULE_DIR in ${FF_LINK_MODULE_DIRS}
+LINK_C_OBJ_FILES=
+LINK_ASM_OBJ_FILES=
+for MODULE_DIR in ${LINK_MODULE_DIRS}
 do
     C_OBJ_FILES="$MODULE_DIR/*.o"
     if ls ${C_OBJ_FILES} 1> /dev/null 2>&1; then
         echo "link $MODULE_DIR/*.o"
-        FF_LINK_C_OBJ_FILES="$FF_LINK_C_OBJ_FILES $C_OBJ_FILES"
+        LINK_C_OBJ_FILES="$LINK_C_OBJ_FILES $C_OBJ_FILES"
     fi
 
-    for ASM_SUB_DIR in ${FF_ASSEMBLER_SUB_DIRS}
+    for ASM_SUB_DIR in ${ASSEMBLER_SUB_DIRS}
     do
         ASM_OBJ_FILES="$MODULE_DIR/$ASM_SUB_DIR/*.o"
         if ls ${ASM_OBJ_FILES} 1> /dev/null 2>&1; then
             echo "link $MODULE_DIR/$ASM_SUB_DIR/*.o"
-            FF_LINK_ASM_OBJ_FILES="$FF_LINK_ASM_OBJ_FILES $ASM_OBJ_FILES"
+            LINK_ASM_OBJ_FILES="$LINK_ASM_OBJ_FILES $ASM_OBJ_FILES"
         fi
     done
 done
 
 echo ""
-echo "FF_LINK_C_OBJ_FILES = $FF_LINK_C_OBJ_FILES"
-echo "FF_LINK_ASM_OBJ_FILES = $FF_LINK_ASM_OBJ_FILES"
-echo "FF_DEP_LIBS = $FF_DEP_LIBS"
-echo "FF_SPLAYER_SO = $FF_OUTPUT_PATH/$FF_SPLAYER_SO_NAME"
-echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
-echo "FF_TOOLCHAIN_SYSROOT = $FF_TOOLCHAIN_SYSROOT_PATH"
+echo "LINK_C_OBJ_FILES = $LINK_C_OBJ_FILES"
+echo "LINK_ASM_OBJ_FILES = $LINK_ASM_OBJ_FILES"
+echo "DEP_LIBS = $DEP_LIBS"
+echo "SPLAYER_SO = $OUTPUT_PATH/$SPLAYER_SO_NAME"
+echo "ANDROID_PLATFORM = $ANDROID_PLATFORM"
+echo "TOOLCHAIN_SYSROOT = $TOOLCHAIN_SYSROOT_PATH"
 echo "Use Compiler: ${CLANG}"
 echo ""
 
-${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAGS} \
-    -Wl,-soname,$FF_SPLAYER_SO_NAME \
-    ${FF_LINK_C_OBJ_FILES} \
-    ${FF_LINK_ASM_OBJ_FILES} \
-    ${FF_DEP_LIBS} \
-    -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME 
+${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${EXTRA_LDFLAGS} \
+    -Wl,-soname,$SPLAYER_SO_NAME \
+    ${LINK_C_OBJ_FILES} \
+    ${LINK_ASM_OBJ_FILES} \
+    ${DEP_LIBS} \
+    -o ${OUTPUT_PATH}/$SPLAYER_SO_NAME 
 
 echo ""
 echo "--------------------"
@@ -474,32 +474,32 @@ mysedi() {
     # echo "${f}    ${exp}    ${n}"
 }
 
-rm -rf ${FF_SHARED_OUTPUT_PATH}
-mkdir -p ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig
-cp -r ${FF_OUTPUT_PATH}/include ${FF_SHARED_OUTPUT_PATH}/include
-cp ${FF_OUTPUT_PATH}/${FF_SPLAYER_SO_NAME} ${FF_SHARED_OUTPUT_PATH}/lib/${FF_SPLAYER_SO_NAME}
-cp ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig
+rm -rf ${SHARED_OUTPUT_PATH}
+mkdir -p ${SHARED_OUTPUT_PATH}/lib/pkgconfig
+cp -r ${OUTPUT_PATH}/include ${SHARED_OUTPUT_PATH}/include
+cp ${OUTPUT_PATH}/${SPLAYER_SO_NAME} ${SHARED_OUTPUT_PATH}/lib/${SPLAYER_SO_NAME}
+cp ${OUTPUT_PATH}/lib/pkgconfig/*.pc ${SHARED_OUTPUT_PATH}/lib/pkgconfig
 
-echo "FF_OUTPUT_SHARE = ${FF_SHARED_OUTPUT_PATH}"
-echo "FF_OUTPUT_SHARE_INCLUDE = ${FF_SHARED_OUTPUT_PATH}/include"
-echo "FF_OUTPUT_SHARE_LIB = ${FF_SHARED_OUTPUT_PATH}/lib"
+echo "OUTPUT_SHARE = ${SHARED_OUTPUT_PATH}"
+echo "OUTPUT_SHARE_INCLUDE = ${SHARED_OUTPUT_PATH}/include"
+echo "OUTPUT_SHARE_LIB = ${SHARED_OUTPUT_PATH}/lib"
 echo ""
 
-for f in ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
+for f in ${SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     # in case empty dir
     if [ ! -f ${f} ]; then
         continue
     fi
-    f=${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
+    f=${SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
     echo "process share lib ${f}"
     # OSX sed doesn't have in-place(-i)
-    mysedi ${f} 's/tools\/build\/'${FF_BUILD_NAME}'\/output/build\/'${FF_BUILD_NAME}'/g'
-    mysedi ${f} 's/-lavcodec/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lavfilter/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lavformat/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lavutil/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lswresample/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lswscale/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/tools\/build\/'${BUILD_NAME}'\/output/build\/'${BUILD_NAME}'/g'
+    mysedi ${f} 's/-lavcodec/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavfilter/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavformat/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavutil/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lswresample/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lswscale/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
 done
 
 echo ""
