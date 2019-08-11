@@ -408,9 +408,7 @@ echo "OUTPUT_PATH = $OUTPUT_PATH"
 
 cp config.* ${OUTPUT_PATH}
 
-make -j8
-
-make install > /dev/null
+make install -j8 > /dev/null
 
 mkdir -p OUTPUT_PATH/include/libffmpeg
 cp -f config.h OUTPUT_PATH/include/libffmpeg/config.h
