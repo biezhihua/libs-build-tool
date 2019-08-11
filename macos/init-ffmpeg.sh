@@ -7,9 +7,9 @@ NC='\033[0m' # No Color
 TARGET=$1
 
 UPSTREAM=https://github.com/FFmpeg/FFmpeg.git
-VERSION=4.1
+VERSION=4.2
 BRANCH=origin/release/$VERSION
-LOCAL_REPO=repository/ffmpeg-$VERSION
+LOCAL_REPO=../repository/ffmpeg-$VERSION
 
 set -e
 
@@ -21,7 +21,7 @@ function pull_repository()
     echo -e "${RED}[*] pull ffmpeg ($UPSTREAM) base branch $BRANCH ${NC}"
     echo "--------------------"
     
-    sh tools/pull-repo-base.sh $UPSTREAM $LOCAL_REPO
+    sh ../tools/pull-repo-base.sh $UPSTREAM $LOCAL_REPO
 }
 
 function pull_fork()
@@ -31,20 +31,20 @@ function pull_fork()
     echo -e "${RED}[*] pull ffmpeg fork ffmpeg-$1 ${NC}"
     echo "--------------------"
     
-    if [[ -d mac/ffmpeg-$1 ]]; then
-        rm -rf mac/ffmpeg-$1
+    if [[ -d tools/ffmpeg-$1 ]]; then
+        rm -rf tools/ffmpeg-$1
     fi
     
-    sh tools/pull-repo-ref.sh $UPSTREAM mac/ffmpeg-$1 ${LOCAL_REPO}
-    cd mac/ffmpeg-$1
+    sh ../tools/pull-repo-ref.sh $UPSTREAM tools/ffmpeg-$1 ${LOCAL_REPO}
+    cd tools/ffmpeg-$1
     git checkout -b build_tools ${BRANCH}
     cd -
 }
 
 echo_usage() {
     echo "Usage:"
-    echo "  init-mac-ffmpeg.sh x86_64"
-    echo "  init-mac-ffmpeg.sh clean"
+    echo "  init-ffmpeg.sh x86_64"
+    echo "  init-ffmpeg.sh clean"
     exit 1
 }
 
@@ -63,9 +63,9 @@ case "$TARGET" in
         ACT_ARCHS_ALL="x86_64"
         for ARCH in $ACT_ARCHS_ALL
         do
-            if [[ -d mac/ffmpeg-$ARCH ]]; then
-                echo "rm mac/ffmpeg-$ARCH"
-                rm -rf mac/ffmpeg-$ARCH
+            if [[ -d tools/ffmpeg-$ARCH ]]; then
+                echo "rm tools/ffmpeg-$ARCH"
+                rm -rf tools/ffmpeg-$ARCH
             fi
         done
         echo "clean complete"
