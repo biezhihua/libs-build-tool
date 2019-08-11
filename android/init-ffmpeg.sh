@@ -43,8 +43,8 @@ function pull_fork()
 
 echo_usage() {
     echo "Usage:"
-    echo "  init-android-ffmpeg.sh all|armv7a|armv8a|x86|x86_64"
-    echo "  init-android-ffmpeg.sh clean"
+    echo "  init-ffmpeg.sh all|armv7a|armv8a|x86|x86_64"
+    echo "  init-ffmpeg.sh clean"
     exit 1
 }
 

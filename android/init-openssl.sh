@@ -47,8 +47,8 @@ function pull_fork()
 
 echo_usage() {
     echo "Usage:"
-    echo "  init-android-openssl.sh all|armv7a|armv8a|x86|x86_64"
-    echo "  init-android-openssl.sh clean"
+    echo "  init-openssl.sh all|armv7a|armv8a|x86|x86_64"
+    echo "  init-openssl.sh clean"
     exit 1
 }
 

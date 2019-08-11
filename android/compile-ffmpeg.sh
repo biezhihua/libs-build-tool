@@ -2,7 +2,7 @@
 
 RED='\033[0;31m'
 Green='\033[0;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 UNI_BUILD_ROOT=`pwd`
 
@@ -22,9 +22,9 @@ echo_archs() {
 
 echo_usage() {
     echo "Usage:"
-    echo "  compile-android-openssl.sh armv7a|armv8a|x86|x86_64"
-    echo "  compile-android-openssl.sh all"
-    echo "  compile-android-openssl.sh clean"
+    echo "  compile-ffmpeg.sh armv7a|armv8a|x86|x86_64"
+    echo "  compile-ffmpeg.sh all"
+    echo "  compile-ffmpeg.sh clean"
     exit 1
 }
 
@@ -37,11 +37,11 @@ echo_nextstep_help() {
 case "$TARGET" in
     "")
         echo_archs armv7a
-        sh ./tools/do-compile-android-openssl.sh armv7a
+        sh ./tools/do-compile-ffmpeg.sh armv7a
     ;;
     armv7a|armv8a|x86|x86_64)
         echo_archs $TARGET $TARGET_EXTRA
-        sh ./tools/do-compile-android-openssl.sh $TARGET $TARGET_EXTRA
+        sh ./tools/do-compile-ffmpeg.sh $TARGET $TARGET_EXTRA
         echo_nextstep_help
     ;;
     all)
@@ -50,7 +50,7 @@ case "$TARGET" in
         for ARCH in $ACT_ARCHS_ALL
         do
             echo "$ARCH $TARGET_EXTRA"
-            sh ./tools/do-compile-android-openssl.sh $ARCH $TARGET_EXTRA
+            sh ./tools/do-compile-ffmpeg.sh $ARCH $TARGET_EXTRA
         done
         echo_nextstep_help
     ;;
@@ -59,12 +59,12 @@ case "$TARGET" in
         echo_archs ACT_ARCHS_ALL
         for ARCH in $ACT_ARCHS_ALL
         do
-            if [ -d openssl-$ARCH ]; then
-                cd openssl-$ARCH && git clean -xdf && cd -
+            if [ -d ./tools/ffmpeg-$ARCH ]; then
+                cd ./tools/ffmpeg-$ARCH && git clean -xdf && cd -
             fi
         done
-        rm -rf ./tools/build/openssl-*
-        rm -rf ./build/openssl-*
+        rm -rf ./tools/build/ffmpeg-*
+        rm -rf ./product/ffmpeg-*
     ;;
     check)
         echo_archs ACT_ARCHS_ALL
@@ -73,4 +73,4 @@ case "$TARGET" in
         echo_usage
         exit 1
     ;;
-esac
+esac 
