@@ -9,7 +9,7 @@ TARGET=$1
 UPSTREAM=https://github.com/openssl/openssl
 TAG=OpenSSL_1_1_1b
 BRANCH=$TAG
-LOCAL_REPO=repository/openssl-$TAG
+LOCAL_REPO=./repository/openssl-$TAG
 
 # http://www.runoob.com/linux/linux-comm-set.html
 # set指令能设置所使用shell的执行方式，可依照不同的需求来做设置
@@ -25,7 +25,7 @@ function pull_repository()
     echo -e "${RED}[*] pull ffmpeg ($UPSTREAM) base branch $BRANCH ${NC}"
     echo "--------------------"
     
-    sh tools/pull-repo-base.sh $UPSTREAM $LOCAL_REPO
+    sh ../tools/pull-repo-base.sh $UPSTREAM $LOCAL_REPO
 }
 
 function pull_fork()
@@ -35,12 +35,12 @@ function pull_fork()
     echo -e "${RED}[*] pull openssl fork openssl-$1 ${NC}"
     echo "--------------------"
     
-    if [[ -d android/openssl-$1 ]]; then
-        rm -rf android/openssl-$1
+    if [[ -d tools/openssl-$1 ]]; then
+        rm -rf tools/openssl-$1
     fi
     
-    sh tools/pull-repo-ref.sh $UPSTREAM android/openssl-$1 ${LOCAL_REPO}
-    cd android/openssl-$1
+    sh ../toolstools/pull-repo-ref.sh $UPSTREAM tools/openssl-$1 ${LOCAL_REPO}
+    cd tools/openssl-$1
     git checkout -b build_tools ${BRANCH}
     cd -
 }
@@ -85,9 +85,9 @@ case "$TARGET" in
         ACT_ARCHS_ALL="armv7a armv8a x86 x86_64"
         for ARCH in $ACT_ARCHS_ALL
         do
-            if [[ -d android/openssl-$ARCH ]]; then
-                echo "rm android/openssl-$ARCH"
-                rm -rf android/openssl-$ARCH
+            if [[ -d tools/openssl-$ARCH ]]; then
+                echo "rm tools/openssl-$ARCH"
+                rm -rf tools/openssl-$ARCH
             fi
         done
         echo "clean complete"

@@ -32,7 +32,7 @@ if [ -z "$FF_ARCH" ]; then
     exit 1
 fi
 
-FF_BUILD_ROOT=`pwd`/android
+FF_BUILD_ROOT=`pwd`/tools
 
 FF_ANDROID_PLATFORM=android-21
 
@@ -57,6 +57,8 @@ FF_STANDALONE_TOOLCHAIN_CLANG=clang3.6
 
 FF_SPLAYER_SO_SIMPLE_NAME=sffmpeg
 FF_SPLAYER_SO_NAME=lib${FF_SPLAYER_SO_SIMPLE_NAME}.so
+
+FF_PRODUCT=product
 
 echo ""
 echo "--------------------"
@@ -220,7 +222,7 @@ if [ ! -d ${FF_FFMPEG_SOURCE_PATH} ]; then
 fi
 
 FF_OUTPUT_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/output
-FF_SHARED_OUTPUT_PATH=${FF_BUILD_ROOT}/../build/${FF_BUILD_NAME}
+FF_SHARED_OUTPUT_PATH=${FF_BUILD_ROOT}/../${FF_PRODUCT}/${FF_BUILD_NAME}
 FF_TOOLCHAIN_PATH=${FF_BUILD_ROOT}/build/${FF_BUILD_NAME}/toolchain
 FF_TOOLCHAIN_SYSROOT_PATH=${FF_TOOLCHAIN_PATH}/sysroot
 
@@ -491,7 +493,7 @@ for f in ${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     f=${FF_SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
     echo "process share lib ${f}"
     # OSX sed doesn't have in-place(-i)
-    mysedi ${f} 's/android\/build\/'${FF_BUILD_NAME}'\/output/build\/'${FF_BUILD_NAME}'/g'
+    mysedi ${f} 's/tools\/build\/'${FF_BUILD_NAME}'\/output/build\/'${FF_BUILD_NAME}'/g'
     mysedi ${f} 's/-lavcodec/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
     mysedi ${f} 's/-lavfilter/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'
     mysedi ${f} 's/-lavformat/-l'${FF_SPLAYER_SO_SIMPLE_NAME}'/g'

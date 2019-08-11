@@ -1,4 +1,46 @@
-build
-ffmpeg-*
-libsoxr-*
-openssl-*
+# -----
+product/
+build/
+ffmpeg-temp/
+android/ffmpeg-*
+android/openssl-*
+ios/ffmpeg-*
+ios/openssl-*
+repository
+.DS_Store
+.idea
+.vscode
+mac/ffmpeg-*
+mac/openssl-*
+
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+libs/
+obj/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio
+.idea
+.gradle
+build/
+
+# Xcode
+xcuserdata
+xcshareddata
+*.xccheckout
+
+

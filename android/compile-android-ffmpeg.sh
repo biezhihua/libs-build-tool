@@ -2,17 +2,12 @@
 
 RED='\033[0;31m'
 Green='\033[0;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 UNI_BUILD_ROOT=`pwd`
 
 TARGET=$1
 TARGET_EXTRA=$2
-
-# -e 若指令传回值不等于0，则立即退出shell。
-#set -e
-# 执行指令后，会先显示该指令及所下的参数。
-# set +x
 
 ACT_ARCHS_ALL="armv7a armv8a x86 x86_64"
 
@@ -42,11 +37,11 @@ echo_nextstep_help() {
 case "$TARGET" in
     "")
         echo_archs armv7a
-        sh ./android/do-compile-android-ffmpeg.sh armv7a
+        sh ./tools/do-compile-android-ffmpeg.sh armv7a
     ;;
     armv7a|armv8a|x86|x86_64)
         echo_archs $TARGET $TARGET_EXTRA
-        sh ./android/do-compile-android-ffmpeg.sh $TARGET $TARGET_EXTRA
+        sh ./tools/do-compile-android-ffmpeg.sh $TARGET $TARGET_EXTRA
         echo_nextstep_help
     ;;
     all)
@@ -55,7 +50,7 @@ case "$TARGET" in
         for ARCH in $ACT_ARCHS_ALL
         do
             echo "$ARCH $TARGET_EXTRA"
-            sh ./android/do-compile-android-ffmpeg.sh $ARCH $TARGET_EXTRA
+            sh ./tools/do-compile-android-ffmpeg.sh $ARCH $TARGET_EXTRA
         done
         echo_nextstep_help
     ;;
@@ -64,11 +59,11 @@ case "$TARGET" in
         echo_archs ACT_ARCHS_ALL
         for ARCH in $ACT_ARCHS_ALL
         do
-            if [ -d ffmpeg-$ARCH ]; then
-                cd ffmpeg-$ARCH && git clean -xdf && cd -
+            if [ -d ./tools/ffmpeg-$ARCH ]; then
+                cd ./tools/ffmpeg-$ARCH && git clean -xdf && cd -
             fi
         done
-        rm -rf ./android/build/ffmpeg-*
+        rm -rf ./tools/build/ffmpeg-*
         rm -rf ./build/ffmpeg-*
     ;;
     check)

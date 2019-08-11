@@ -37,11 +37,11 @@ echo_nextstep_help() {
 case "$TARGET" in
     "")
         echo_archs armv7a
-        sh ./android/do-compile-android-openssl.sh armv7a
+        sh ./tools/do-compile-android-openssl.sh armv7a
     ;;
     armv7a|armv8a|x86|x86_64)
         echo_archs $TARGET $TARGET_EXTRA
-        sh ./android/do-compile-android-openssl.sh $TARGET $TARGET_EXTRA
+        sh ./tools/do-compile-android-openssl.sh $TARGET $TARGET_EXTRA
         echo_nextstep_help
     ;;
     all)
@@ -50,7 +50,7 @@ case "$TARGET" in
         for ARCH in $ACT_ARCHS_ALL
         do
             echo "$ARCH $TARGET_EXTRA"
-            sh ./android/do-compile-android-openssl.sh $ARCH $TARGET_EXTRA
+            sh ./tools/do-compile-android-openssl.sh $ARCH $TARGET_EXTRA
         done
         echo_nextstep_help
     ;;
@@ -63,7 +63,7 @@ case "$TARGET" in
                 cd openssl-$ARCH && git clean -xdf && cd -
             fi
         done
-        rm -rf ./android/build/openssl-*
+        rm -rf ./tools/build/openssl-*
         rm -rf ./build/openssl-*
     ;;
     check)
