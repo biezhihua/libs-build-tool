@@ -9,7 +9,7 @@ TARGET=$1
 UPSTREAM=https://github.com/openssl/openssl
 VERSION=OpenSSL_1_1_1-stable
 BRANCH=origin/$VERSION
-LOCAL_REPO=./repository/openssl-$VERSION
+LOCAL_REPO=../repository/openssl-$VERSION
 
 # http://www.runoob.com/linux/linux-comm-set.html
 # set指令能设置所使用shell的执行方式，可依照不同的需求来做设置

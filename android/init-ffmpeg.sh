@@ -9,7 +9,7 @@ TARGET=$1
 UPSTREAM=https://github.com/FFmpeg/FFmpeg.git
 VERSION=4.2
 BRANCH=origin/release/$VERSION
-LOCAL_REPO=repository/ffmpeg-$VERSION
+LOCAL_REPO=../repository/ffmpeg-$VERSION
 
 set -e
 
