@@ -37,13 +37,16 @@ BUILD_ROOT=`pwd`/tools
 ANDROID_PLATFORM=android-21
 
 BUILD_NAME=
+
 BUILD_NAME_OPENSSL=
+
 FFMPEG_SOURCE_PATH=
+
 CROSS_PREFIX_NAME=
 
 CFG_FLAGS=
-
 EXTRA_CFLAGS=
+
 EXTRA_LDFLAGS=
 DEP_LIBS=
 
@@ -55,8 +58,8 @@ STANDALONE_TOOLCHAIN_NAME=
 STANDALONE_TOOLCHAIN_ARCH=arm
 STANDALONE_TOOLCHAIN_CLANG=clang3.6
 
-SPLAYER_SO_SIMPLE_NAME=sffmpeg
-SPLAYER_SO_NAME=lib${SPLAYER_SO_SIMPLE_NAME}.so
+SO_SIMPLE_NAME=sffmpeg
+SO_NAME=lib${SO_SIMPLE_NAME}.so
 
 PRODUCT=product
 
@@ -405,6 +408,8 @@ echo "OUTPUT_PATH = $OUTPUT_PATH"
 
 cp config.* ${OUTPUT_PATH}
 
+make -j8
+
 make install > /dev/null
 
 mkdir -p OUTPUT_PATH/include/libffmpeg
@@ -443,18 +448,18 @@ echo ""
 echo "LINK_C_OBJ_FILES = $LINK_C_OBJ_FILES"
 echo "LINK_ASM_OBJ_FILES = $LINK_ASM_OBJ_FILES"
 echo "DEP_LIBS = $DEP_LIBS"
-echo "SPLAYER_SO = $OUTPUT_PATH/$SPLAYER_SO_NAME"
+echo "SPLAYER_SO = $OUTPUT_PATH/$SO_NAME"
 echo "ANDROID_PLATFORM = $ANDROID_PLATFORM"
 echo "TOOLCHAIN_SYSROOT = $TOOLCHAIN_SYSROOT_PATH"
 echo "Use Compiler: ${CLANG}"
 echo ""
 
 ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${EXTRA_LDFLAGS} \
-    -Wl,-soname,$SPLAYER_SO_NAME \
+    -Wl,-soname,$SO_NAME \
     ${LINK_C_OBJ_FILES} \
     ${LINK_ASM_OBJ_FILES} \
     ${DEP_LIBS} \
-    -o ${OUTPUT_PATH}/$SPLAYER_SO_NAME 
+    -o ${OUTPUT_PATH}/$SO_NAME 
 
 echo ""
 echo "--------------------"
@@ -477,7 +482,7 @@ mysedi() {
 rm -rf ${SHARED_OUTPUT_PATH}
 mkdir -p ${SHARED_OUTPUT_PATH}/lib/pkgconfig
 cp -r ${OUTPUT_PATH}/include ${SHARED_OUTPUT_PATH}/include
-cp ${OUTPUT_PATH}/${SPLAYER_SO_NAME} ${SHARED_OUTPUT_PATH}/lib/${SPLAYER_SO_NAME}
+cp ${OUTPUT_PATH}/${SO_NAME} ${SHARED_OUTPUT_PATH}/lib/${SO_NAME}
 cp ${OUTPUT_PATH}/lib/pkgconfig/*.pc ${SHARED_OUTPUT_PATH}/lib/pkgconfig
 
 echo "OUTPUT_SHARE = ${SHARED_OUTPUT_PATH}"
@@ -494,12 +499,12 @@ for f in ${SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     echo "process share lib ${f}"
     # OSX sed doesn't have in-place(-i)
     mysedi ${f} 's/tools\/build\/'${BUILD_NAME}'\/output/build\/'${BUILD_NAME}'/g'
-    mysedi ${f} 's/-lavcodec/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lavfilter/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lavformat/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lavutil/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lswresample/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
-    mysedi ${f} 's/-lswscale/-l'${SPLAYER_SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavcodec/-l'${SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavfilter/-l'${SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavformat/-l'${SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lavutil/-l'${SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lswresample/-l'${SO_SIMPLE_NAME}'/g'
+    mysedi ${f} 's/-lswscale/-l'${SO_SIMPLE_NAME}'/g'
 done
 
 echo ""
