@@ -7,9 +7,9 @@ NC='\033[0m' # No Color
 TARGET=$1
 
 UPSTREAM=https://github.com/openssl/openssl
-TAG=OpenSSL_1_1_1b
-BRANCH=$TAG
-LOCAL_REPO=./repository/openssl-$TAG
+VERSION=OpenSSL_1_1_1-stable
+BRANCH=origin/$VERSION
+LOCAL_REPO=./repository/openssl-$VERSION
 
 # http://www.runoob.com/linux/linux-comm-set.html
 # set指令能设置所使用shell的执行方式，可依照不同的需求来做设置
@@ -39,7 +39,7 @@ function pull_fork()
         rm -rf tools/openssl-$1
     fi
     
-    sh ../toolstools/pull-repo-ref.sh $UPSTREAM tools/openssl-$1 ${LOCAL_REPO}
+    sh ../tools/pull-repo-ref.sh $UPSTREAM tools/openssl-$1 ${LOCAL_REPO}
     cd tools/openssl-$1
     git checkout -b build_tools ${BRANCH}
     cd -
