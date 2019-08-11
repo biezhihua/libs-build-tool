@@ -140,14 +140,6 @@ echo "${RED}[*] compile ffmpeg [编译FFmpeg] ${NC}"
 echo "--------------------"
 echo "FFMPEG_OUTPUT_PATH = $FFMPEG_OUTPUT_PATH"
 
-cp config.* ${FFMPEG_OUTPUT_PATH}
+make install -j8
 
-make -j8 > /dev/null
-
-make install > /dev/null
-
-mkdir -p ${FFMPEG_OUTPUT_PATH}/include/libffmpeg
-cp -f config.h ${FFMPEG_OUTPUT_PATH}/include/libffmpeg/config.h
-
-echo "LIB_CONFIG = ${FFMPEG_OUTPUT_PATH}/include/libffmpeg/config.h"
 echo "FFmpeg install success"
