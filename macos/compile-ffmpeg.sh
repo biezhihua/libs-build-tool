@@ -60,7 +60,7 @@ case "$TARGET" in
             fi
         done
         rm -rf ./tools/build/ffmpeg-*
-        rm -rf ./build/ffmpeg-*
+        rm -rf ./product/ffmpeg-*
     ;;
     check)
         echo_archs ACT_ARCHS_ALL

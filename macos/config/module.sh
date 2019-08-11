@@ -30,8 +30,8 @@ export COMMON_CFG_FLAGS=
 #   --enable-version3        upgrade (L)GPL to version 3 [no]
 #   --enable-nonfree         allow use of nonfree code, the resulting libs
 #                            and binaries will be unredistributable [no]
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-gpl"
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-nonfree"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-gpl"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-nonfree"
 
 # Configuration options:
 #   https://stackoverflow.com/questions/2649334/difference-between-static-and-shared-libraries
