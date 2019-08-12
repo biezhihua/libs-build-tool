@@ -30,14 +30,19 @@ FFMPEG_SOURCE_PATH=
 CFG_FLAGS=
 
 # --extra-cflags would provide extra command-line switches for the C compiler,
+DEP_INCLUDES=
 CFLAGS=
 
 # --extra-ldflags would provide extra flags for the linker. 
+DEP_LIBS=
 LDFLAGS=
 
 PRODUCT=product
 
 TOOLCHAIN_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk"
+
+TOOLCHAIN_AS="/Applications/Xcode.app/Contents/Developer/usr/bin/gcc"
+TOOLCHAIN_LD="/Applications/Xcode.app/Contents/Developer/usr/bin/ld"
 
 echo ""
 echo "--------------------"
@@ -52,9 +57,11 @@ if [ "$ARCH" = "x86_64" ]; then
 
     CFG_FLAGS="$CFG_FLAGS --arch=x86_64 --cpu=x86_64"
 
-    CFLAGS="$CFLAGS "
+    DEP_INCLUDES="$DEP_INCLUDES -I/usr/local/include"
+    CFLAGS="$CFLAGS"
 
-    LDFLAGS="$LDFLAGS "
+    DEP_LIBS="$DEP_LIBS -L/usr/local/lib"
+    LDFLAGS="$LDFLAGS -Wl,-no_compact_unwind"
 
 else
     echo "unknown architecture $ARCH";
@@ -72,7 +79,6 @@ fi
 FFMPEG_OUTPUT_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/output
 SHARED_OUTPUT_PATH=${BUILD_ROOT}/../${PRODUCT}/${BUILD_NAME}
 
-rm -rf ${BUILD_ROOT}/build/${BUILD_NAME}
 mkdir -p ${FFMPEG_OUTPUT_PATH}
 mkdir -p ${SHARED_OUTPUT_PATH}
 
@@ -80,11 +86,17 @@ echo "BUILD_NAME[构建名称] = $BUILD_NAME"
 echo ""
 echo "CFG_FLAGS[编译参数] = $CFG_FLAGS"
 echo ""
+echo "DEP_INCLUDES[编译器依赖头文件] = $DEP_INCLUDES"
+echo ""
 echo "CFLAGS[编译器参数] = $CFLAGS"
+echo ""
+echo "DEP_LIBS[链接器依赖库] = $DEP_LIBS"
 echo ""
 echo "LDFLAGS[链接器参数] = $LDFLAGS"
 echo ""
 echo "TOOLCHAIN_SYSROOT[编译链Root] = $TOOLCHAIN_SYSROOT"
+echo ""
+echo "TOOLCHAIN_AS[] = $TOOLCHAIN_AS"
 echo ""
 echo "FFMPEG_SOURCE_PATH[源码目录] = $FFMPEG_SOURCE_PATH"
 echo ""
@@ -97,22 +109,25 @@ echo "--------------------"
 
 CFG_FLAGS="$CFG_FLAGS --prefix=$FFMPEG_OUTPUT_PATH"
 CFG_FLAGS="$CFG_FLAGS --sysroot=$TOOLCHAIN_SYSROOT"
-CFG_FLAGS="$CFG_FLAGS --cc=clang --host-cflags= --host-ldflags="
+CFG_FLAGS="$CFG_FLAGS --cc=clang"
+CFG_FLAGS="$CFG_FLAGS --as=${TOOLCHAIN_AS}"
+CFG_FLAGS="$CFG_FLAGS --host-cflags= --host-ldflags="
 CFG_FLAGS="$CFG_FLAGS --enable-cross-compile"
 CFG_FLAGS="$CFG_FLAGS --target-os=darwin"
 
-case "$BUILD_OPT" in
-    debug)
-        CFG_FLAGS="$CFG_FLAGS --disable-optimizations"
-        CFG_FLAGS="$CFG_FLAGS --enable-debug"
-        CFG_FLAGS="$CFG_FLAGS --disable-small"
-    ;;
-    *)
-        CFG_FLAGS="$CFG_FLAGS --enable-optimizations"
-        CFG_FLAGS="$CFG_FLAGS --disable-debug"
-        CFG_FLAGS="$CFG_FLAGS --enable-small"
-    ;;
-esac
+
+# case "$BUILD_OPT" in
+#     debug)
+#         CFG_FLAGS="$CFG_FLAGS --disable-optimizations"
+#         CFG_FLAGS="$CFG_FLAGS --enable-debug"
+#         CFG_FLAGS="$CFG_FLAGS --disable-small"
+#     ;;
+#     *)
+#         CFG_FLAGS="$CFG_FLAGS --enable-optimizations"
+#         CFG_FLAGS="$CFG_FLAGS --disable-debug"
+#         CFG_FLAGS="$CFG_FLAGS --enable-small"
+#     ;;
+# esac
 
 export COMMON_CFG_FLAGS=
 . ${BUILD_ROOT}/../config/module.sh
@@ -122,6 +137,10 @@ CFG_FLAGS="$CFG_FLAGS $COMMON_CFG_FLAGS"
 echo "PATH[环境变量] = $PATH"
 echo ""
 echo "CFG_FLAGS[编译参数] = $CFG_FLAGS"
+echo ""
+echo "DEP_INCLUDES[编译器依赖头文件] = $DEP_INCLUDES"
+echo ""
+echo "DEP_LIBS[链接器依赖库] = $DEP_LIBS"
 echo ""
 echo "CFLAGS[编译器参数] = $CFLAGS"
 echo ""
@@ -135,7 +154,7 @@ cd ${FFMPEG_SOURCE_PATH}
 
 ./configure ${CFG_FLAGS} \
     --extra-cflags="$CFLAGS" \
-    --extra-ldflags="$LDFLAGS" 
+    --extra-ldflags="$DEP_LIBS $LDFLAGS" 
 
 make clean
 
