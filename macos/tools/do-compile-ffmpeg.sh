@@ -26,6 +26,7 @@ BUILD_NAME=
 
 FFMPEG_SOURCE_PATH=
 
+# compiler options
 CFG_FLAGS=
 
 # --extra-cflags would provide extra command-line switches for the C compiler,
@@ -36,8 +37,7 @@ LDFLAGS=
 
 PRODUCT=product
 
-SO_SIMPLE_NAME=sffmpeg
-SO_NAME=lib${SPLAYER_SO_SIMPLE_NAME}.so
+TOOLCHAIN_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk"
 
 echo ""
 echo "--------------------"
@@ -50,7 +50,7 @@ if [ "$ARCH" = "x86_64" ]; then
 
     FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
-    CFG_FLAGS="$CFG_FLAGS "
+    CFG_FLAGS="$CFG_FLAGS --arch=x86_64 --cpu=x86_64"
 
     CFLAGS="$CFLAGS "
 
@@ -84,6 +84,8 @@ echo "CFLAGS[编译器参数] = $CFLAGS"
 echo ""
 echo "LDFLAGS[链接器参数] = $LDFLAGS"
 echo ""
+echo "TOOLCHAIN_SYSROOT[编译链Root] = $TOOLCHAIN_SYSROOT"
+echo ""
 echo "FFMPEG_SOURCE_PATH[源码目录] = $FFMPEG_SOURCE_PATH"
 echo ""
 echo "FFMPEG_OUTPUT_PATH[编译输出目录] = $FFMPEG_OUTPUT_PATH"
@@ -94,7 +96,10 @@ echo "${RED}[*] make ffmpeg params [确定FFmpeg编译参数]  ${NC}"
 echo "--------------------"
 
 CFG_FLAGS="$CFG_FLAGS --prefix=$FFMPEG_OUTPUT_PATH"
+CFG_FLAGS="$CFG_FLAGS --sysroot=$TOOLCHAIN_SYSROOT"
 CFG_FLAGS="$CFG_FLAGS --cc=clang --host-cflags= --host-ldflags="
+CFG_FLAGS="$CFG_FLAGS --enable-cross-compile"
+CFG_FLAGS="$CFG_FLAGS --target-os=darwin"
 
 case "$BUILD_OPT" in
     debug)
