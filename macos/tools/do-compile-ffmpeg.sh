@@ -111,23 +111,24 @@ CFG_FLAGS="$CFG_FLAGS --prefix=$FFMPEG_OUTPUT_PATH"
 CFG_FLAGS="$CFG_FLAGS --sysroot=$TOOLCHAIN_SYSROOT"
 CFG_FLAGS="$CFG_FLAGS --cc=clang"
 CFG_FLAGS="$CFG_FLAGS --as=${TOOLCHAIN_AS}"
+CFG_FLAGS="$CFG_FLAGS --strip="
 CFG_FLAGS="$CFG_FLAGS --host-cflags= --host-ldflags="
 CFG_FLAGS="$CFG_FLAGS --enable-cross-compile"
 CFG_FLAGS="$CFG_FLAGS --target-os=darwin"
+CFG_FLAGS="$CFG_FLAGS --disable-stripping"
 
-
-# case "$BUILD_OPT" in
-#     debug)
-#         CFG_FLAGS="$CFG_FLAGS --disable-optimizations"
-#         CFG_FLAGS="$CFG_FLAGS --enable-debug"
-#         CFG_FLAGS="$CFG_FLAGS --disable-small"
-#     ;;
-#     *)
-#         CFG_FLAGS="$CFG_FLAGS --enable-optimizations"
-#         CFG_FLAGS="$CFG_FLAGS --disable-debug"
-#         CFG_FLAGS="$CFG_FLAGS --enable-small"
-#     ;;
-# esac
+case "$BUILD_OPT" in
+    debug)
+        CFG_FLAGS="$CFG_FLAGS --disable-optimizations"
+        CFG_FLAGS="$CFG_FLAGS --enable-debug"
+        CFG_FLAGS="$CFG_FLAGS --disable-small"
+    ;;
+    *)
+        CFG_FLAGS="$CFG_FLAGS --enable-optimizations"
+        CFG_FLAGS="$CFG_FLAGS --disable-debug"
+        CFG_FLAGS="$CFG_FLAGS --enable-small"
+    ;;
+esac
 
 export COMMON_CFG_FLAGS=
 . ${BUILD_ROOT}/../config/module.sh
@@ -168,5 +169,44 @@ make install -j8  > /dev/null
 
 cp -r ${FFMPEG_OUTPUT_PATH}/include ${SHARED_OUTPUT_PATH}/include
 cp -r ${FFMPEG_OUTPUT_PATH}/lib ${SHARED_OUTPUT_PATH}/lib
+
+
+# LINK_MODULE_DIRS="compat libavcodec libavfilter libavformat libavutil libswresample libswscale"
+# ASSEMBLER_SUB_DIRS="x86"
+
+# LINK_C_OBJ_FILES=
+# LINK_ASM_OBJ_FILES=
+# for MODULE_DIR in ${LINK_MODULE_DIRS}
+# do
+#     C_OBJ_FILES="`pwd`/$MODULE_DIR/*.o"
+#     if ls ${C_OBJ_FILES} 1> /dev/null 2>&1; then
+#         echo "link $MODULE_DIR/*.o"
+#         LINK_C_OBJ_FILES="$LINK_C_OBJ_FILES $C_OBJ_FILES"
+#     fi
+
+#     for ASM_SUB_DIR in ${ASSEMBLER_SUB_DIRS}
+#     do
+#         ASM_OBJ_FILES="`pwd`/$MODULE_DIR/$ASM_SUB_DIR/*.o"
+#         if ls ${ASM_OBJ_FILES} 1> /dev/null 2>&1; then
+#             echo "link $MODULE_DIR/$ASM_SUB_DIR/*.o"
+#             LINK_ASM_OBJ_FILES="$LINK_ASM_OBJ_FILES $ASM_OBJ_FILES"
+#         fi
+#     done
+# done
+
+# echo "LINK_C_OBJ_FILES = $LINK_C_OBJ_FILES"
+# echo ""
+# echo "LINK_ASM_OBJ_FILES = $LINK_ASM_OBJ_FILES"
+# echo ""
+# echo "LDFLAGS = $LDFLAGS"
+# echo ""
+# echo "DEP_LIBS = $DEP_LIBS"
+
+# CLANG="/Library/Developer/CommandLineTools/usr/bin/clang"
+# ${CLANG} -v -lm -lz -shared ${LDFLAGS} \
+#     ${LINK_C_OBJ_FILES} \
+#     ${LINK_ASM_OBJ_FILES} \
+#     ${DEP_LIBS} \
+#     -o /Users/biezhihua/StudySpace/libssplayer.so
 
 echo "FFmpeg install success"
