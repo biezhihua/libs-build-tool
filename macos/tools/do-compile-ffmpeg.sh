@@ -33,7 +33,7 @@ CFG_FLAGS=
 DEP_INCLUDES=
 CFLAGS=
 
-# --extra-ldflags would provide extra flags for the linker. 
+# --extra-ldflags would provide extra flags for the linker.
 DEP_LIBS=
 LDFLAGS=
 
@@ -52,17 +52,17 @@ echo "--------------------"
 if [ "$ARCH" = "x86_64" ]; then
     
     BUILD_NAME=ffmpeg-x86_64
-
+    
     FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
-
+    
     CFG_FLAGS="$CFG_FLAGS --arch=x86_64 --cpu=x86_64"
-
+    
     DEP_INCLUDES="$DEP_INCLUDES -I/usr/local/include"
     CFLAGS="$CFLAGS"
-
+    
     DEP_LIBS="$DEP_LIBS -L/usr/local/lib"
     LDFLAGS="$LDFLAGS -Wl,-no_compact_unwind"
-
+    
 else
     echo "unknown architecture $ARCH";
     exit 1
@@ -153,9 +153,7 @@ echo "--------------------"
 
 cd ${FFMPEG_SOURCE_PATH}
 
-./configure ${CFG_FLAGS} \
-    --extra-cflags="$CFLAGS" \
-    --extra-ldflags="$DEP_LIBS $LDFLAGS" 
+./configure ${CFG_FLAGS} --extra-cflags="$CFLAGS" --extra-ldflags="$DEP_LIBS $LDFLAGS"
 
 make clean
 
@@ -169,44 +167,5 @@ make install -j8  > /dev/null
 
 cp -r ${FFMPEG_OUTPUT_PATH}/include ${SHARED_OUTPUT_PATH}/include
 cp -r ${FFMPEG_OUTPUT_PATH}/lib ${SHARED_OUTPUT_PATH}/lib
-
-
-# LINK_MODULE_DIRS="compat libavcodec libavfilter libavformat libavutil libswresample libswscale"
-# ASSEMBLER_SUB_DIRS="x86"
-
-# LINK_C_OBJ_FILES=
-# LINK_ASM_OBJ_FILES=
-# for MODULE_DIR in ${LINK_MODULE_DIRS}
-# do
-#     C_OBJ_FILES="`pwd`/$MODULE_DIR/*.o"
-#     if ls ${C_OBJ_FILES} 1> /dev/null 2>&1; then
-#         echo "link $MODULE_DIR/*.o"
-#         LINK_C_OBJ_FILES="$LINK_C_OBJ_FILES $C_OBJ_FILES"
-#     fi
-
-#     for ASM_SUB_DIR in ${ASSEMBLER_SUB_DIRS}
-#     do
-#         ASM_OBJ_FILES="`pwd`/$MODULE_DIR/$ASM_SUB_DIR/*.o"
-#         if ls ${ASM_OBJ_FILES} 1> /dev/null 2>&1; then
-#             echo "link $MODULE_DIR/$ASM_SUB_DIR/*.o"
-#             LINK_ASM_OBJ_FILES="$LINK_ASM_OBJ_FILES $ASM_OBJ_FILES"
-#         fi
-#     done
-# done
-
-# echo "LINK_C_OBJ_FILES = $LINK_C_OBJ_FILES"
-# echo ""
-# echo "LINK_ASM_OBJ_FILES = $LINK_ASM_OBJ_FILES"
-# echo ""
-# echo "LDFLAGS = $LDFLAGS"
-# echo ""
-# echo "DEP_LIBS = $DEP_LIBS"
-
-# CLANG="/Library/Developer/CommandLineTools/usr/bin/clang"
-# ${CLANG} -v -lm -lz -shared ${LDFLAGS} \
-#     ${LINK_C_OBJ_FILES} \
-#     ${LINK_ASM_OBJ_FILES} \
-#     ${DEP_LIBS} \
-#     -o /Users/biezhihua/StudySpace/libssplayer.so
 
 echo "FFmpeg install success"
