@@ -1,18 +1,8 @@
 #! /usr/bin/env bash
 
-#normal=$(tput sgr0)                      # normal text
-# Black        0;30     Dark Gray     1;30
-# Red          0;31     Light Red     1;31
-# Green        0;32     Light Green   1;32
-# Brown/Orange 0;33     Yellow        1;33
-# Blue         0;34     Light Blue    1;34
-# Purple       0;35     Light Purple  1;35
-# Cyan         0;36     Light Cyan    1;36
-# Light Gray   0;37     White         1;37
-
 RED='\033[0;31m'
 Green='\033[0;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 echo "--------------------"
 echo "${RED}[*] check env ing $1 ${NC}"
@@ -245,7 +235,6 @@ echo "--------------------"
 cd ${OPENSSL_SOURCE_PATH}
 
 echo ""
-
 echo "Enter Dir : ${OPENSSL_SOURCE_PATH}"
 
 ./Configure --help
@@ -261,7 +250,8 @@ mkdir -p ${SHARED_OUTPUT_PATH}/lib
 cp ${OUTPUT_PATH}/lib/libcrypto.a ${SHARED_OUTPUT_PATH}/lib/libcrypto.a
 cp ${OUTPUT_PATH}/lib/libssl.a ${SHARED_OUTPUT_PATH}/lib/libssl.a
 
+echo ""
 echo "SHARED_OUTPUT_PATH = ${SHARED_OUTPUT_PATH}"
-echo "OUTPUT_SHARE_INCLUDE = ${SHARED_OUTPUT_PATH}/include"
-echo "OUTPUT_SHARE_LIB = ${SHARED_OUTPUT_PATH}/lib"
+echo "SHARED_OUTPUT_PATH_INCLUDE = ${SHARED_OUTPUT_PATH}/include"
+echo "SHARED_OUTPUT_PATH_LIB = ${SHARED_OUTPUT_PATH}/lib"
 echo ""
