@@ -46,7 +46,7 @@ export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-nonfree"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-runtime-cpudetect"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-gray"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-swscale-alpha"
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-shared"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-shared"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-static"
 
 # Program options:

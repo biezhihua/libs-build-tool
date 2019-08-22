@@ -7,9 +7,8 @@ NC='\033[0m' # No Color
 TARGET=$1
 
 UPSTREAM=https://github.com/openssl/openssl
-VERSION=OpenSSL_1_1_1-stable
-BRANCH=origin/$VERSION
-LOCAL_REPO=../repository/openssl-$VERSION
+BRANCH=OpenSSL_1_1_1c
+LOCAL_REPO=../repository/openssl
 
 # http://www.runoob.com/linux/linux-comm-set.html
 # set指令能设置所使用shell的执行方式，可依照不同的需求来做设置
