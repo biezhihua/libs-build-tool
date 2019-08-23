@@ -1,18 +1,8 @@
 #! /usr/bin/env bash
 
-#normal=$(tput sgr0)                      # normal text
-# Black        0;30     Dark Gray     1;30
-# Red          0;31     Light Red     1;31
-# Green        0;32     Light Green   1;32
-# Brown/Orange 0;33     Yellow        1;33
-# Blue         0;34     Light Blue    1;34
-# Purple       0;35     Light Purple  1;35
-# Cyan         0;36     Light Cyan    1;36
-# Light Gray   0;37     White         1;37
-
 RED='\033[0;31m'
 Green='\033[0;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 echo "--------------------"
 echo "${RED}[*] check env ing $1 ${NC}"
@@ -20,13 +10,10 @@ echo "--------------------"
 
 ARCH=$1
 BUILD_OPT=$2
-REAL_OUTPUT_PATH=$3
 
-echo "ARCH=$ARCH"
-echo "BUILD_OPT=$BUILD_OPT"
-echo "REAL_OUTPUT_PATH=$REAL_OUTPUT_PATH"
+echo "ARCH[架构]=$ARCH"
+echo "BUILD_OPT[构建选项]=$BUILD_OPT"
 
-# -z 字符串	字符串的长度为零则为真
 if [ -z "$ARCH" ]; then
     echo "You must specific an architecture 'armv8a, armv7a, x86, ...'."
     exit 1
@@ -45,6 +32,8 @@ FFMPEG_SOURCE_PATH=
 CROSS_PREFIX_NAME=
 
 CFG_FLAGS=
+
+CFLAGS=
 EXTRA_CFLAGS=
 
 EXTRA_LDFLAGS=
@@ -71,7 +60,7 @@ echo "--------------------"
 UNAME_S=$(uname -s)
 UNAME_SM=$(uname -sm)
 
-echo "BUILD PLATFORM = $UNAME_SM"
+echo "BUILD PLATFORM[构建平台] = $UNAME_SM"
 echo "ANDROID_NDK = $ANDROID_NDK"
 
 if [ -z "$ANDROID_NDK" ]; then
@@ -105,7 +94,7 @@ esac
 
 echo ""
 echo "--------------------"
-echo "${RED}[*] make params${NC}"
+echo "${RED}[*] make params ${NC}"
 echo "--------------------"
 
 if [ "$ARCH" = "armv7a" ]; then
@@ -115,8 +104,6 @@ if [ "$ARCH" = "armv7a" ]; then
     BUILD_NAME_OPENSSL=openssl-armv7a
 
     ANDROID_PLATFORM=android-21
-
-    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
     CROSS_PREFIX_NAME=arm-linux-androideabi
 
@@ -134,6 +121,8 @@ if [ "$ARCH" = "armv7a" ]; then
 
     ASSEMBLER_SUB_DIRS="arm"
 
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
+
 elif [ "$ARCH" = "armv8a" ]; then
     
     BUILD_NAME=ffmpeg-armv8a
@@ -141,8 +130,6 @@ elif [ "$ARCH" = "armv8a" ]; then
     BUILD_NAME_OPENSSL=openssl-armv8a
 
     ANDROID_PLATFORM=android-21
-
-    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
     CROSS_PREFIX_NAME=aarch64-linux-android
 
@@ -156,6 +143,8 @@ elif [ "$ARCH" = "armv8a" ]; then
 
     ASSEMBLER_SUB_DIRS="aarch64 neon"
 
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
+
 elif [ "$ARCH" = "x86" ]; then
     
     BUILD_NAME=ffmpeg-x86
@@ -163,8 +152,6 @@ elif [ "$ARCH" = "x86" ]; then
     BUILD_NAME_OPENSSL=openssl-x86
 
     ANDROID_PLATFORM=android-21
-
-    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
     CROSS_PREFIX_NAME=i686-linux-android
 
@@ -177,6 +164,8 @@ elif [ "$ARCH" = "x86" ]; then
     EXTRA_LDFLAGS="$EXTRA_LDFLAGS"
 
     ASSEMBLER_SUB_DIRS="x86"
+
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
 
 elif [ "$ARCH" = "x86_64" ]; then
     
@@ -193,8 +182,6 @@ elif [ "$ARCH" = "x86_64" ]; then
     ;;
     esac
 
-    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
-
     CROSS_PREFIX_NAME=x86_64-linux-android
 
     STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${STANDALONE_TOOLCHAIN_CLANG}
@@ -210,6 +197,8 @@ elif [ "$ARCH" = "x86_64" ]; then
 
     ASSEMBLER_SUB_DIRS="x86"
 
+    FFMPEG_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
+
 else
     echo "unknown architecture $ARCH";
     exit 1
@@ -224,56 +213,72 @@ if [ ! -d ${FFMPEG_SOURCE_PATH} ]; then
     exit 1
 fi
 
-OUTPUT_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/output
-SHARED_OUTPUT_PATH=${BUILD_ROOT}/../${PRODUCT}/${BUILD_NAME}
-TOOLCHAIN_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/toolchain
-TOOLCHAIN_SYSROOT_PATH=${TOOLCHAIN_PATH}/sysroot
+FFMPEG_OUTPUT_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/output
+FFMPEG_SHARED_OUTPUT_PATH=${BUILD_ROOT}/../${PRODUCT}/${BUILD_NAME}
+FFMPEG_TOOLCHAIN_PATH=${BUILD_ROOT}/build/${BUILD_NAME}/toolchain
+FFMPEG_TOOLCHAIN_SYSROOT_PATH=${FFMPEG_TOOLCHAIN_PATH}/sysroot
 
-OUTPUT_PATH_OPENSSL=${BUILD_ROOT}/build/${BUILD_NAME_OPENSSL}/output
-TOOLCHAIN_PATH_OPENSSL=${BUILD_ROOT}/build/${BUILD_NAME_OPENSSL}/toolchain
-TOOLCHAIN_SYSROOT_PATH_OPENSSL=${TOOLCHAIN_PATH_OPENSSL}/sysroot
-DEP_OPENSSL_INC=${OUTPUT_PATH_OPENSSL}/include
-DEP_OPENSSL_LIB=${OUTPUT_PATH_OPENSSL}/lib
+OPENSSL_OUTPUT_PATH=${BUILD_ROOT}/build/${BUILD_NAME_OPENSSL}/output
+OPENSSL_TOOLCHAIN_PATH=${BUILD_ROOT}/build/${BUILD_NAME_OPENSSL}/toolchain
+OPENSSL_TOOLCHAIN_SYSROOT_PATH=${OPENSSL_TOOLCHAIN_PATH}/sysroot
+OPENSSL_DEP_INCLUDE=${OPENSSL_OUTPUT_PATH}/include
+OPENSSL_DEP_LIB=${OPENSSL_OUTPUT_PATH}/lib
 
 rm -rf ${BUILD_ROOT}/build/${BUILD_NAME}
-mkdir -p ${OUTPUT_PATH}
-mkdir -p ${SHARED_OUTPUT_PATH}
+mkdir -p ${FFMPEG_OUTPUT_PATH}
+mkdir -p ${FFMPEG_SHARED_OUTPUT_PATH}
 
-echo "FFMPEG_SOURCE_PATH = $FFMPEG_SOURCE_PATH"
-echo ""
 echo "BUILD_NAME = $BUILD_NAME"
-echo "BUILD_NAME_OPENSSL = $BUILD_NAME_OPENSSL"
-echo "BUILD_NAME_LIBSOXR = $BUILD_NAME_LIBSOXR"
-echo "CROSS_PREFIX_NAME = $CROSS_PREFIX_NAME"
-echo "STANDALONE_TOOLCHAIN_NAME = $STANDALONE_TOOLCHAIN_NAME"
 echo ""
-echo "CFG_FLAGS = $CFG_FLAGS"
+echo "BUILD_NAME_OPENSSL = $BUILD_NAME_OPENSSL"
+echo ""
+echo "BUILD_NAME_LIBSOXR = $BUILD_NAME_LIBSOXR"
+echo ""
+echo "CFG_FLAGS[构建参数] = $CFG_FLAGS"
+echo ""
+echo "CFLAGS = $CFLAGS"
 echo "EXTRA_CFLAGS = $EXTRA_CFLAGS"
+echo ""
+echo "DEP_LIBS = $DEP_LIBS"
 echo "EXTRA_LDFLAGS = $EXTRA_LDFLAGS"
+echo ""
 echo "ASSEMBLER_SUB_DIRS = $ASSEMBLER_SUB_DIRS"
 echo ""
-echo "OUTPUT_PATH = $OUTPUT_PATH"
-echo "TOOLCHAIN_PATH = $TOOLCHAIN_PATH"
-echo "TOOLCHAIN_SYSROOT_PATH = $TOOLCHAIN_SYSROOT_PATH"
+echo "CROSS_PREFIX_NAME = $CROSS_PREFIX_NAME"
 echo ""
-echo "OUTPUT_PATH_OPENSSL = $OUTPUT_PATH_OPENSSL"
-echo "TOOLCHAIN_PATH_OPENSSL = $TOOLCHAIN_PATH_OPENSSL"
-echo "TOOLCHAIN_SYSROOT_PATH_OPENSSL = $TOOLCHAIN_SYSROOT_PATH_OPENSSL"
-echo "DEP_OPENSSL_INC = $DEP_OPENSSL_INC"
-echo "DEP_OPENSSL_LIB = $DEP_OPENSSL_LIB"
-
-echo ""
-echo "--------------------"
-echo "${RED}[*] make NDK standalone toolchain${NC}"
-echo "--------------------"
-
-STANDALONE_TOOLCHAIN_FLAGS="$STANDALONE_TOOLCHAIN_FLAGS --install-dir=$TOOLCHAIN_PATH"
-
 echo "STANDALONE_TOOLCHAIN_NAME = $STANDALONE_TOOLCHAIN_NAME"
-echo "STANDALONE_TOOLCHAIN_FLAGS = $STANDALONE_TOOLCHAIN_FLAGS"
+echo ""
+echo "FFMPEG_TOOLCHAIN_PATH = $FFMPEG_TOOLCHAIN_PATH"
+echo "FFMPEG_TOOLCHAIN_SYSROOT_PATH = $FFMPEG_TOOLCHAIN_SYSROOT_PATH"
+echo ""
+echo "OPENSSL_TOOLCHAIN_PATH = $OPENSSL_TOOLCHAIN_PATH"
+echo "OPENSSL_TOOLCHAIN_SYSROOT_PATH = $OPENSSL_TOOLCHAIN_SYSROOT_PATH"
+echo ""
+echo "OPENSSL_DEP_INCLUDE = $OPENSSL_DEP_INCLUDE"
+echo "OPENSSL_DEP_LIB = $OPENSSL_DEP_LIB"
+echo ""
+echo "FFMPEG_SOURCE_PATH = $FFMPEG_SOURCE_PATH"
+echo ""
+echo "FFMPEG_OUTPUT_PATH = $FFMPEG_OUTPUT_PATH"
+echo ""
+echo "OPENSSL_OUTPUT_PATH = $OPENSSL_OUTPUT_PATH"
 
+echo ""
+echo "--------------------"
+echo "${RED}[*] make NDK standalone toolchain ${NC}"
+echo "--------------------"
+
+STANDALONE_TOOLCHAIN_FLAGS="$STANDALONE_TOOLCHAIN_FLAGS --install-dir=$FFMPEG_TOOLCHAIN_PATH"
+
+echo ""
+echo "STANDALONE_TOOLCHAIN_NAME = $STANDALONE_TOOLCHAIN_NAME"
+echo ""
+echo "STANDALONE_TOOLCHAIN_FLAGS = $STANDALONE_TOOLCHAIN_FLAGS"
+echo ""
 echo "STANDALONE_TOOLCHAIN_ARCH = $STANDALONE_TOOLCHAIN_ARCH"
+echo ""
 echo "STANDALONE_TOOLCHAIN_CLANG = $STANDALONE_TOOLCHAIN_CLANG"
+echo ""
 echo "ANDROID_PLATFORM = $ANDROID_PLATFORM"
 
 ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
@@ -287,7 +292,7 @@ echo "--------------------"
 echo "${RED}[*] check ffmpeg env${NC}"
 echo "--------------------"
 
-export PATH=${TOOLCHAIN_PATH}/bin:$PATH
+export PATH=${FFMPEG_TOOLCHAIN_PATH}/bin:$PATH
 export CLANG=${CROSS_PREFIX_NAME}-clang
 export CXX=${CROSS_PREFIX_NAME}-clang++
 export LD=${CROSS_PREFIX_NAME}-ld
@@ -316,12 +321,12 @@ CFLAGS="-O3 -fPIC -Wall -pipe \
     -DANDROID -DNDEBUG"
 
 # with ffmpeg standard options:
-CFG_FLAGS="$CFG_FLAGS --prefix=$OUTPUT_PATH"
-CFG_FLAGS="$CFG_FLAGS --sysroot=$TOOLCHAIN_SYSROOT_PATH"
+CFG_FLAGS="$CFG_FLAGS --prefix=$FFMPEG_OUTPUT_PATH"
+CFG_FLAGS="$CFG_FLAGS --sysroot=$FFMPEG_TOOLCHAIN_SYSROOT_PATH"
 CFG_FLAGS="$CFG_FLAGS --cc=clang --host-cflags= --host-ldflags="
 
 # with ffmpeg Advanced options (experts only):
-CFG_FLAGS="$CFG_FLAGS --cross-prefix=${TOOLCHAIN_PATH}/bin/${CROSS_PREFIX_NAME}-"
+CFG_FLAGS="$CFG_FLAGS --cross-prefix=${FFMPEG_TOOLCHAIN_PATH}/bin/${CROSS_PREFIX_NAME}-"
 CFG_FLAGS="$CFG_FLAGS --enable-cross-compile"
 CFG_FLAGS="$CFG_FLAGS --target-os=android"
 CFG_FLAGS="$CFG_FLAGS --enable-pic"
@@ -352,31 +357,36 @@ export COMMON_CFG_FLAGS=
 
 
 # with openssl
-if [ -f "${DEP_OPENSSL_LIB}/libssl.a" ]; then
-    export PKG_CONFIG_PATH=${DEP_OPENSSL_LIB}/pkgconfig
-    echo "PKG_CONFIG_PATH = ${PKG_CONFIG_PATH}"
+if [ -f "${OPENSSL_DEP_LIB}/libssl.a" ]; then
+    export PKG_CONFIG_PATH=${OPENSSL_DEP_LIB}/pkgconfig
     CFG_FLAGS="$CFG_FLAGS --enable-protocol=https"
     CFG_FLAGS="$CFG_FLAGS --enable-openssl"
     CFG_FLAGS="$CFG_FLAGS --pkg-config=pkg-config"
-    CFLAGS="$CFLAGS -I${DEP_OPENSSL_INC}"
-    DEP_LIBS="$DEP_LIBS -L${DEP_OPENSSL_LIB} -lssl -lcrypto"
+    CFLAGS="$CFLAGS -I${OPENSSL_DEP_INCLUDE}"
+    DEP_LIBS="$DEP_LIBS -L${OPENSSL_DEP_LIB} -lssl -lcrypto"
 fi
 
 CFG_FLAGS="$CFG_FLAGS $COMMON_CFG_FLAGS"
 
 echo "PATH = $PATH"
+echo ""
 echo "CLANG = $CLANG"
+echo ""
 echo "LD = $LD"
+echo ""
 echo "AR = $AR"
+echo ""
 echo "STRIP = $STRIP"
 echo ""
 echo "CFLAGS = $CFLAGS"
+echo ""
+echo "CFG_FLAGS = $CFG_FLAGS"
+echo ""
 echo "EXTRA_CFLAGS = $EXTRA_CFLAGS"
 echo ""
 echo "DEP_LIBS = $DEP_LIBS"
-echo "EXTRA_LDFLAGS = $EXTRA_LDFLAGS"
 echo ""
-echo "CFG_FLAGS = $CFG_FLAGS"
+echo "EXTRA_LDFLAGS = $EXTRA_LDFLAGS"
 echo ""
 
 echo "--------------------"
@@ -404,16 +414,16 @@ echo ""
 echo "--------------------"
 echo "${RED}[*] compile ffmpeg${NC}"
 echo "--------------------"
-echo "OUTPUT_PATH = $OUTPUT_PATH"
+echo "FFMPEG_OUTPUT_PATH = $FFMPEG_OUTPUT_PATH"
 
-cp config.* ${OUTPUT_PATH}
+cp config.* ${FFMPEG_OUTPUT_PATH}
 
 make install -j8 > /dev/null
 
-mkdir -p OUTPUT_PATH/include/libffmpeg
-cp -f config.h OUTPUT_PATH/include/libffmpeg/config.h
+mkdir -p FFMPEG_OUTPUT_PATH/include/libffmpeg
+cp -f config.h FFMPEG_OUTPUT_PATH/include/libffmpeg/config.h
 
-echo "LIB_CONFIG = $OUTPUT_PATH/include/libffmpeg/config.h"
+echo "LIB_CONFIG = $FFMPEG_OUTPUT_PATH/include/libffmpeg/config.h"
 echo "FFmpeg install success"
 
 
@@ -444,11 +454,11 @@ done
 
 echo ""
 echo "LINK_C_OBJ_FILES = $LINK_C_OBJ_FILES"
+echo ""
 echo "LINK_ASM_OBJ_FILES = $LINK_ASM_OBJ_FILES"
-echo "DEP_LIBS = $DEP_LIBS"
-echo "SPLAYER_SO = $OUTPUT_PATH/$SO_NAME"
-echo "ANDROID_PLATFORM = $ANDROID_PLATFORM"
-echo "TOOLCHAIN_SYSROOT = $TOOLCHAIN_SYSROOT_PATH"
+echo ""
+echo "SPLAYER_SO = $FFMPEG_OUTPUT_PATH/$SO_NAME"
+echo ""
 echo "Use Compiler: ${CLANG}"
 echo ""
 
@@ -457,7 +467,7 @@ ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${EXTRA_LDFLAGS} 
     ${LINK_C_OBJ_FILES} \
     ${LINK_ASM_OBJ_FILES} \
     ${DEP_LIBS} \
-    -o ${OUTPUT_PATH}/$SO_NAME 
+    -o ${FFMPEG_OUTPUT_PATH}/$SO_NAME 
 
 echo ""
 echo "--------------------"
@@ -477,23 +487,23 @@ mysedi() {
     # echo "${f}    ${exp}    ${n}"
 }
 
-rm -rf ${SHARED_OUTPUT_PATH}
-mkdir -p ${SHARED_OUTPUT_PATH}/lib/pkgconfig
-cp -r ${OUTPUT_PATH}/include ${SHARED_OUTPUT_PATH}/include
-cp ${OUTPUT_PATH}/${SO_NAME} ${SHARED_OUTPUT_PATH}/lib/${SO_NAME}
-cp ${OUTPUT_PATH}/lib/pkgconfig/*.pc ${SHARED_OUTPUT_PATH}/lib/pkgconfig
+rm -rf ${FFMPEG_SHARED_OUTPUT_PATH}
+mkdir -p ${FFMPEG_SHARED_OUTPUT_PATH}/lib/pkgconfig
+cp -r ${FFMPEG_OUTPUT_PATH}/include ${FFMPEG_SHARED_OUTPUT_PATH}/include
+cp ${FFMPEG_OUTPUT_PATH}/${SO_NAME} ${FFMPEG_SHARED_OUTPUT_PATH}/lib/${SO_NAME}
+cp ${FFMPEG_OUTPUT_PATH}/lib/pkgconfig/*.pc ${FFMPEG_SHARED_OUTPUT_PATH}/lib/pkgconfig
 
-echo "OUTPUT_SHARE = ${SHARED_OUTPUT_PATH}"
-echo "OUTPUT_SHARE_INCLUDE = ${SHARED_OUTPUT_PATH}/include"
-echo "OUTPUT_SHARE_LIB = ${SHARED_OUTPUT_PATH}/lib"
+echo "OUTPUT_SHARE = ${FFMPEG_SHARED_OUTPUT_PATH}"
+echo "OUTPUT_SHARE_INCLUDE = ${FFMPEG_SHARED_OUTPUT_PATH}/include"
+echo "OUTPUT_SHARE_LIB = ${FFMPEG_SHARED_OUTPUT_PATH}/lib"
 echo ""
 
-for f in ${SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
+for f in ${FFMPEG_SHARED_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     # in case empty dir
     if [ ! -f ${f} ]; then
         continue
     fi
-    f=${SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
+    f=${FFMPEG_SHARED_OUTPUT_PATH}/lib/pkgconfig/`basename ${f}`
     echo "process share lib ${f}"
     # OSX sed doesn't have in-place(-i)
     mysedi ${f} 's/tools\/build\/'${BUILD_NAME}'\/output/build\/'${BUILD_NAME}'/g'

@@ -1,12 +1,72 @@
 
 # FFmpegBuildTool
 
-一款简洁、快速的FFmpeg编译构建工具。
+A simple，fast FFmpeg build tool
+
+# Build Platform
+
+ * MacOS(需要安装Python)
+ * Ubuntu(需要安装Python)
+
+# Target Platform
+
+ * Android
+ * MacOS
+ * Ubuntu (Will Coming)
+ * Windows (Will Coming)
+ * iOS (Will Coming)
+
+# Features
+
+ * FFmpeg: 4.1+
+ * OpenSSL: 1.1.1+
+ * Support NDK Version : **r13c** **r14b** **r15c** **r16b** **r17c** **r18b** **r19**
+ * Support Arch : armv7a/armv8a/x86/x86_64
+ * Support FFmpeg Separate compilation
+ * Support OpenSSL Separate compilation
+
+NDK Download : https://developer.android.com/ndk/downloads/revision_history
+
+
+# Set up the necessary environment
+
+```
+# add these lines to your ~/.bash_profile or ~/.profile
+export ANDROID_SDK=<your sdk path>
+export ANDROID_NDK=<your ndk path>
+```
+
+# How use
+
+ Android-OpenSSL: https://github.com/biezhihua/FFmpegBuildTool/blob/master/android/README_OPENSSL.md
+ 
+ Android-FFmpeg: https://github.com/biezhihua/FFmpegBuildTool/blob/master/android/README_FFMPEG.md
+
+ MacOS-FFmpeg: https://github.com/biezhihua/FFmpegBuildTool/blob/master/macos/README_FFMPEG.md
+
+# Note
+
+Part of the main structure from the IJKPlayer (https://github.com/bilibili/ijkplayer)
+
+
+----------------
+
+# FFmpegBuildTool
+
+一款简洁、快速的全平台FFmpeg编译构建工具。
 
 # 支持构建平台
 
  * MacOS(需要安装Python)
  * Ubuntu(需要安装Python)
+
+# 支持目标平台
+
+ * Android
+ * MacOS
+ * Ubuntu (即将到来)
+ * Windows (即将到来)
+ * iOS (即将到来)
 
 # 特性
 
@@ -31,9 +91,11 @@ export ANDROID_NDK=<your ndk path>
 
 # 如何使用
 
- Android-OpenSSL: https://github.com/biezhihua/FFmpegBuildTool/blob/master/android/OPENSSL_README.md
+ Android-OpenSSL: https://github.com/biezhihua/FFmpegBuildTool/blob/master/android/README_OPENSSL.md
  
- Android-FFmpeg: https://github.com/biezhihua/FFmpegBuildTool/blob/master/android/FFMPEG_README.md
+ Android-FFmpeg: https://github.com/biezhihua/FFmpegBuildTool/blob/master/android/README_FFMPEG.md
+
+ MacOS-FFmpeg: https://github.com/biezhihua/FFmpegBuildTool/blob/master/macos/README_FFMPEG.md
 
 # 注意
 
@@ -42,5 +104,3 @@ export ANDROID_NDK=<your ndk path>
 # 引用
 
  * https://stackoverflow.com/questions/2649334/difference-between-static-and-shared-libraries
-
-# 预编译库下载

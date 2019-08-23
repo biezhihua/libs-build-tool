@@ -98,7 +98,7 @@ if [ "$ARCH" = "armv7a" ]; then
     
     OPENSSL_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
     
-    elif [ "$ARCH" = "armv8a" ]; then
+elif [ "$ARCH" = "armv8a" ]; then
     
     BUILD_NAME=openssl-armv8a
     
@@ -112,7 +112,7 @@ if [ "$ARCH" = "armv7a" ]; then
     
     OPENSSL_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
     
-    elif [ "$ARCH" = "x86" ]; then
+elif [ "$ARCH" = "x86" ]; then
     
     BUILD_NAME=openssl-x86
     
@@ -126,7 +126,7 @@ if [ "$ARCH" = "armv7a" ]; then
     
     OPENSSL_SOURCE_PATH=${BUILD_ROOT}/${BUILD_NAME}
     
-    elif [ "$ARCH" = "x86_64" ]; then
+elif [ "$ARCH" = "x86_64" ]; then
     
     BUILD_NAME=openssl-x86_64
     
