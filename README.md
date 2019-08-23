@@ -20,7 +20,7 @@ A simple，fast FFmpeg build tool
 
  * FFmpeg: 4.1+
  * OpenSSL: 1.1.1+
- * Support NDK Version : **r13c** **r14b** **r15c** **r16b** **r17c** **r18b** **r19**
+ * Support NDK Version : **r13c** **r14b** **r15c** **r16b** **r17c** **r18b** **r19** **r20**
  * Support Arch : armv7a/armv8a/x86/x86_64
  * Support FFmpeg Separate compilation
  * Support OpenSSL Separate compilation
@@ -72,7 +72,7 @@ Part of the main structure from the IJKPlayer (https://github.com/bilibili/ijkpl
 
  * FFmpeg: 4.1+
  * OpenSSL: 1.1.1+
- * 支持的NDK版本: **r13c** **r14b** **r15c** **r16b** **r17c** **r18b** **r19**
+ * 支持的NDK版本: **r13c** **r14b** **r15c** **r16b** **r17c** **r18b** **r19** **r20**
  * 支持的架构: armv7a/armv8a/x86/x86_64
  * 支持FFmpeg独立编译
  * 支持OpenSSL独立编译

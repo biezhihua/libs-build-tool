@@ -62,7 +62,7 @@ NDK_REL=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2
 echo "NDK_REL = $NDK_REL"
 
 case "$NDK_REL" in
-    13*|14*|15*|16*|17*|18*|19*)
+    13*|14*|15*|16*|17*|18*|19*|20*)
         if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
         then
             echo "NDK VERSION = r$NDK_REL"
