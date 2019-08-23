@@ -5,8 +5,8 @@ A simple，fast FFmpeg build tool
 
 # Build Platform
 
- * MacOS(需要安装Python)
- * Ubuntu(需要安装Python)
+ * MacOS (Need install Python)
+ * Ubuntu (Need install Python)
 
 # Target Platform
 
