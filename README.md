@@ -1,4 +1,10 @@
 
+
+[![Build Status](https://travis-ci.org/biezhihua/FFmpegBuildTool.svg?branch=master)](https://travis-ci.org/biezhihua/FFmpegBuildTool)
+
+[![License](https://img.shields.io/badge/license-MIT-%23373737)](https://github.com/biezhihua/FFmpegBuildTool/blob/master/LICENSE)
+
+
 # FFmpegBuildTool
 
 A simple，fast FFmpeg build tool
