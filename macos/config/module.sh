@@ -47,7 +47,7 @@ export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-runtime-cpudetect"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-gray"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-swscale-alpha"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-shared"
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-static"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-static"
 
 # Program options:
 #   --disable-programs       do not build command line programs

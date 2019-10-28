@@ -39,7 +39,7 @@ LDFLAGS=
 
 PRODUCT=product
 
-TOOLCHAIN_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk"
+TOOLCHAIN_SYSROOT=`xcrun --sdk macosx --show-sdk-path`
 
 TOOLCHAIN_AS="/Applications/Xcode.app/Contents/Developer/usr/bin/gcc"
 TOOLCHAIN_LD="/Applications/Xcode.app/Contents/Developer/usr/bin/ld"
