@@ -46,8 +46,8 @@ export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-nonfree"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-runtime-cpudetect"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-gray"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-swscale-alpha"
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-shared"
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-static"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-shared"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-static"
 
 # Program options:
 #   --disable-programs       do not build command line programs
@@ -56,7 +56,7 @@ export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-static"
 #   --disable-ffprobe        disable ffprobe build
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-programs"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-ffmpeg"
-export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-ffplay"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-ffplay"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-ffprobe"
 
 # Documentation options:
@@ -147,6 +147,9 @@ export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-hwaccels"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-muxers"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-devices"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-protocol=async"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=aac"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=ac3"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=flac"
 
 # External library support:
 

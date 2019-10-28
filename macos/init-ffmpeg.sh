@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 TARGET=$1
 
 UPSTREAM=https://github.com/FFmpeg/FFmpeg.git
-BRANCH=release/4.2
+BRANCH=origin/release/4.2
 LOCAL_REPO=../repository/ffmpeg
 
 set -e

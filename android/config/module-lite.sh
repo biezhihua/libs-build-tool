@@ -53,6 +53,7 @@ export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-encoder=png"
 # ./configure --list-decoders
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --disable-decoders"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=aac"
+export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=ac3"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=aac_latm"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=flv"
 export COMMON_CFG_FLAGS="$COMMON_CFG_FLAGS --enable-decoder=h264"
