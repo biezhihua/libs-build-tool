@@ -1,2 +1,0 @@
-6231a6232
->                                check_lib openssl openssl/ssl.h OPENSSL_init_ssl -lssl -lcrypto ||

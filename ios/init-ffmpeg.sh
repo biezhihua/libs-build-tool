@@ -20,6 +20,6 @@ branch=origin/release/4.2
 local_repo=../repository/ffmpeg
 
 # 所有架构
-arch_all="x86_64"
+arch_all="armv7 armv7s arm64 i386 x86_64"
 
 init_repository

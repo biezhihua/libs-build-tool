@@ -1,72 +1,101 @@
 #! /usr/bin/env bash
 
-RED='\033[0;31m'
-Green='\033[0;33m'
-NC='\033[0m' # No Color
+source ../tools/colors.sh
+source ../tools/common.sh
+set -e
 
-UNI_BUILD_ROOT=`pwd`
+function make_mac_ffmpeg_config_params() {
 
-TARGET=$1
-TARGET_EXTRA=$2
-
-ACT_ARCHS_ALL="x86_64"
-
-echo_archs() {
     echo "--------------------"
-    echo -e "${RED}[*] check archs${NC}"
+    echo -e "${red}[*] make config params ${nc}"
     echo "--------------------"
-    echo "ALL_ARCHS = $ACT_ARCHS_ALL"
-    echo "ACT_ARCHS = $*"
+
+    cfg_flags="$cfg_flags --prefix=$output_path"
+
+    export COMMON_CFG_FLAGS=
+    . ./config/module.sh
+
+    # config
+    cfg_flags="$cfg_flags ${COMMON_CFG_FLAGS}"
+
+    #
+    cfg_flags="$cfg_flags --enable-cross-compile"
+
+    # Developer options (useful when working on FFmpeg itself):
+    cfg_flags="$cfg_flags --disable-stripping"
+
+    cfg_flags="$cfg_flags --target-os=darwin"
+    cfg_flags="$cfg_flags --arch=$target_arch"
+    cfg_flags="$cfg_flags --cpu=$target_arch"
+
+    cfg_flags="$cfg_flags --disable-static"
+    cfg_flags="$cfg_flags --enable-shared"
+    cfg_flags="$cfg_flags --enable-optimizations"
+    cfg_flags="$cfg_flags --disable-debug"
+    cfg_flags="$cfg_flags --enable-small"
+
+    xcrun_platform_name="MacOSX"
+
+    xcrun_osversion="-mmacosx-version-min=10.10"
+
+    cfg_cpu="$cfg_cpu"
+
+    echo "cfg_flags = $cfg_flags"
+    echo ""
+    echo "dep_libs = $dep_libs"
+    echo ""
+    echo "ld_flags = $ld_flags"
+    echo ""
+    echo "cfg_cpu = $cfg_cpu"
+    echo ""
+    echo "xcrun_platform_name = $xcrun_platform_name"
+    echo ""
+    echo "xcrun_osversion = $xcrun_osversion"
     echo ""
 }
 
-echo_usage() {
-    echo "Usage:"
-    echo "  compile-ffmpeg.sh x86_64"
-    echo "  compile-ffmpeg.sh all"
-    echo "  compile-ffmpeg.sh clean"
-    exit 1
+
+function compile() {
+    check_env
+    check_ios_mac_host
+    make_env_params
+    make_mac_ffmpeg_config_params
+    make_ios_or_mac_toolchain
+    make_ios_or_mac_ffmpeg_product
 }
 
-echo_nextstep_help() {
-    echo "--------------------"
-    echo -e "${RED}[*] Finished${NC}"
-    echo "--------------------"
+target_arch=$1
+arch_all="x86_64"
+name=ffmpeg
+build_root=`pwd`/build
+
+function main() {
+    current_path=`pwd`
+    case "$target_arch" in
+        armv7|armv7s|arm64|i386|x86_64)
+            echo_arch
+            compile
+        ;;
+        clean)
+            for arch in ${arch_all}
+            do
+                if [[ -d ${name}-${arch} ]]; then
+                    cd ${name}-${arch} && git clean -xdf && cd -
+                fi
+            done
+            rm -rf ./build/src/${name}-*
+            rm -rf ./build/output/${name}-*
+            rm -rf ./build/product/${name}-*
+            echo "clean complete"
+        ;;
+        check)
+            echo_arch
+        ;;
+        *)
+            echo_compile_usage
+            exit 1
+        ;;
+    esac
 }
 
-case "$TARGET" in
-    ""|x86_64)
-        echo_archs $TARGET $TARGET_EXTRA
-        sh ./tools/do-compile-ffmpeg.sh $TARGET $TARGET_EXTRA
-        echo_nextstep_help
-    ;;
-    all)
-        echo "prepare all"
-        echo_archs $ACT_ARCHS_ALL
-        for ARCH in $ACT_ARCHS_ALL
-        do
-            echo "$ARCH $TARGET_EXTRA"
-            sh ./tools/do-compile-ffmpeg.sh $ARCH $TARGET_EXTRA
-        done
-        echo_nextstep_help
-    ;;
-    clean)
-        echo "prepare clean"
-        echo_archs ACT_ARCHS_ALL
-        for ARCH in $ACT_ARCHS_ALL
-        do
-            if [ -d tools/ffmpeg-$ARCH ]; then
-                cd tools/ffmpeg-$ARCH && git clean -xdf && cd -
-            fi
-        done
-        rm -rf ./tools/build/ffmpeg-*
-        rm -rf ./product/ffmpeg-*
-    ;;
-    check)
-        echo_archs ACT_ARCHS_ALL
-    ;;
-    *)
-        echo_usage
-        exit 1
-    ;;
-esac
+main

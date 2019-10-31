@@ -1,0 +1,10 @@
+# -----
+product/
+build/
+ffmpeg-temp/
+repository
+.DS_Store
+.idea
+.vscode
+tools/ffmpeg-*
+tools/openssl-*

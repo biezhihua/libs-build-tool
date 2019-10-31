@@ -8,18 +8,18 @@ set -e
 target_arch=$1
 
 # 库名称
-name=ffmpeg
+name=openssl
 
 # 库地址
-upstream=https://github.com/FFmpeg/FFmpeg.git
+upstream=https://github.com/openssl/openssl
 
 # 库分支
-branch=origin/release/4.2
+branch=origin/OpenSSL_1_1_1-stable
 
 # 本地库地址
-local_repo=../repository/ffmpeg
+local_repo=../repository/openssl
 
 # 所有架构
-arch_all="x86_64"
+arch_all="armv7 armv7s arm64 i386 x86_64"
 
 init_repository

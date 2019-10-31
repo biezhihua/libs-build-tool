@@ -1,10 +1,12 @@
 # -----
 build/
 ffmpeg-temp/
+android/build
 android/ffmpeg-*
 android/openssl-*
 ios/ffmpeg-*
 ios/openssl-*
+ios/build
 repository
 .DS_Store
 .idea
@@ -41,5 +43,11 @@ build/
 xcuserdata
 xcshareddata
 *.xccheckout
+
+ios/build
+ios/product
+ios/tools/build
+ios/tools/ffmpeg-*
+ios/tools/openssl-*
 
 

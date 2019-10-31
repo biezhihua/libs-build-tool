@@ -5,27 +5,22 @@
 # 
 
 # 远程库地址
-REMOTE_REPO=$1
+remote_repo=$1
+
 # 本地副本路径
-LOCAL_WORKSPACE_PATH=$2
+local_workspace_path=$2
+
 # 本地库路径
-REF_REPO=$3
+ref_repo=$3
 
-# http://www.runoob.com/linux/linux-shell-test.html
-# -z 字符串	字符串的长度为零则为真
-# -d 文件名	如果文件存在且为目录则为真
-# 或( -o )
-
-if [ -z $1 -o -z $2 -o -z $3 ]; then
+if [[ -z $1 || -z $2 || -z $3 ]]; then
     echo "invalid call pull-repo.sh '$1' '$2' '$3'"
-elif [ ! -d $LOCAL_WORKSPACE_PATH ]; then
-    # https://git-scm.com/docs/git-clone
-    # git clone --reference git/linux.git git://git.kernel.org/pub/scm/.../linux.git my-linux
-    git clone --reference $REF_REPO $REMOTE_REPO $LOCAL_WORKSPACE_PATH
-    cd $LOCAL_WORKSPACE_PATH
+elif [[ ! -d ${local_workspace_path} ]]; then
+    git clone --reference ${ref_repo} ${remote_repo} ${local_workspace_path}
+    cd ${local_workspace_path}
     git repack -a
 else
-    cd $LOCAL_WORKSPACE_PATH
+    cd ${local_workspace_path}
     git fetch --all --tags
     cd -
 fi

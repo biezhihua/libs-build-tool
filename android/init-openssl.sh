@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 TARGET=$1
 
 UPSTREAM=https://github.com/openssl/openssl
-BRANCH=OpenSSL_1_1_1c
+BRANCH=OpenSSL_1_1_1d
 LOCAL_REPO=../repository/openssl
 
 # http://www.runoob.com/linux/linux-comm-set.html
