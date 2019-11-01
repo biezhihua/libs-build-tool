@@ -1,76 +1,117 @@
 #! /usr/bin/env bash
 
-RED='\033[0;31m'
-Green='\033[0;33m'
-NC='\033[0m' # No Color
+source ../tools/colors.sh
+source ../tools/common.sh
+set -e
 
-UNI_BUILD_ROOT=`pwd`
+function make_android_openssl_config_params() {
 
-TARGET=$1
-TARGET_EXTRA=$2
-
-ACT_ARCHS_ALL="armv7a armv8a x86 x86_64"
-
-echo_archs() {
     echo "--------------------"
-    echo -e "${RED}[*] check archs${NC}"
+    echo -e "${red}[*] make config params ${nc}"
     echo "--------------------"
-    echo "ALL_ARCHS = $ACT_ARCHS_ALL"
-    echo "ACT_ARCHS = $*"
+
+    android_standalone_toolchain_clang=clang3.6
+
+    cfg_flags="$cfg_flags zlib-dynamic"
+    cfg_flags="$cfg_flags no-shared"
+    cfg_flags="$cfg_flags --prefix=$output_path"
+
+    if [[ "$target_arch" = "armv7a" ]]; then
+
+        android_platform_name=android-21
+
+        android_standalone_toolchain_name=arm-linux-android-${android_standalone_toolchain_clang}
+
+        cfg_flags="$cfg_flags android-arm"
+
+    elif [[ "$target_arch" = "armv8a" ]]; then
+
+        android_platform_name=android-21
+
+        android_standalone_toolchain_name=aarch64-linux-android-${android_standalone_toolchain_clang}
+
+        cfg_flags="$cfg_flags android-arm64"
+
+    elif [[ "$target_arch" = "x86" ]]; then
+
+        android_platform_name=android-21
+
+        android_standalone_toolchain_name=x86-linux-android-${android_standalone_toolchain_clang}
+
+        cfg_flags="$cfg_flags android-x86 no-asm"
+
+    elif [[ "$target_arch" = "x86_64" ]]; then
+
+        android_platform_name=android-21
+
+        android_standalone_toolchain_name=x86_64-linux-android-${android_standalone_toolchain_clang}
+
+        cfg_flags="$cfg_flags android-x86_64"
+
+     case "$ndk_rel" in
+        18*|19*)
+            android_platform_name=android-23
+        ;;
+        13*|14*|15*|16*|17*)
+            android_platform_name=android-21
+        ;;
+    esac
+
+    else
+        echo "unknown architecture $target_arch";
+        exit 1
+    fi
+
+    echo "cfg_flags = $cfg_flags"
+    echo ""
+    echo "dep_libs = $dep_libs"
+    echo ""
+    echo "android_platform_name = $android_platform_name"
+    echo ""
+    echo "android_standalone_toolchain_name = $android_standalone_toolchain_name"
     echo ""
 }
 
-echo_usage() {
-    echo "Usage:"
-    echo "  compile-openssl.sh armv7a|armv8a|x86|x86_64"
-    echo "  compile-openssl.sh all"
-    echo "  compile-openssl.sh clean"
-    exit 1
+function compile() {
+    check_env
+    check_ndk
+    make_env_params
+    make_android_openssl_config_params
+    make_android_toolchain
+    make_openssl_product
 }
 
-echo_nextstep_help() {
-    echo "--------------------"
-    echo -e "${RED}[*] Finished${NC}"
-    echo "--------------------"
+target_arch=$1
+arch_all="armv7a armv8a x86 x86_64"
+name=openssl
+build_root=`pwd`/build
+
+function main() {
+    case "$target_arch" in
+        armv7a|armv8a|x86|x86_64)
+            echo_arch
+            compile
+        ;;
+        clean)
+            for arch in ${arch_all}
+            do
+                if [[ -d ${name}-${arch} ]]; then
+                    cd ${name}-${arch} && git clean -xdf && cd -
+                fi
+            done
+            rm -rf ./build/src/${name}-*
+            rm -rf ./build/output/${name}-*
+            rm -rf ./build/product/${name}-*
+            echo "clean complete"
+        ;;
+        check)
+            echo_arch
+        ;;
+        *)
+            echo_compile_usage
+            exit 1
+        ;;
+    esac
 }
 
-case "$TARGET" in
-    "")
-        echo_archs armv7a
-        sh ./tools/do-compile-openssl.sh armv7a
-    ;;
-    armv7a|armv8a|x86|x86_64)
-        echo_archs $TARGET $TARGET_EXTRA
-        sh ./tools/do-compile-openssl.sh $TARGET $TARGET_EXTRA
-        echo_nextstep_help
-    ;;
-    all)
-        echo "prepare all"
-        echo_archs $ACT_ARCHS_ALL
-        for ARCH in $ACT_ARCHS_ALL
-        do
-            echo "$ARCH $TARGET_EXTRA"
-            sh ./tools/do-compile-openssl.sh $ARCH $TARGET_EXTRA
-        done
-        echo_nextstep_help
-    ;;
-    clean)
-        echo "prepare clean"
-        echo_archs ACT_ARCHS_ALL
-        for ARCH in $ACT_ARCHS_ALL
-        do
-            if [ -d openssl-$ARCH ]; then
-                cd openssl-$ARCH && git clean -xdf && cd -
-            fi
-        done
-        rm -rf ./tools/build/openssl-*
-        rm -rf ./build/openssl-*
-    ;;
-    check)
-        echo_archs ACT_ARCHS_ALL
-    ;;
-    *)
-        echo_usage
-        exit 1
-    ;;
-esac
+main

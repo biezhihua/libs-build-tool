@@ -88,7 +88,7 @@ function init_repository() {
                 pull_fork
             done
         ;;
-        armv7|armv7s|arm64|x86_64|i386)
+        armv7|armv7s|arm64|x86_64|i386|armv7a|armv8a|x86)
             pull_repository
             pull_fork
         ;;
@@ -142,6 +142,35 @@ function check_env() {
         exit 1
     fi
     echo ""
+}
+
+function check_ndk() {
+    if [[ -z "$ANDROID_NDK" ]]; then
+        echo "You must define ANDROID_NDK before starting."
+        echo "They must point to your NDK directories."
+        echo ""
+        exit 1
+    fi
+
+    ndk_rel=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2>/dev/null | sed 's/[[:space:]]*//g' | cut -d "=" -f 2)
+
+    case "$ndk_rel" in
+        13*|14*|15*|16*|17*|18*|19*|20*)
+            if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
+            then
+                echo "ndk version = r$ndk_rel"
+            else
+                echo "You need the NDK r16b r17c 18b 19 20"
+                echo "https://developer.android.com/ndk/downloads/"
+                exit 1
+            fi
+        ;;
+        *)
+            echo "You need the NDK r16b r17c 18b 19 20"
+            echo "https://developer.android.com/ndk/downloads/"
+            exit 1
+        ;;
+    esac
 }
 
 # out:xcrun_developer
@@ -244,6 +273,11 @@ function make_env_params() {
     source_path=${build_root}/src/${build_name}
     output_path=${build_root}/output/${build_name}
     product_path=${build_root}/product/${build_name}
+    toolchain_path=${build_root}/toolchain/${build_name}
+
+    export PATH=${toolchain_path}/bin:$PATH
+    export ANDROID_NDK_HOME=${toolchain_path}
+    export PATH=${ANDROID_NDK_HOME}/bin:$PATH
 
     if [[ ! -d ${output_path} ]]; then
          mkdir -p ${output_path}
@@ -305,6 +339,48 @@ function make_ios_or_mac_ffmpeg_product() {
     echo ""
 }
 
+function make_openssl_product() {
+    echo "--------------------"
+    echo -e "${red}[*] compile openssl ${nc}"
+    echo "--------------------"
+
+    current_path=`pwd`
+
+    cd ${source_path}
+
+    echo "current_directory = ${source_path}"
+
+    ./Configure ${cfg_flags}
+
+    make clean
+    make SHLIB_VERSION_NUMBER=
+    make install
+
+    cp -r ${output_path}/include ${product_path}/include
+    mkdir -p ${product_path}/lib
+    cp ${output_path}/lib/libcrypto.a ${product_path}/lib/libcrypto.a
+    cp ${output_path}/lib/libssl.a ${product_path}/lib/libssl.a
+
+    cd ${current_path}
+
+    echo "product_path = ${product_path}"
+    echo ""
+    echo "product_path_include = ${product_path}/include"
+    echo ""
+    echo "product_path_lib = ${product_path}/lib"
+    echo ""
+}
+
+function make_android_toolchain() {
+    android_standalone_toolchain_flags="$android_standalone_toolchain_flags --install-dir=$toolchain_path"
+    ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
+        ${android_standalone_toolchain_flags} \
+        --platform=${android_platform_name} \
+        --toolchain=${android_standalone_toolchain_name} \
+        --force
+
+}
+
 # 目标架构
 # eg: arm64
 target_arch=
@@ -345,6 +421,10 @@ output_path=
 # eg: */build/product/
 product_path=
 
+# 工具链输出
+# eg:
+toolchain_path=
+
 # 构建配置
 cfg_flags=
 cfg_cpu=
@@ -357,6 +437,9 @@ ld_flags=
 
 # 构建依赖
 dep_libs=
+
+## iOS
+##
 
 # iOS SDK
 # eg: iphoneos
@@ -381,3 +464,19 @@ xcrun_cc=
 # iOS SDK 支持最低版本
 # eg: xcrun_osversion="-miphoneos-version-min=7.0"
 xcrun_osversion=
+
+# Android
+# ndk_rel = 20.0.5594570
+ndk_rel=
+
+# android平台名称
+android_platform_name=
+
+# Android独立工具链clang
+android_standalone_toolchain_clang=
+
+# Android独立工具链名称
+android_standalone_toolchain_name=
+
+# Android独立工具链编译标记
+android_standalone_toolchain_flags=
