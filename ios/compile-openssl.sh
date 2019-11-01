@@ -119,7 +119,7 @@ function compile() {
 }
 
 target_arch=$1
-arch_all="armv7 armv7s arm64"
+arch_all="armv7 armv7s arm64 i386 x86_64"
 name=openssl
 
 function main() {

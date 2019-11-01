@@ -123,6 +123,13 @@ function make_android_ffmpeg_config_params() {
     cfg_flags="$cfg_flags --target-os=android"
     cfg_flags="$cfg_flags --enable-pic"
 
+    # 动态库 Shared libraries are .so (or in Windows .dll, or in OS X .dylib) files.
+    # 静态库 Static libraries are .a (or in Windows .lib) files.
+    # https://stackoverflow.com/questions/2649334/difference-between-static-and-shared-libraries
+    # https://blog.csdn.net/foooooods/article/details/80259395
+    cfg_flags="$cfg_flags --enable-static"
+    cfg_flags="$cfg_flags --disable-shared"
+
     # with debug
     cfg_flags="$cfg_flags --enable-optimizations"
     cfg_flags="$cfg_flags --disable-debug"
