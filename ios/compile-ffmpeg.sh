@@ -98,12 +98,12 @@ function make_ios_ffmpeg_config_params() {
     c_flags="$c_flags $xcrun_osversion"
     c_flags="$c_flags $xcode_bitcode"
     ld_flags="$ld_flags"
-    dep_libs="$c_flags"
+    ld_libs="$c_flags"
     cfg_cpu="$cfg_cpu"
 
     echo "cfg_flags = $cfg_flags"
     echo ""
-    echo "dep_libs = $dep_libs"
+    echo "dep_libs = $ld_libs"
     echo ""
     echo "ld_flags = $ld_flags"
     echo ""
@@ -133,7 +133,7 @@ function make_ios_ffmpeg_product() {
         ${cfg_cpu} \
         --extra-cflags="$c_flags" \
         --extra-cxxflags="$c_flags" \
-        --extra-ldflags="$ld_flags $dep_libs"
+        --extra-ldflags="$ld_flags $ld_libs"
 
     make clean
     make install -j8
@@ -176,8 +176,6 @@ function compile() {
 target_arch=$1
 arch_all="armv7 armv7s arm64 i386 x86_64"
 name=ffmpeg
-build_root=`pwd`/build
-build_name_openssl=
 libs="libavcodec libavfilter libavformat libavutil libswscale libswresample"
 
 function main() {
@@ -194,9 +192,9 @@ function main() {
                     cd ${name}-${arch} && git clean -xdf && cd -
                 fi
             done
-            rm -rf ./build/src/${name}-*
-            rm -rf ./build/output/${name}-*
-            rm -rf ./build/product/${name}-*
+            rm -rf ./build/output/**
+            rm -rf ./build/product/**
+            rm -rf ./build/toolchain/**
             echo "clean complete"
         ;;
         check)

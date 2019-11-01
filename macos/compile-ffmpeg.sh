@@ -42,7 +42,7 @@ function make_mac_ffmpeg_config_params() {
 
     echo "cfg_flags = $cfg_flags"
     echo ""
-    echo "dep_libs = $dep_libs"
+    echo "dep_libs = $ld_libs"
     echo ""
     echo "ld_flags = $ld_flags"
     echo ""
@@ -67,7 +67,6 @@ function compile() {
 target_arch=$1
 arch_all="x86_64"
 name=ffmpeg
-build_root=`pwd`/build
 
 function main() {
     current_path=`pwd`
@@ -83,9 +82,9 @@ function main() {
                     cd ${name}-${arch} && git clean -xdf && cd -
                 fi
             done
-            rm -rf ./build/src/${name}-*
-            rm -rf ./build/output/${name}-*
-            rm -rf ./build/product/${name}-*
+            rm -rf ./build/output/**
+            rm -rf ./build/product/**
+            rm -rf ./build/toolchain/**
             echo "clean complete"
         ;;
         check)

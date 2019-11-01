@@ -64,7 +64,7 @@ function make_android_openssl_config_params() {
 
     echo "cfg_flags = $cfg_flags"
     echo ""
-    echo "dep_libs = $dep_libs"
+    echo "dep_libs = $ld_libs"
     echo ""
     echo "android_platform_name = $android_platform_name"
     echo ""
@@ -84,7 +84,6 @@ function compile() {
 target_arch=$1
 arch_all="armv7a armv8a x86 x86_64"
 name=openssl
-build_root=`pwd`/build
 
 function main() {
     case "$target_arch" in
@@ -99,9 +98,9 @@ function main() {
                     cd ${name}-${arch} && git clean -xdf && cd -
                 fi
             done
-            rm -rf ./build/src/${name}-*
-            rm -rf ./build/output/${name}-*
-            rm -rf ./build/product/${name}-*
+            rm -rf ./build/output/**
+            rm -rf ./build/product/**
+            rm -rf ./build/toolchain/**
             echo "clean complete"
         ;;
         check)

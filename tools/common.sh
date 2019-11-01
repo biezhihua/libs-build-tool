@@ -95,8 +95,8 @@ function init_repository() {
         clean)
             for arch in ${arch_all}
             do
-                if [[ -d tools/${name}-${arch} ]]; then
-                    rm -rf tools/${name}-${arch}
+                if [[ -d build/${name}-${arch} ]]; then
+                    rm -rf build/${name}-${arch}
                 fi
             done
             echo "clean complete"
@@ -260,6 +260,7 @@ function make_ios_or_mac_toolchain() {
 # in:  name
 # in:  build_root
 # out: build_name
+# out: build_
 # out: source_path
 # out: output_path
 # out: product_path
@@ -269,11 +270,18 @@ function make_env_params() {
     echo -e "${red}[*] make env params ${nc}"
     echo "--------------------"
 
+    build_root=`pwd`/build
     build_name=${name}-${target_arch}
     source_path=${build_root}/src/${build_name}
     output_path=${build_root}/output/${build_name}
     product_path=${build_root}/product/${build_name}
     toolchain_path=${build_root}/toolchain/${build_name}
+
+    build_name_depend=${name_depend}-${target_arch}
+    source_path_depend=${build_root}/src/${build_name_depend}
+    output_path_depend=${build_root}/output/${build_name_depend}
+    product_path_depend=${build_root}/product/${build_name_depend}
+    toolchain_path_depend=${build_root}/toolchain/${build_name_depend}
 
     export PATH=${toolchain_path}/bin:$PATH
     export ANDROID_NDK_HOME=${toolchain_path}
@@ -287,6 +295,16 @@ function make_env_params() {
          mkdir -p ${product_path}
     fi
 
+    if [[ ! -d ${output_path_depend} ]]; then
+         mkdir -p ${output_path_depend}
+    fi
+
+    if [[ ! -d ${product_path_depend} ]]; then
+         mkdir -p ${product_path_depend}
+    fi
+
+    echo "build_root = $build_root"
+    echo ""
     echo "build_name = $build_name"
     echo ""
     echo "source_path = $source_path"
@@ -294,6 +312,18 @@ function make_env_params() {
     echo "output_path = $output_path"
     echo ""
     echo "product_path = $product_path"
+    echo ""
+    echo "toolchain_path = $toolchain_path"
+    echo ""
+    echo "build_name_depend = $build_name_depend"
+    echo ""
+    echo "source_path_depend = $source_path_depend"
+    echo ""
+    echo "output_path_depend = $output_path_depend"
+    echo ""
+    echo "product_path_depend = $product_path_depend"
+    echo ""
+    echo "toolchain_path_depend = $toolchain_path_depend"
     echo ""
 }
 
@@ -320,7 +350,7 @@ function make_ios_or_mac_ffmpeg_product() {
         ${cfg_cpu} \
         --extra-cflags="$c_flags" \
         --extra-cxxflags="$c_flags" \
-        --extra-ldflags="$ld_flags $dep_libs"
+        --extra-ldflags="$ld_flags $ld_libs"
 
     make clean
     make install -j8
@@ -339,6 +369,7 @@ function make_ios_or_mac_ffmpeg_product() {
     echo ""
 }
 
+# 构建OpenSSL产物
 function make_openssl_product() {
     echo "--------------------"
     echo -e "${red}[*] compile openssl ${nc}"
@@ -371,6 +402,7 @@ function make_openssl_product() {
     echo ""
 }
 
+# 构建AndroidNDK工具链
 function make_android_toolchain() {
     android_standalone_toolchain_flags="$android_standalone_toolchain_flags --install-dir=$toolchain_path"
     ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
@@ -378,7 +410,18 @@ function make_android_toolchain() {
         --platform=${android_platform_name} \
         --toolchain=${android_standalone_toolchain_name} \
         --force
+}
 
+function mysedi() {
+    f=$1
+    exp=$2
+    n=`basename $f`
+    cp $f /tmp/$n
+    # http://www.runoob.com/linux/linux-comm-sed.html
+    # sed可依照script的指令，来处理、编辑文本文件。
+    sed $exp /tmp/$n > $f
+    rm /tmp/$n
+    # echo "${f}    ${exp}    ${n}"
 }
 
 # 目标架构
@@ -401,29 +444,27 @@ local_repo=
 # eg: ffmpeg/openssl
 name=
 
+# 库名称
+# eg: openssl
+name_depend=
+
 # 构建根路径
 # eg: */build/
 build_root=
 
 # 构建名称
-# eg: ffmpeg-arm64
 build_name=
-
-# 构建库源码
-# eg: */build/src/
 source_path=
-
-# 构建库输出
-# eg: */build/output/
 output_path=
-
-# 产物输出
-# eg: */build/product/
 product_path=
-
-# 工具链输出
-# eg:
 toolchain_path=
+
+# 构建依赖项名称
+build_name_depend=
+source_path_depend=
+output_path_depend=
+product_path_depend=
+toolchain_path_depend=
 
 # 构建配置
 cfg_flags=
@@ -436,7 +477,7 @@ c_flags=
 ld_flags=
 
 # 构建依赖
-dep_libs=
+ld_libs=
 
 ## iOS
 ##
@@ -466,16 +507,21 @@ xcrun_cc=
 xcrun_osversion=
 
 # Android
-# ndk_rel = 20.0.5594570
+# eg: 20.0.5594570
 ndk_rel=
 
 # android平台名称
+# eg: android-21
 android_platform_name=
 
 # Android独立工具链clang
+# eg: clang3.6
 android_standalone_toolchain_clang=
 
+android_standalone_toolchain_cross_prefix_name=
+
 # Android独立工具链名称
+# eg:
 android_standalone_toolchain_name=
 
 # Android独立工具链编译标记
