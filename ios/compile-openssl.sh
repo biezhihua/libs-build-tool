@@ -10,7 +10,7 @@ function make_ios_openssl_config_params() {
     echo -e "${red}[*] make config params ${nc}"
     echo "--------------------"
 
-    if [[ "$target_arch" = "i386" ]]; then
+    if [[ "$target_arch" == "i386" ]]; then
 
         xcrun_platform_name="iPhoneSimulator"
 
@@ -18,7 +18,7 @@ function make_ios_openssl_config_params() {
 
         cfg_flags="$cfg_flags darwin-i386-cc"
 
-    elif [[ "$target_arch" = "x86_64" ]]; then
+    elif [[ "$target_arch" == "x86_64" ]]; then
 
         xcrun_platform_name="iPhoneSimulator"
 
@@ -26,7 +26,7 @@ function make_ios_openssl_config_params() {
 
         cfg_flags="$cfg_flags darwin64-x86_64-cc"
 
-    elif [[ "$target_arch" = "arm64" ]]; then
+    elif [[ "$target_arch" == "arm64" ]]; then
 
         xcrun_platform_name="iPhoneOS"
 
@@ -38,7 +38,7 @@ function make_ios_openssl_config_params() {
 
         cfg_flags="$cfg_flags iphoneos-cross"
 
-    elif [[ "$target_arch" = "armv7" ]]; then
+    elif [[ "$target_arch" == "armv7" ]]; then
 
         xcrun_platform_name="iPhoneOS"
 
@@ -48,7 +48,7 @@ function make_ios_openssl_config_params() {
 
         cfg_flags="$cfg_flags iphoneos-cross"
 
-    elif [[ "$target_arch" = "armv7s" ]]; then
+    elif [[ "$target_arch" == "armv7s" ]]; then
 
         xcrun_platform_name="iPhoneOS"
 
@@ -59,10 +59,9 @@ function make_ios_openssl_config_params() {
         cfg_flags="$cfg_flags iphoneos-cross"
 
     else
-        echo "unknown architecture $target_arch";
+        echo "unknown architecture $target_arch"
         exit 1
     fi
-
 
     cfg_flags="$cfg_flags --prefix=$output_path"
 
@@ -83,7 +82,7 @@ function make_ios_openssl_product() {
     echo -e "${red}[*] compile openssl ${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
 
     cd ${source_path}
 
@@ -124,28 +123,35 @@ name=openssl
 
 function main() {
     case "$target_arch" in
-        armv7|armv7s|arm64)
+    all)
+        for arch in ${arch_all}; do
+            reset
+            target_arch=${arch}
             echo_arch
             compile
+        done
         ;;
-        clean)
-            for arch in ${arch_all}
-            do
-                if [[ -d ${name}-${arch} ]]; then
-                    cd ${name}-${arch} && git clean -xdf && cd -
-                fi
-            done
-            rm -rf ./build/output/**
-            rm -rf ./build/product/**
-            rm -rf ./build/toolchain/**
-            echo "clean complete"
+    armv7 | armv7s | arm64)
+        echo_arch
+        compile
         ;;
-        check)
-            echo_arch
+    clean)
+        for arch in ${arch_all}; do
+            if [[ -d ${name}-${arch} ]]; then
+                cd ${name}-${arch} && git clean -xdf && cd -
+            fi
+        done
+        rm -rf ./build/output/**
+        rm -rf ./build/product/**
+        rm -rf ./build/toolchain/**
+        echo "clean complete"
         ;;
-        *)
-            echo_compile_usage
-            exit 1
+    check)
+        echo_arch
+        ;;
+    *)
+        echo_compile_usage
+        exit 1
         ;;
     esac
 }

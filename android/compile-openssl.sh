@@ -87,6 +87,15 @@ name=openssl
 
 function main() {
     case "$target_arch" in
+        all)
+            for arch in ${arch_all}
+            do
+                reset
+                target_arch=${arch}
+                echo_arch
+                compile
+            done
+        ;;
         armv7a|armv8a|x86|x86_64)
             echo_arch
             compile

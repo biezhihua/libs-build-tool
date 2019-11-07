@@ -38,7 +38,7 @@ function make_ios_ffmpeg_config_params() {
     cfg_flags="$cfg_flags --enable-static"
     cfg_flags="$cfg_flags --disable-shared"
 
-    if [[ "$target_arch" = "i386" ]]; then
+    if [[ "$target_arch" == "i386" ]]; then
 
         xcrun_platform_name="iPhoneSimulator"
 
@@ -48,7 +48,7 @@ function make_ios_ffmpeg_config_params() {
         cfg_flags="$cfg_flags --disable-mmx"
         cfg_flags="$cfg_flags --assert-level=2"
 
-    elif [[ "$target_arch" = "x86_64" ]]; then
+    elif [[ "$target_arch" == "x86_64" ]]; then
 
         xcrun_platform_name="iPhoneSimulator"
 
@@ -58,7 +58,7 @@ function make_ios_ffmpeg_config_params() {
         cfg_flags="$cfg_flags --disable-mmx"
         cfg_flags="$cfg_flags --assert-level=2"
 
-    elif [[ "$target_arch" = "arm64" ]]; then
+    elif [[ "$target_arch" == "arm64" ]]; then
 
         xcrun_platform_name="iPhoneOS"
 
@@ -71,7 +71,7 @@ function make_ios_ffmpeg_config_params() {
         cfg_flags="$cfg_flags --enable-pic"
         cfg_flags="$cfg_flags --enable-neon"
 
-    elif [[ "$target_arch" = "armv7" ]]; then
+    elif [[ "$target_arch" == "armv7" ]]; then
 
         xcrun_platform_name="iPhoneOS"
 
@@ -82,7 +82,7 @@ function make_ios_ffmpeg_config_params() {
         cfg_flags="$cfg_flags --enable-pic"
         cfg_flags="$cfg_flags --enable-neon"
 
-    elif [[ "$target_arch" = "armv7s" ]]; then
+    elif [[ "$target_arch" == "armv7s" ]]; then
 
         xcrun_platform_name="iPhoneOS"
 
@@ -96,7 +96,7 @@ function make_ios_ffmpeg_config_params() {
         cfg_flags="$cfg_flags --enable-neon"
 
     else
-        echo "unknown architecture $target_arch";
+        echo "unknown architecture $target_arch"
         exit 1
     fi
 
@@ -128,7 +128,7 @@ function make_ios_ffmpeg_product() {
     echo -e "${red}[*] compile openssl ${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
     cd ${source_path}
 
     echo "current_directory = ${source_path}"
@@ -147,6 +147,8 @@ function make_ios_ffmpeg_product() {
     cp -r ${output_path}/include ${product_path}/include
     mkdir -p ${product_path}/lib
     cp -r ${output_path}/lib/* ${product_path}/lib/
+    mkdir -p ${product_path}/include/libffmpeg
+    cp -f config.h ${product_path}/include/libffmpeg/config.h
 
     cd ${current_path}
 
@@ -158,16 +160,93 @@ function make_ios_ffmpeg_product() {
     echo ""
 }
 
-#function make_arch_merge() {
-#    for lib in ${libs}
-#    do
-#        file="$lib.a";
-#        src=${product_path}/lib/${file}
-#        output=${product_path}/lib/${file}
-#        xcrun lipo -create ${src} -output ${output}
-#        xcrun lipo -info ${output}
-#    done
-#}
+function make_arch_merge() {
+    echo "--------------------"
+    echo -e "${red}[*] merge arch ${nc}"
+    echo "--------------------"
+
+    merge_root=${build_root}/product/${name}
+
+    echo "merge_root = ${merge_root}"
+    echo ""
+
+    if [[ ! -d ${merge_root} ]]; then
+        mkdir ${merge_root}
+    fi
+
+    for lib in ${merge_libs}; do
+        file="$lib.a"
+        merge_output=${merge_root}/lib/${file}
+
+        if [[ ! -d ${merge_root}/lib ]]; then
+            mkdir ${merge_root}/lib
+        fi
+
+        merge_src=
+
+        echo "merge_output = ${merge_output}"
+        echo ""
+
+        for arch in ${arch_all}; do
+            merge_name=${name}-${arch}
+            merge_product_path=${build_root}/product/${merge_name}
+            src=${merge_product_path}/lib/${file}
+            if [[ -f ${src} ]]; then
+                merge_src="$merge_src ${src}"
+
+                echo "merge_name = ${merge_name}"
+                echo "merge_product_path = ${merge_product_path}"
+                echo ""
+            fi
+        done
+
+        echo "merge_src = ${merge_src}"
+        echo ""
+
+        xcrun lipo -create ${merge_src} -output ${merge_output}
+        xcrun lipo -info ${merge_output}
+    done
+
+    echo ""
+
+    any_arch=
+    for arch in ${arch_all}
+    do
+        merge_name=${name}-${arch}
+        merge_product_path=${build_root}/product/${merge_name}
+        merge_arch_inc_dir="${merge_product_path}/include"
+
+        echo "merge_name = ${merge_name}"
+        echo "merge_product_path = ${merge_product_path}"
+        echo "merge_arch_inc_dir = ${merge_arch_inc_dir}"
+        echo ""
+
+        if [[ -d "$merge_arch_inc_dir" ]]; then
+            if [[ -z "$any_arch" ]]; then
+                any_arch=${arch}
+                cp -R "$merge_arch_inc_dir" "${merge_root}"
+            fi
+
+            merge_inc_dir="${merge_root}/include"
+
+            mkdir -p "$merge_inc_dir/libavutil/$arch"
+
+            cp -f "$merge_arch_inc_dir/libavutil/avconfig.h"  "$merge_inc_dir/libavutil/$arch/avconfig.h"
+
+            cp -f tools/avconfig.h                      "$merge_inc_dir/libavutil/avconfig.h"
+
+            cp -f "$merge_arch_inc_dir/libavutil/ffversion.h" "$merge_inc_dir/libavutil/$arch/ffversion.h"
+
+            cp -f tools/ffversion.h                     "$merge_inc_dir/libavutil/ffversion.h"
+
+            mkdir -p "$merge_inc_dir/libffmpeg/$arch"
+
+            cp -f "$merge_arch_inc_dir/libffmpeg/config.h"    "$merge_inc_dir/libffmpeg/$arch/config.h"
+
+            cp -f tools/config.h                        "$merge_inc_dir/libffmpeg/config.h"
+        fi
+    done
+}
 
 function compile() {
     check_env
@@ -176,39 +255,46 @@ function compile() {
     make_ios_ffmpeg_config_params
     make_ios_or_mac_toolchain
     make_ios_ffmpeg_product
-#    make_arch_merge
+    make_arch_merge
 }
 
 target_arch=$1
 arch_all="armv7 armv7s arm64 i386 x86_64"
 name=ffmpeg
-libs="libavcodec libavfilter libavformat libavutil libswscale libswresample"
+merge_libs="libavcodec libavfilter libavformat libavutil libswscale libswresample"
 
 function main() {
-    current_path=`pwd`
+    current_path=$(pwd)
     case "$target_arch" in
-        armv7|armv7s|arm64|i386|x86_64)
+    all)
+        for arch in ${arch_all}; do
+            reset
+            target_arch=${arch}
             echo_arch
             compile
+        done
         ;;
-        clean)
-            for arch in ${arch_all}
-            do
-                if [[ -d ${name}-${arch} ]]; then
-                    cd ${name}-${arch} && git clean -xdf && cd -
-                fi
-            done
-            rm -rf ./build/output/**
-            rm -rf ./build/product/**
-            rm -rf ./build/toolchain/**
-            echo "clean complete"
+    armv7 | armv7s | arm64 | i386 | x86_64)
+        echo_arch
+        compile
         ;;
-        check)
-            echo_arch
+    clean)
+        for arch in ${arch_all}; do
+            if [[ -d ${name}-${arch} ]]; then
+                cd ${name}-${arch} && git clean -xdf && cd -
+            fi
+        done
+        rm -rf ./build/output/**
+        rm -rf ./build/product/**
+        rm -rf ./build/toolchain/**
+        echo "clean complete"
         ;;
-        *)
-            echo_compile_usage
-            exit 1
+    check)
+        echo_arch
+        ;;
+    *)
+        echo_compile_usage
+        exit 1
         ;;
     esac
 }

@@ -12,7 +12,7 @@ function pull_repository() {
     echo -e "${red}[*] pull ffmpeg=$upstream base branch=$branch ${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
 
     if [[ ! -d ${local_repo} ]]; then
         git clone ${upstream} ${local_repo}
@@ -45,7 +45,7 @@ function pull_fork() {
         rm -rf ${local_workspace_path}
     fi
 
-    current_path=`pwd`
+    current_path=$(pwd)
 
     if [[ ! -d ${local_workspace_path} ]]; then
         git clone --reference ${ref_repo} ${remote_repo} ${local_workspace_path}
@@ -80,30 +80,28 @@ function echo_init_usage() {
 # in: arch_all
 function init_repository() {
     case ${target_arch} in
-        all)
-            pull_repository
-            for arch in ${arch_all}
-            do
-                target_arch="$arch"
-                pull_fork
-            done
-        ;;
-        armv7|armv7s|arm64|x86_64|i386|armv7a|armv8a|x86)
-            pull_repository
+    all)
+        pull_repository
+        for arch in ${arch_all}; do
+            target_arch="$arch"
             pull_fork
+        done
         ;;
-        clean)
-            for arch in ${arch_all}
-            do
-                if [[ -d build/${name}-${arch} ]]; then
-                    rm -rf build/${name}-${arch}
-                fi
-            done
-            echo "clean complete"
+    armv7 | armv7s | arm64 | x86_64 | i386 | armv7a | armv8a | x86)
+        pull_repository
+        pull_fork
         ;;
-        *)
-            echo_init_usage
-            exit 1
+    clean)
+        for arch in ${arch_all}; do
+            if [[ -d build/${name}-${arch} ]]; then
+                rm -rf build/${name}-${arch}
+            fi
+        done
+        echo "clean complete"
+        ;;
+    *)
+        echo_init_usage
+        exit 1
         ;;
     esac
 }
@@ -155,20 +153,19 @@ function check_ndk() {
     ndk_rel=$(grep -o '^Pkg\.Revision.*=[0-9]*.*' ${ANDROID_NDK}/source.properties 2>/dev/null | sed 's/[[:space:]]*//g' | cut -d "=" -f 2)
 
     case "$ndk_rel" in
-        13*|14*|15*|16*|17*|18*|19*|20*)
-            if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
-            then
-                echo "ndk version = r$ndk_rel"
-            else
-                echo "You need the NDK r16b r17c 18b 19 20"
-                echo "https://developer.android.com/ndk/downloads/"
-                exit 1
-            fi
-        ;;
-        *)
+    13* | 14* | 15* | 16* | 17* | 18* | 19* | 20*)
+        if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9; then
+            echo "ndk version = r$ndk_rel"
+        else
             echo "You need the NDK r16b r17c 18b 19 20"
             echo "https://developer.android.com/ndk/downloads/"
             exit 1
+        fi
+        ;;
+    *)
+        echo "You need the NDK r16b r17c 18b 19 20"
+        echo "https://developer.android.com/ndk/downloads/"
+        exit 1
         ;;
     esac
 }
@@ -180,22 +177,22 @@ function check_ios_mac_host() {
     echo -e "${red}[*] check host ${nc}"
     echo "--------------------"
 
-    xcrun_developer=`xcode-select -print-path`
+    xcrun_developer=$(xcode-select -print-path)
 
     if [[ ! -d "$xcrun_developer" ]]; then
-      echo "xcode path is not set correctly $xcrun_developer does not exist (most likely because of xcode > 4.3)"
-      echo "run"
-      echo "sudo xcode-select -switch <xcode path>"
-      echo "for default installation:"
-      echo "sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer"
-      exit 1
+        echo "xcode path is not set correctly $xcrun_developer does not exist (most likely because of xcode > 4.3)"
+        echo "run"
+        echo "sudo xcode-select -switch <xcode path>"
+        echo "for default installation:"
+        echo "sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer"
+        exit 1
     fi
 
     case ${xcrun_developer} in
-         *\ * )
-               echo "Your Xcode path contains whitespaces, which is not supported."
-               exit 1
-              ;;
+    *\ *)
+        echo "Your Xcode path contains whitespaces, which is not supported."
+        exit 1
+        ;;
     esac
 
     echo "xcrun_developer=$xcrun_developer"
@@ -220,21 +217,21 @@ function make_ios_or_mac_toolchain() {
 
     # echo "iPhoneOS" | tr '[:upper:]' '[:lower:]'
     # iphoneos
-    xcrun_sdk=`echo ${xcrun_platform_name} | tr '[:upper:]' '[:lower:]'`
+    xcrun_sdk=$(echo ${xcrun_platform_name} | tr '[:upper:]' '[:lower:]')
 
     # xcrun --sdk iphoneos --show-sdk-platform-path
     # /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform
-    xcrun_sdk_platform_path=`xcrun -sdk ${xcrun_sdk} --show-sdk-platform-path`
+    xcrun_sdk_platform_path=$(xcrun -sdk ${xcrun_sdk} --show-sdk-platform-path)
 
     # xcrun --sdk iphoneos --show-sdk-path
     # /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.0.sdk
-    xcrun_sdk_path=`xcrun -sdk ${xcrun_sdk} --show-sdk-path`
+    xcrun_sdk_path=$(xcrun -sdk ${xcrun_sdk} --show-sdk-path)
 
     # xcrun --sdk iphoneos clang
     xcrun_cc="xcrun -sdk ${xcrun_sdk} clang"
 
     export CROSS_TOP="$xcrun_sdk_platform_path/Developer"
-    export CROSS_SDK=`echo ${xcrun_sdk_path/#$CROSS_TOP\/SDKs\//}`
+    export CROSS_SDK=$(echo ${xcrun_sdk_path/#$CROSS_TOP\/SDKs\//})
     export BUILD_TOOL="$xcrun_developer"
     export CC="$xcrun_cc -arch $target_arch $xcrun_osversion"
 
@@ -270,37 +267,23 @@ function make_env_params() {
     echo -e "${red}[*] make env params ${nc}"
     echo "--------------------"
 
-    build_root=`pwd`/build
+    build_root=$(pwd)/build
     build_name=${name}-${target_arch}
     source_path=${build_root}/src/${build_name}
     output_path=${build_root}/output/${build_name}
     product_path=${build_root}/product/${build_name}
     toolchain_path=${build_root}/toolchain/${build_name}
 
-    build_name_depend=${name_depend}-${target_arch}
-    source_path_depend=${build_root}/src/${build_name_depend}
-    output_path_depend=${build_root}/output/${build_name_depend}
-    product_path_depend=${build_root}/product/${build_name_depend}
-    toolchain_path_depend=${build_root}/toolchain/${build_name_depend}
-
     export PATH=${toolchain_path}/bin:$PATH
     export ANDROID_NDK_HOME=${toolchain_path}
     export PATH=${ANDROID_NDK_HOME}/bin:$PATH
 
     if [[ ! -d ${output_path} ]]; then
-         mkdir -p ${output_path}
+        mkdir -p ${output_path}
     fi
 
     if [[ ! -d ${product_path} ]]; then
-         mkdir -p ${product_path}
-    fi
-
-    if [[ ! -d ${output_path_depend} ]]; then
-         mkdir -p ${output_path_depend}
-    fi
-
-    if [[ ! -d ${product_path_depend} ]]; then
-         mkdir -p ${product_path_depend}
+        mkdir -p ${product_path}
     fi
 
     echo "build_root = $build_root"
@@ -314,17 +297,36 @@ function make_env_params() {
     echo "product_path = $product_path"
     echo ""
     echo "toolchain_path = $toolchain_path"
-    echo ""
-    echo "build_name_depend = $build_name_depend"
-    echo ""
-    echo "source_path_depend = $source_path_depend"
-    echo ""
-    echo "output_path_depend = $output_path_depend"
-    echo ""
-    echo "product_path_depend = $product_path_depend"
-    echo ""
-    echo "toolchain_path_depend = $toolchain_path_depend"
-    echo ""
+
+    if [[ ! -z ${name_depend} ]]; then
+
+        build_name_depend=${name_depend}-${target_arch}
+        source_path_depend=${build_root}/src/${build_name_depend}
+        output_path_depend=${build_root}/output/${build_name_depend}
+        product_path_depend=${build_root}/product/${build_name_depend}
+        toolchain_path_depend=${build_root}/toolchain/${build_name_depend}
+
+        if [[ ! -d ${output_path_depend} ]]; then
+            mkdir -p ${output_path_depend}
+        fi
+
+        if [[ ! -d ${product_path_depend} ]]; then
+            mkdir -p ${product_path_depend}
+        fi
+
+        echo ""
+        echo "build_name_depend = $build_name_depend"
+        echo ""
+        echo "source_path_depend = $source_path_depend"
+        echo ""
+        echo "output_path_depend = $output_path_depend"
+        echo ""
+        echo "product_path_depend = $product_path_depend"
+        echo ""
+        echo "toolchain_path_depend = $toolchain_path_depend"
+        echo ""
+    fi
+
 }
 
 # in: source_path
@@ -339,7 +341,7 @@ function make_ios_or_mac_ffmpeg_product() {
     echo -e "${red}[*] compile openssl ${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
     cd ${source_path}
 
     echo "current_directory = ${source_path}"
@@ -375,7 +377,7 @@ function make_openssl_product() {
     echo -e "${red}[*] compile openssl ${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
 
     cd ${source_path}
 
@@ -415,13 +417,48 @@ function make_android_toolchain() {
 function mysedi() {
     f=$1
     exp=$2
-    n=`basename $f`
+    n=$(basename $f)
     cp $f /tmp/$n
     # http://www.runoob.com/linux/linux-comm-sed.html
     # sed可依照script的指令，来处理、编辑文本文件。
-    sed $exp /tmp/$n > $f
+    sed $exp /tmp/$n >$f
     rm /tmp/$n
     # echo "${f}    ${exp}    ${n}"
+}
+
+# 重置变量
+function reset() {
+    target_arch=""
+    upstream=""
+    branch=""
+    local_repo=""
+    build_root=""
+    source_path=""
+    output_path=""
+    product_path=""
+    toolchain_path=""
+    build_name_depend=""
+    source_path_depend=""
+    output_path_depend=""
+    product_path_depend=""
+    toolchain_path_depend=""
+    cfg_flags=""
+    cfg_cpu=""
+    c_flags=""
+    ld_flags=""
+    ld_libs=""
+    xcrun_sdk=""
+    xcrun_sdk_platform_path=""
+    xcrun_platform_name=""
+    xcrun_sdk_path=""
+    xcrun_cc=""
+    xcrun_osversion=""
+    ndk_rel=""
+    android_platform_name=""
+    android_standalone_toolchain_clang=""
+    android_standalone_toolchain_cross_prefix_name=""
+    android_standalone_toolchain_name=""
+    android_standalone_toolchain_flags=""
 }
 
 # 目标架构
@@ -518,6 +555,8 @@ android_platform_name=
 # eg: clang3.6
 android_standalone_toolchain_clang=
 
+# Android独立工具链前缀名称
+# eg:
 android_standalone_toolchain_cross_prefix_name=
 
 # Android独立工具链名称

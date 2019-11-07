@@ -12,7 +12,7 @@ function make_android_ffmpeg_config_params() {
 
     android_standalone_toolchain_clang=clang3.6
 
-    if [[ "$target_arch" = "armv7a" ]]; then
+    if [[ "$target_arch" == "armv7a" ]]; then
 
         android_platform_name=android-21
 
@@ -32,7 +32,7 @@ function make_android_ffmpeg_config_params() {
 
         assembler_sub_dirs="arm"
 
-    elif [[ "$target_arch" = "armv8a" ]]; then
+    elif [[ "$target_arch" == "armv8a" ]]; then
 
         android_platform_name=android-21
 
@@ -46,7 +46,7 @@ function make_android_ffmpeg_config_params() {
 
         assembler_sub_dirs="aarch64 neon"
 
-    elif [[ "$target_arch" = "x86" ]]; then
+    elif [[ "$target_arch" == "x86" ]]; then
 
         android_platform_name=android-21
 
@@ -60,7 +60,7 @@ function make_android_ffmpeg_config_params() {
 
         assembler_sub_dirs="x86"
 
-    elif [[ "$target_arch" = "x86_64" ]]; then
+    elif [[ "$target_arch" == "x86_64" ]]; then
 
         android_platform_name=android-21
 
@@ -80,16 +80,16 @@ function make_android_ffmpeg_config_params() {
         assembler_sub_dirs="x86"
 
         case "$ndk_rel" in
-            18*|19*|20*)
-                android_platform_name=android-23
+        18* | 19* | 20*)
+            android_platform_name=android-23
             ;;
-            13*|14*|15*|16*|17*)
-                android_platform_name=android-21
+        13* | 14* | 15* | 16* | 17*)
+            android_platform_name=android-21
             ;;
         esac
 
     else
-        echo "unknown architecture $target_arch";
+        echo "unknown architecture $target_arch"
         exit 1
     fi
 
@@ -136,7 +136,7 @@ function make_android_ffmpeg_config_params() {
     cfg_flags="$cfg_flags --enable-small"
 
     # with asm
-    if [[ "$target_arch" = "x86" ]]; then
+    if [[ "$target_arch" == "x86" ]]; then
         cfg_flags="$cfg_flags --disable-asm"
     else
         cfg_flags="$cfg_flags --enable-asm"
@@ -178,7 +178,7 @@ function make_android_product() {
     echo -e "${red}[*] compile ${name} ${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
 
     cd ${source_path}
 
@@ -189,8 +189,8 @@ function make_android_product() {
     patch -p0 ./configure ${current_path}/patch/configure-patch.patch
 
     ./configure ${cfg_flags} \
-    --extra-cflags="$c_flags" \
-    --extra-ldflags="$ld_libs $ld_flags"
+        --extra-cflags="$c_flags" \
+        --extra-ldflags="$ld_libs $ld_flags"
 
     make clean
 
@@ -212,24 +212,22 @@ function make_android_product_so() {
     echo -e "${red}[*] link ffmpeg${nc}"
     echo "--------------------"
 
-    current_path=`pwd`
+    current_path=$(pwd)
 
     cd ${source_path}
 
     link_c_obj_files=
     link_asm_obj_files=
-    for module_dir in ${link_module_dirs}
-    do
+    for module_dir in ${link_module_dirs}; do
         c_obj_files="$module_dir/*.o"
-        if ls ${c_obj_files} 1> /dev/null 2>&1; then
+        if ls ${c_obj_files} 1>/dev/null 2>&1; then
             echo "link $module_dir/*.o"
             link_c_obj_files="$link_c_obj_files $c_obj_files"
         fi
 
-        for asm_sub_dir in ${assembler_sub_dirs}
-        do
+        for asm_sub_dir in ${assembler_sub_dirs}; do
             asm_obj_files="$module_dir/$asm_sub_dir/*.o"
-            if ls ${asm_obj_files} 1> /dev/null 2>&1; then
+            if ls ${asm_obj_files} 1>/dev/null 2>&1; then
                 echo "link $module_dir/$asm_sub_dir/*.o"
                 link_asm_obj_files="$link_asm_obj_files $asm_obj_files"
             fi
@@ -257,25 +255,25 @@ function make_android_product_so() {
         ${ld_libs} \
         -o ${product_path}/lib/${so_name}
 
-#    mkdir -p ${product_path}/lib/pkgconfig
-#    cp ${output_path}/lib/pkgconfig/*.pc ${product_path}/lib/pkgconfig
-#
-#    for f in ${product_path}/lib/pkgconfig/*.pc; do
-#        # in case empty dir
-#        if [[ ! -f ${f} ]]; then
-#            continue
-#        fi
-#        f=${product_path}/lib/pkgconfig/`basename ${f}`
-#        echo "process share lib ${f}"
-#        # OSX sed doesn't have in-place(-i)
-#        mysedi ${f} 's/tools\/build\/'${build_name}'\/output/build\/'${build_name}'/g'
-#        mysedi ${f} 's/-lavcodec/-l'${so_simple_name}'/g'
-#        mysedi ${f} 's/-lavfilter/-l'${so_simple_name}'/g'
-#        mysedi ${f} 's/-lavformat/-l'${so_simple_name}'/g'
-#        mysedi ${f} 's/-lavutil/-l'${so_simple_name}'/g'
-#        mysedi ${f} 's/-lswresample/-l'${so_simple_name}'/g'
-#        mysedi ${f} 's/-lswscale/-l'${so_simple_name}'/g'
-#    done
+    #    mkdir -p ${product_path}/lib/pkgconfig
+    #    cp ${output_path}/lib/pkgconfig/*.pc ${product_path}/lib/pkgconfig
+    #
+    #    for f in ${product_path}/lib/pkgconfig/*.pc; do
+    #        # in case empty dir
+    #        if [[ ! -f ${f} ]]; then
+    #            continue
+    #        fi
+    #        f=${product_path}/lib/pkgconfig/`basename ${f}`
+    #        echo "process share lib ${f}"
+    #        # OSX sed doesn't have in-place(-i)
+    #        mysedi ${f} 's/tools\/build\/'${build_name}'\/output/build\/'${build_name}'/g'
+    #        mysedi ${f} 's/-lavcodec/-l'${so_simple_name}'/g'
+    #        mysedi ${f} 's/-lavfilter/-l'${so_simple_name}'/g'
+    #        mysedi ${f} 's/-lavformat/-l'${so_simple_name}'/g'
+    #        mysedi ${f} 's/-lavutil/-l'${so_simple_name}'/g'
+    #        mysedi ${f} 's/-lswresample/-l'${so_simple_name}'/g'
+    #        mysedi ${f} 's/-lswscale/-l'${so_simple_name}'/g'
+    #    done
 }
 
 function compile() {
@@ -299,28 +297,35 @@ so_name=lib${so_simple_name}.so
 
 function main() {
     case "$target_arch" in
-        armv7a|armv8a|x86|x86_64)
+    all)
+        for arch in ${arch_all}; do
+            reset
+            target_arch=${arch}
             echo_arch
             compile
+        done
         ;;
-        clean)
-            for arch in ${arch_all}
-            do
-                if [[ -d ${name}-${arch} ]]; then
-                    cd ${name}-${arch} && git clean -xdf && cd -
-                fi
-            done
-            rm -rf ./build/output/**
-            rm -rf ./build/product/**
-            rm -rf ./build/toolchain/**
-            echo "clean complete"
+    armv7a | armv8a | x86 | x86_64)
+        echo_arch
+        compile
         ;;
-        check)
-            echo_arch
+    clean)
+        for arch in ${arch_all}; do
+            if [[ -d ${name}-${arch} ]]; then
+                cd ${name}-${arch} && git clean -xdf && cd -
+            fi
+        done
+        rm -rf ./build/output/**
+        rm -rf ./build/product/**
+        rm -rf ./build/toolchain/**
+        echo "clean complete"
         ;;
-        *)
-            echo_compile_usage
-            exit 1
+    check)
+        echo_arch
+        ;;
+    *)
+        echo_compile_usage
+        exit 1
         ;;
     esac
 }
