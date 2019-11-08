@@ -1,4 +1,5 @@
 language: shell
 install: true
 script:
-  - cd ios && ./init-ffmpeg.sh all && ./compile-ffmpeg.sh all
+  - cd ios && ./init-ffmpeg.sh arm64
+  - cd ios && ./compile-ffmpeg.sh arm64
