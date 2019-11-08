@@ -1,4 +1,5 @@
 
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/biezhihua/FFmpegBuildTool)
 
 [![Build Status](https://travis-ci.org/biezhihua/FFmpegBuildTool.svg?branch=master)](https://travis-ci.org/biezhihua/FFmpegBuildTool)
 
