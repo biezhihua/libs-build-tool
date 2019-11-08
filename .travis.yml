@@ -1,0 +1,4 @@
+language: shell
+install: true
+script:
+  - ./ios/init-ffmpeg.sh all && ./ios/compile-ffmpeg.sh all
