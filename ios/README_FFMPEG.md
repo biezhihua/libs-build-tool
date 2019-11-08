@@ -2,7 +2,7 @@
 # Init Repository 初始化库 
 
 ```
-./init-ffmpeg.sh armv7a | all
+./init-ffmpeg.sh arm64 | all
 ```
 
 # Clean Repository Cache 清理库缓存
@@ -20,7 +20,7 @@
 # Build Library 构建库
 
 ```
-./compile-ffmpeg.sh armv7a | all
+./compile-ffmpeg.sh arm64 | all
 ```
 
 # Check Output 查看输出结果
