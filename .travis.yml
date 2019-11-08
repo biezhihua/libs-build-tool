@@ -1,5 +1,8 @@
 language: shell
 install: true
 script:
-  - cd ios && ./init-ffmpeg.sh arm64
-  - cd ios && ./compile-ffmpeg.sh arm64
+  - cd ios
+  - env_path=`pwd`
+  - ./init-ffmpeg.sh arm64
+  - cd ${env_path}
+  - ./compile-ffmpeg.sh arm64
