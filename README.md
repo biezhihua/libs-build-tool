@@ -45,6 +45,10 @@ export ANDROID_NDK=<your ndk path>
 
 # iOS
 
+## Env
+
+ * xcode
+
 ## Features
 
  * FFmpeg: 4.1+
