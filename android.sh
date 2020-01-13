@@ -24,6 +24,8 @@ main() {
 
     print_enabled_libraries
 
+    build_env
+
     build_lib
 }
 

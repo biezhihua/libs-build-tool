@@ -283,3 +283,23 @@ build_lib() {
     export API=${ORIGINAL_API}
 
 }
+
+
+build_env(){
+    export PATH="$BASEDIR/env_tools/build/bin:$PATH"
+    echo -e "INFO: Building env_tools"
+    echo ""
+
+    . ${BASEDIR}/env_tools/init.sh
+
+    init_env_tools
+
+    TMP_PWD=`pwd`
+    cd $BASEDIR/env_tools
+
+    make $(get_make_flags)
+
+    make $(get_make_flags) .gas || make $(get_make_flags) .buildgas
+
+    cd $TMP_PWD
+}
