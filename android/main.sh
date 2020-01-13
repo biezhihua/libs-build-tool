@@ -188,6 +188,7 @@ build() {
     echo "AR=${AR}" >>config.mak
     echo "RANLIB=${RANLIB}" >>config.mak
     echo "LD=${LD}" >>config.mak
+    echo "MAKE_FLAGS=$(get_make_flags)" >>config.mak
 }
 
 build_openssl() {
@@ -199,13 +200,14 @@ build_openssl() {
 
     ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
 
+    echo "MAKE_FLAGS=$(get_make_flags)" >>config.mak
 }
 
 build_lib() {
 
     export ORIGINAL_API=${API}
 
-    CURRENT_PWD=$(pwd)
+    CURRENT_PWD=`pwd`
 
     for run_arch in $ENABLED_ARCHS; do
 
@@ -284,8 +286,7 @@ build_lib() {
 
 }
 
-
-build_env(){
+build_env() {
     export PATH="$BASEDIR/env_tools/build/bin:$PATH"
     echo -e "INFO: Building env_tools"
     echo ""

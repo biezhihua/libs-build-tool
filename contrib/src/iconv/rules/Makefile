@@ -33,5 +33,6 @@ endif
 
 .iconv: iconv
 	cd $< && $(HOSTVARS) ./configure CFLAGS="$(CFLAGS) -fgnu89-inline" $(HOSTCONF) --disable-nls
+	cd $< && $(MAKE) $(MAKE_FLAGS)
 	cd $< && $(MAKE) install
 	touch $@

@@ -34,7 +34,7 @@ endif
 .libdsm: libdsm
 	$(RECONF)
 	cd $< && $(HOSTVARS_PIC) ./configure --disable-programs $(LIBDSM_CONF)
-	cd $< && $(MAKE)
+	cd $< && $(MAKE) $(MAKE_FLAGS)
 	cd $< && ../../../contrib/src/pkg-static.sh libdsm.pc
 	cd $< && $(MAKE) install
 	touch $@
