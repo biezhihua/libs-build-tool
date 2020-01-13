@@ -24,7 +24,7 @@ OPENSSL_ARCH=$(shell $(SRC)/openssl/arch.sh $(ANDROID_ABI))
 .openssl: openssl
 	$(APPLY) $(SRC)/openssl/android.patch
 	cd $< && ./Configure no-shared no-unit-test -D__ANDROID_API__=$(ANDROID_API) $(OPENSSL_ARCH) --prefix=$(PREFIX)
-	cd $< && $(MAKE)
+	cd $< && $(MAKE) $(MAKE_FLAGS)
 	cd $< && ../../../contrib/src/pkg-static.sh openssl.pc
 	cd $< && $(MAKE) install
 	touch $@
