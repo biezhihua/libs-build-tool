@@ -13,10 +13,10 @@ TOPDST ?= ..
 SRC := $(TOPSRC)/src
 TARBALLS := $(TOPSRC)/tarballs
 
-PATH :=$(abspath ../../extras/tools/build/bin):$(PATH)
+PATH :=$(abspath ../../env_tools/build/bin):$(PATH)
 export PATH
 
-PKGS_ALL := $(patsubst $(SRC)/%/rules.mak,%,$(wildcard $(SRC)/*/rules.mak))
+PKGS_ALL := $(patsubst $(SRC)/%/rules/Makefile,%,$(wildcard $(SRC)/*/rules/Makefile))
 DATE := $(shell date +%Y%m%d)
 VPATH := $(TARBALLS)
 
@@ -136,7 +136,7 @@ CCAS=$(CC) -c
 
 ifdef HAVE_IOS
 ifdef HAVE_NEON
-AS=perl $(abspath ../../extras/tools/build/bin/gas-preprocessor.pl) $(CC)
+AS=perl $(abspath ../../env_tools/build/bin/gas-preprocessor.pl) $(CC)
 CCAS=gas-preprocessor.pl $(CC) -c
 endif
 EXTRA_CFLAGS += $(CFLAGS)
@@ -399,7 +399,7 @@ endif
 # Per-package build rules
 #
 PKGS_FOUND :=
-include $(SRC)/*/rules.mak
+include $(SRC)/*/rules/Makefile
 
 ifeq ($(PKGS_DISABLE), all)
 PKGS :=

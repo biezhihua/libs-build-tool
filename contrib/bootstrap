@@ -51,7 +51,7 @@ WITH_OPTIMIZATION="1"
 ANDROID_ABI=
 ANDROID_API=
 
-if test ! -f "../../contrib/src/main.mak"; then
+if test ! -f "../../contrib/src/Makefile"; then
 	echo "$0 must be run from a subdirectory"
 	exit 1
 fi
@@ -377,7 +377,7 @@ esac
 # Results output
 #
 test -e Makefile && unlink Makefile
-ln -sf ../../contrib/src/main.mak Makefile || exit $?
+ln -sf ../../contrib/src/Makefile Makefile || exit $?
 echo "INFO: Bootstrap completed."
 echo ""
 
