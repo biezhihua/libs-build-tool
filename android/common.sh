@@ -519,9 +519,6 @@ set_toolchain_clang_paths() {
 
     if [ "$1" == "x264" ]; then
         export AS=${CC}
-    elif [ "$1" == "openssl"]; then
-        export CC=$(get_toolchain_path_bin)/$(get_target_host)-gcc
-        export CXX=$(get_toolchain_path_bin)/$(get_target_host)-gcc++
     else
         export AS=$(get_toolchain_path_bin)/$(get_target_host)-as
     fi

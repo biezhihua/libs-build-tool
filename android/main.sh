@@ -123,8 +123,18 @@ process_args() {
 
         --lib-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
-            export ENABLE_LIBRARYS="${ENABLE_LIBRARYS} $ENABLED_LIBRARY"
+            if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
+                echo -e "ERROR: openssl only alone build"
+                exit 0
+            fi
+            export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
+
+            case $ENABLE_LIBRARYS in
+            "openssl ")
+                clean_build
+                ;;
+            esac
             ;;
 
         --arch-all)
@@ -160,6 +170,37 @@ process_args() {
     done
 }
 
+build() {
+
+    set_toolchain_params
+
+    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+
+    # Some libraries have arm assembly which won't build in thumb mode
+    # We append -marm to the CFLAGS of these libs to disable thumb mode
+    [ $(get_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>config.mak
+
+    echo "EXTRA_CFLAGS=${CFLAGS}" >>config.mak
+    echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>config.mak
+    echo "EXTRA_LDFLAGS=${LDFLAGS}" >>config.mak
+    echo "CC=${CC}" >>config.mak
+    echo "CXX=${CXX}" >>config.mak
+    echo "AR=${AR}" >>config.mak
+    echo "RANLIB=${RANLIB}" >>config.mak
+    echo "LD=${LD}" >>config.mak
+}
+
+build_openssl() {
+
+    echo -e "INFO: Build openssl"
+    echo ""
+
+    export PATH=$(get_toolchain_path)/bin:$PATH
+
+    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+
+}
+
 build_lib() {
 
     export ORIGINAL_API=${API}
@@ -181,7 +222,7 @@ build_lib() {
         echo ""
         echo -e "INFO: Building ${ARCH} platform on API level ${API}"
         echo ""
-        echo -e "INFO: Starting new build for ${ARCH} on API level ${API} at "$(date)""
+        echo -e "INFO: Starting new build for ${ARCH} on API level ${API} "
         echo ""
 
         export ARCH=$run_arch
@@ -210,10 +251,6 @@ build_lib() {
 
         check_api
 
-        make_toolchain
-
-        set_toolchain_params
-
         echo -e "INFO: Building the contribs"
         echo ""
 
@@ -222,20 +259,16 @@ build_lib() {
 
         cd $CONTRIB/contrib-android-$(get_target_host)
 
-        ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+        make_toolchain
 
-        # Some libraries have arm assembly which won't build in thumb mode
-        # We append -marm to the CFLAGS of these libs to disable thumb mode
-        [ $(get_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>config.mak
-
-        echo "EXTRA_CFLAGS=${CFLAGS}" >>config.mak
-        echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>config.mak
-        echo "EXTRA_LDFLAGS=${LDFLAGS}" >>config.mak
-        echo "CC=${CC}" >>config.mak
-        echo "CXX=${CXX}" >>config.mak
-        echo "AR=${AR}" >>config.mak
-        echo "RANLIB=${RANLIB}" >>config.mak
-        echo "LD=${LD}" >>config.mak
+        case $ENABLE_LIBRARYS in
+        "openssl ")
+            build_openssl
+            ;;
+        *)
+            build
+            ;;
+        esac
 
         make $(get_make_flags) fetch
 
@@ -243,7 +276,7 @@ build_lib() {
 
         make $(get_make_flags)
 
-        echo -e "INFO: Completed build for ${ARCH} on API level ${API} at "$(date)""
+        echo -e "INFO: Completed build for ${ARCH} on API level ${API} "
 
     done
 
