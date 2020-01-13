@@ -2,7 +2,7 @@
 #
 # This file is under the same license as the vlc package.
 
-include packages.mak
+include $(CURRENT)/mak_packages/Makefile
 
 #
 # common rules

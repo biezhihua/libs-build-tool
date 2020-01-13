@@ -26,7 +26,7 @@ main() {
 
     build_env
 
-    build_lib
+    # build_lib
 }
 
 main $*

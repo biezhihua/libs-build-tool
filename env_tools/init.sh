@@ -133,11 +133,12 @@ init_env_tools() {
 MAKEFLAGS += -j$CPUS
 CMAKEFLAGS += --parallel=$CPUS
 PREFIX=\$(abspath ./build)
+CURRENT=\$(abspath ./)
 
 all: $NEEDED
 	@echo "INFO: You are ready to build libs"
 
-include tools.mak
+include ./mak_tools/Makefile
 EOF
 
     echo -e "INFO: Completed env tools build"
