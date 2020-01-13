@@ -1,0 +1,44 @@
+--- flac.orig/src/share/win_utf8_io/win_utf8_io.c	2017-01-02 18:07:08.794676209 -0500
++++ flac/src/share/win_utf8_io/win_utf8_io.c	2017-01-02 18:10:16.633867994 -0500
+@@ -34,6 +34,7 @@
+ #endif
+ 
+ #include <windows.h>
++#include <winapifamily.h>
+ #include "share/win_utf8_io.h"
+ #include "share/windows_unicode_filenames.h"
+ 
+@@ -164,11 +165,13 @@
+ int win_get_console_width(void)
+ {
+ 	int width = 80;
++#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+ 	CONSOLE_SCREEN_BUFFER_INFO csbi;
+ 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+ 	if(hOut != INVALID_HANDLE_VALUE && hOut != NULL)
+ 		if (GetConsoleScreenBufferInfo(hOut, &csbi) != 0)
+ 			width = csbi.dwSize.X;
++#endif
+ 	return width;
+ }
+ 
+@@ -176,6 +179,11 @@
+ 
+ static int wprint_console(FILE *stream, const wchar_t *text, size_t len)
+ {
++#if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
++	(void)stream;
++	OutputDebugStringW(text);
++	return len;
++#else
+ 	DWORD out;
+ 	int ret;
+ 
+@@ -202,6 +210,7 @@
+ 	if (ret < 0)
+ 		return ret;
+ 	return len;
++#endif
+ }
+ 
+ int printf_utf8(const char *format, ...)

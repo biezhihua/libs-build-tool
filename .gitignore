@@ -4,3 +4,8 @@ repository
 .vscode/
 android/.DS_Store
 macos/.DS_Store
+
+*.log
+/prebuilt/
+*.DS_Store
+/.tmp/
