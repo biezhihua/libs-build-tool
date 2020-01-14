@@ -1,6 +1,6 @@
 # jpeg
 
-OPENJPEG_VERSION := 2.3.0
+OPENJPEG_VERSION := 2.3.1
 OPENJPEG_URL := https://github.com/uclouvain/openjpeg/archive/v$(OPENJPEG_VERSION).tar.gz
 
 $(TARBALLS)/openjpeg-v$(OPENJPEG_VERSION).tar.gz:
@@ -11,14 +11,7 @@ $(TARBALLS)/openjpeg-v$(OPENJPEG_VERSION).tar.gz:
 openjpeg: openjpeg-v$(OPENJPEG_VERSION).tar.gz .sum-openjpeg
 	$(UNPACK)
 	mv openjpeg-$(OPENJPEG_VERSION) openjpeg-v$(OPENJPEG_VERSION)
-ifdef HAVE_VISUALSTUDIO
-#	$(APPLY) $(SRC)/openjpeg/msvc.patch
-endif
-#	$(APPLY) $(SRC)/openjpeg/restrict.patch
-	$(APPLY) $(SRC)/openjpeg/install.patch
-	$(APPLY) $(SRC)/openjpeg/pic.patch
-	$(APPLY) $(SRC)/openjpeg/openjp2_pthread.patch
-	$(call pkg_static,"./src/lib/openjp2/libopenjp2.pc.cmake.in")
+	$(APPLY) $(SRC)/openjpeg/fix.patch
 	$(MOVE)
 
 .openjpeg: openjpeg toolchain.cmake
