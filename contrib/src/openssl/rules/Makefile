@@ -2,6 +2,7 @@
 
 OPENSSL_VERSION := 1_1_1d
 OPENSSL_URL := https://github.com/openssl/openssl/archive/OpenSSL_$(OPENSSL_VERSION).tar.gz
+
 ifeq ($(call need_pkg,"OPENSSL >= 1_1_1"),)
 PKGS_FOUND += openssl
 endif
@@ -14,6 +15,7 @@ OPENSSL_CONF = $(HOSTCONF)
 ifndef WITH_OPTIMIZATION
 OPENSSL_CONF += --enable-debug
 endif
+
 .sum-openssl: openssl-$(OPENSSL_VERSION).tar.gz
 
 openssl: openssl-$(OPENSSL_VERSION).tar.gz .sum-openssl

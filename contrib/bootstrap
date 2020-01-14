@@ -272,6 +272,10 @@ test "$(uname -o 2>/dev/null)" != "Msys" || add_make "CMAKE_GENERATOR := -G \"MS
 # Checks
 #
 OS="${HOST#*-}" # strip architecture
+
+echo "INFO: OS ${OS} HOST $HOST"
+echo ""
+
 case "${OS}" in
 *-darwin*)
 	if test -z "$BUILDFORIOS"; then
