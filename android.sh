@@ -1,12 +1,7 @@
 #!/bin/bash
 
-export BASEDIR=$(pwd)
-export CONTRIB=$(pwd)/contrib
-export CONTRIB_SRC=$(pwd)/contrib/src
-export CONTRIB_TARBALLS=$(pwd)/contrib/tarballs
-
 # 引入公共模块
-. ${BASEDIR}/common/common.sh
+. $(pwd)/common/common.sh
 . ${BASEDIR}/android/common.sh
 . ${BASEDIR}/android/main.sh
 
