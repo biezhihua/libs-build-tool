@@ -3,7 +3,7 @@
 get_all_pkgs() {
     local ALL_PKGS=""
     for filepath in $CONTRIB_SRC/*; do
-        if [[ -d $filepath ]]; then
+        if [[ -d $filepath && -d ${filepath}/rules ]]; then
             name=${filepath##*/}
             ALL_PKGS="$ALL_PKGS $name"
         fi
