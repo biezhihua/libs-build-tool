@@ -22,6 +22,9 @@ endif
 	$(MOVE)
 
 .lame: lame
+	@echo ""
+	@echo "INFO: Lame"
+	@echo ""
 	$(RECONF)
 	cd $< && $(HOSTVARS) ./configure $(HOSTCONF) --disable-analyzer-hooks --disable-decoder --disable-gtktest --disable-frontend
 	cd $< && $(MAKE) install

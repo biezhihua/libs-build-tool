@@ -2,7 +2,6 @@
 
 #Uncomment the one you want
 
-USE_FFMPEG ?= 1
 FFMPEG_VERSION := 4.2.2
 FFMPEG_URL := https://github.com/FFmpeg/FFmpeg/archive/n$(FFMPEG_VERSION).tar.gz
 
@@ -27,18 +26,17 @@ FFMPEGCONF = \
 	--disable-avresample \
 	--enable-bsf=vp9_superframe
 
-ifdef USE_FFMPEG
 FFMPEGCONF += \
 	--disable-swresample \
 	--disable-iconv \
 	--disable-avisynth \
 	--disable-nvenc \
 	--disable-linux-perf
+
 ifdef HAVE_DARWIN_OS
 FFMPEGCONF += \
 	--disable-videotoolbox \
 	--disable-securetransport
-endif
 endif
 
 DEPS_ffmpeg = zlib gsm
@@ -135,9 +133,7 @@ endif
 #
 ifdef HAVE_DARWIN_OS
 FFMPEGCONF += --arch=$(ARCH) --target-os=darwin
-ifdef USE_FFMPEG
 FFMPEGCONF += --disable-lzma
-endif
 ifeq ($(ARCH),x86_64)
 FFMPEGCONF += --cpu=core2
 endif
@@ -226,23 +222,22 @@ endif
 
 FFMPEGCONF += --nm="$(NM)" --ar="$(AR)"
 
-$(TARBALLS)/ffmpeg-$(FFMPEG_VERSION).tar.gz:
+ffmpeg-$(FFMPEG_VERSION).tar.gz:
 	$(call download_pkg,$(FFMPEG_URL),ffmpeg)
 
-.sum-ffmpeg: $(TARBALLS)/ffmpeg-$(FFMPEG_VERSION).tar.gz
-	$(call check_githash,$(FFMPEG_HASH))
+.sum-ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.gz
 	touch $@
 
 ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.gz .sum-ffmpeg
-	rm -Rf $@ $@-$(FFMPEG_VERSION)
-	mkdir -p $@-$(FFMPEG_VERSION)
-	tar xvJfo "$<" --strip-components=1 -C $@-$(FFMPEG_VERSION)
-	$(MOVE)
+	$(UNPACK) 
+	mv FFmpeg-n$(FFMPEG_VERSION) $@ && touch $@
 
 .ffmpeg: ffmpeg
+	@echo ""
 	@echo "INFO: Config $(FFMPEGCONF)"
+	@echo ""
 	cd $< && $(HOSTVARS) ./configure \
 		--extra-ldflags="$(LDFLAGS)" $(FFMPEGCONF) \
 		--prefix="$(PREFIX)" --enable-static --disable-shared
-	cd $< && $(MAKE) install-libs install-headers
+	cd $< && $(MAKE) $(MAKE_FLAGS) install-libs install-headers
 	touch $@

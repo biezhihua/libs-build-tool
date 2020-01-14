@@ -16,6 +16,9 @@ gsm: libgsm_$(GSM_VERSION).tar.gz .sum-gsm
 	$(MOVE)
 
 .gsm: gsm
+	@echo ""
+	@echo "INFO: Lame"
+	@echo ""
 	cd $< && $(HOSTVARS_PIC) $(MAKE)
 	mkdir -p "$(PREFIX)/include/gsm" "$(PREFIX)/lib"
 	cp $</inc/gsm.h "$(PREFIX)/include/gsm/"

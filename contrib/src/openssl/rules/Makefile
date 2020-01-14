@@ -7,7 +7,7 @@ ifeq ($(call need_pkg,"OPENSSL >= 1_1_1"),)
 PKGS_FOUND += openssl
 endif
 
-$(TARBALLS)/openssl-$(OPENSSL_VERSION).tar.gz:
+openssl-$(OPENSSL_VERSION).tar.gz:
 	$(call download_pkg,$(OPENSSL_URL),openssl)
 
 OPENSSL_CONF = $(HOSTCONF)
@@ -17,6 +17,7 @@ OPENSSL_CONF += --enable-debug
 endif
 
 .sum-openssl: openssl-$(OPENSSL_VERSION).tar.gz
+	touch $@
 
 openssl: openssl-$(OPENSSL_VERSION).tar.gz .sum-openssl
 	$(UNPACK)
@@ -24,9 +25,12 @@ openssl: openssl-$(OPENSSL_VERSION).tar.gz .sum-openssl
 
 OPENSSL_ARCH=$(shell $(SRC)/openssl/arch.sh $(ANDROID_ABI))
 .openssl: openssl
+	@echo ""
+	@echo "INFO: Openssl"
+	@echo ""
 	$(APPLY) $(SRC)/openssl/android.patch
 	cd $< && ./Configure no-shared no-unit-test -D__ANDROID_API__=$(ANDROID_API) $(OPENSSL_ARCH) --prefix=$(PREFIX)
 	cd $< && $(MAKE) $(MAKE_FLAGS)
 	cd $< && ../../../contrib/src/pkg-static.sh openssl.pc
-	cd $< && $(MAKE) install
+	cd $< && $(MAKE) $(MAKE_FLAGS) install
 	touch $@
