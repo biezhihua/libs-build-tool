@@ -41,6 +41,7 @@ HOST=
 PREFIX=
 PKGS_ENABLE=
 PKGS_DISABLE=
+BUILD_OPENSSL="0"
 BUILD_ENCODERS="1"
 BUILD_NETWORK="1"
 BUILD_DISCS="1"
@@ -70,6 +71,9 @@ while test -n "$1"; do
 		;;
 	--prefix=*)
 		PREFIX="${1#--prefix=}"
+		;;
+	--enable-openssl)
+		BUILD_OPENSSL="1"
 		;;
 	--disable-disc)
 		BUILD_DISCS=
@@ -261,6 +265,7 @@ test -z "$PREFIX" || add_make "PREFIX := $PREFIX"
 test -z "$BUILD_DISCS" || add_make_enabled "BUILD_DISCS"
 test -z "$BUILD_ENCODERS" || add_make_enabled "BUILD_ENCODERS"
 test -z "$BUILD_NETWORK" || add_make_enabled "BUILD_NETWORK"
+test -z "$BUILD_OPENSSL" || add_make_enabled "BUILD_OPENSSL"
 test -z "$ENABLE_SMALL" || add_make_enabled "ENABLE_SMALL"
 test -z "$GPL" || add_make_enabled "GPL"
 test -z "$GNUV3" || add_make_enabled "GNUV3"

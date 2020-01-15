@@ -123,18 +123,8 @@ process_args() {
 
         --lib-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
-            if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
-                echo -e "ERROR: openssl only alone build"
-                exit 0
-            fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
-
-            case $ENABLE_LIBRARYS in
-            "openssl ")
-                clean_build
-                ;;
-            esac
             ;;
 
         --arch-all)
@@ -207,7 +197,7 @@ build_lib() {
 
     export ORIGINAL_API=${API}
 
-    CURRENT_PWD=`pwd`
+    CURRENT_PWD=$(pwd)
 
     for run_arch in $ENABLED_ARCHS; do
 
@@ -263,14 +253,7 @@ build_lib() {
 
         make_toolchain
 
-        case $ENABLE_LIBRARYS in
-        "openssl ")
-            build_openssl
-            ;;
-        *)
-            build
-            ;;
-        esac
+        build
 
         make $(get_make_flags) fetch
 
@@ -295,7 +278,7 @@ build_env() {
 
     init_env_tools
 
-    TMP_PWD=`pwd`
+    TMP_PWD=$(pwd)
     cd $BASEDIR/env_tools
 
     make $(get_make_flags)

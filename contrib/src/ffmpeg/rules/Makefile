@@ -55,7 +55,15 @@ else
 FFMPEGCONF += --disable-encoders --disable-muxers
 endif
 
+ifdef BUILD_OPENSSL
+FFMPEGCONF += --enable-protocol=https
+FFMPEGCONF += --enable-openssl
+DEPS_ffmpeg += openssl $(DEPS_openssl)
+endif
+
+#
 # Small size
+#
 ifdef WITH_OPTIMIZATION
 ifdef ENABLE_SMALL
 FFMPEGCONF += --enable-small
@@ -153,6 +161,8 @@ FFMPEGCONF += --target-os=linux --enable-pic --extra-libs="-lm"
 endif
 
 ifdef HAVE_ANDROID
+
+FFMPEGCONF += --target-os=android 
 
 # broken text relocations
 ifeq ($(ANDROID_ABI), x86)
