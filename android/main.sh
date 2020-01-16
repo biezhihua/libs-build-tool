@@ -41,7 +41,15 @@ without any external libraries enabled. Options can be used to disable ABIs and/
     echo -e "Libraries:"
 
     echo -e "  --lib-libname\t\t\tbuild with libname libraries"
-    echo -e "  support libs : $(get_all_pkgs)"
+    echo ""
+    echo -e "  \t\t\t\tsupport libs : $(get_all_pkgs)"
+    echo ""
+    echo -e "  \t\t\t\tnote: Openssl library must be compiled independently"
+    echo ""
+
+    echo -e "With Libraries:"
+
+    echo -e "  --with-openssl\t\tbuild with openssl for ffmpeg"
     echo ""
 
     echo -e "GPL libraries:"
@@ -51,25 +59,30 @@ without any external libraries enabled. Options can be used to disable ABIs and/
 
     echo -e "Advanced options:"
     echo ""
+
+    echo -e "Autohr:"
+    echo -e "  name\t\t\t\tbiezhihua"
+    echo -e "  email\t\t\t\tbiezhihua@gmail.com"
+    echo ""
 }
 
 display_version() {
     COMMAND=$(echo $0 | sed -e 's/\.\///g')
-    echo -e "display_version"
+    echo -e "INFO: display_version"
 }
 
 print_unknown_option() {
-    echo -e "Unknown option \"$1\".\nSee $0 --help for available options."
+    echo -e "INFO: Unknown option \"$1\".\nSee $0 --help for available options."
     exit 1
 }
 
 print_unknown_library() {
-    echo -e "Unknown library \"$1\".\nSee $0 --help for available libraries."
+    echo -e "INFO: Unknown library \"$1\".\nSee $0 --help for available libraries."
     exit 1
 }
 
 print_unknown_platform() {
-    echo -e "Unknown platform \"$1\".\nSee $0 --help for available platforms."
+    echo -e "INFO: Unknown platform \"$1\".\nSee $0 --help for available platforms."
     exit 1
 }
 
@@ -82,6 +95,11 @@ print_enabled_architectures() {
 print_enabled_libraries() {
     echo -e "INFO: Libraries: "
     echo $ENABLE_LIBRARYS
+    echo ""
+}
+print_with_libraries() {
+    echo -e "INFO: With Libraries: "
+    echo $WITH_LIBRARYS
     echo ""
 }
 
@@ -121,10 +139,25 @@ process_args() {
             exit 0
             ;;
 
+        --with-*)
+            WITH_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
+            export WITH_LIBRARYS="$WITH_LIBRARYS $WITH_LIBRARY"
+            ;;
+
         --lib-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
+            if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
+                echo -e "ERROR: openssl only alone build"
+                exit 0
+            fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
+
+            case $ENABLE_LIBRARYS in
+            "openssl ")
+                clean_build
+                ;;
+            esac
             ;;
 
         --arch-all)
@@ -253,7 +286,14 @@ build_lib() {
 
         make_toolchain
 
-        build
+        case $ENABLE_LIBRARYS in
+        "openssl ")
+            build_openssl
+            ;;
+        *)
+            build
+            ;;
+        esac
 
         make $(get_make_flags) fetch
 
@@ -262,6 +302,15 @@ build_lib() {
         make $(get_make_flags)
 
         echo -e "INFO: Completed build for ${ARCH} on API level ${API} "
+
+        case $ENABLE_LIBRARYS in
+        "openssl ")
+            clean_build
+            ;;
+        *)
+            build
+            ;;
+        esac
 
     done
 

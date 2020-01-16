@@ -53,11 +53,15 @@ ANDROID_ABI=
 ANDROID_API=
 
 if test ! -f "../../contrib/src/Makefile"; then
-	echo "$0 must be run from a subdirectory"
+	echo "INFO: $0 must be run from a subdirectory"
 	exit 1
 fi
 
 while test -n "$1"; do
+
+	echo "INFO: Init $1"
+	echo ""
+
 	case "$1" in
 	--build=*)
 		BUILD="${1#--build=}"
@@ -72,9 +76,9 @@ while test -n "$1"; do
 	--prefix=*)
 		PREFIX="${1#--prefix=}"
 		;;
-	--enable-openssl)
-		BUILD_OPENSSL="1"
-		;;
+	# --enable-openssl)
+		# BUILD_OPENSSL="1"
+		# ;;
 	--disable-disc)
 		BUILD_DISCS=
 		;;
@@ -112,7 +116,7 @@ while test -n "$1"; do
 		ANDROID_ABI="${1#--arch-name=}"
 		;;
 	*)
-		echo "Unrecognized options $1"
+		echo "INFO: Unrecognized options $1"
 		usage
 		exit 1
 		;;
@@ -154,6 +158,7 @@ else
 		LICENSE="Lesser GPL version 2.1"
 	fi
 fi
+
 echo "INFO: Packages licensing... $LICENSE"
 echo ""
 
@@ -277,10 +282,6 @@ test "$(uname -o 2>/dev/null)" != "Msys" || add_make "CMAKE_GENERATOR := -G \"MS
 # Checks
 #
 OS="${HOST#*-}" # strip architecture
-
-echo "INFO: OS ${OS} HOST $HOST"
-echo ""
-
 case "${OS}" in
 *-darwin*)
 	if test -z "$BUILDFORIOS"; then
@@ -388,6 +389,21 @@ esac
 test -e Makefile && unlink Makefile
 ln -sf ../../contrib/src/Makefile Makefile || exit $?
 echo "INFO: Bootstrap completed."
+echo "    BUILD $BUILD"
+echo "    HOST $HOST"
+echo "    PREFIX $PREFIX"
+echo "    PKGS_ENABLE $PKGS_ENABLE"
+echo "    PKGS_DISABLE $PKGS_DISABLE"
+echo "    BUILD_OPENSSL $BUILD_OPENSSL"
+echo "    BUILD_ENCODERS $BUILD_ENCODERS"
+echo "    BUILD_NETWORK $BUILD_NETWORK"
+echo "    BUILD_DISCS $BUILD_DISCS"
+echo "    GPL $GPL"
+echo "    GGNUV3PL $GNUV3"
+echo "    AD_CLAUSES $AD_CLAUSES"
+echo "    WITH_OPTIMIZATION $WITH_OPTIMIZATION"
+echo "    ANDROID_ABI $ANDROID_ABI"
+echo "    ANDROID_API $ANDROID_API"
 echo ""
 
 echo "INFO: Help Info"
