@@ -9,6 +9,13 @@ Convenient and fast library building tools.
 
 # Android Guide Start
 
+## Prerequisite
+
+* NDK-18: android-ndk-r18b
+* MacOS
+
+## Guide
+
 ```
 ./android.sh -h
 ```
