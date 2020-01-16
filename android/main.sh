@@ -137,8 +137,7 @@ process_args() {
             ;;
 
         --with-*)
-            WITH_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
-            export WITH_LIBRARYS="$WITH_LIBRARYS $WITH_LIBRARY"
+            export WITH_LIBRARYS="$WITH_LIBRARYS $1"
             ;;
 
         --lib-*)
@@ -194,7 +193,7 @@ build() {
 
     set_toolchain_params
 
-    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
 
     # Some libraries have arm assembly which won't build in thumb mode
     # We append -marm to the CFLAGS of these libs to disable thumb mode
@@ -218,7 +217,7 @@ build_openssl() {
 
     export PATH=$(get_toolchain_path)/bin:$PATH
 
-    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
 
     echo "MAKE_FLAGS=$(get_make_flags)" >>config.mak
 }

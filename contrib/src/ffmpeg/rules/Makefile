@@ -58,7 +58,6 @@ endif
 ifdef BUILD_OPENSSL
 FFMPEGCONF += --enable-protocol=https
 FFMPEGCONF += --enable-openssl
-DEPS_ffmpeg += openssl $(DEPS_openssl)
 endif
 
 #

@@ -34,6 +34,7 @@ usage() {
 	echo "  --enable-ad-clauses configure to build packages with advertising clauses"
 	echo "                   (USE AT YOUR OWN LEGAL RISKS)"
 	echo "  --disable-optim  disable optimization in libraries"
+	echo "  --with-libname   build libname with for enable lib"
 }
 
 BUILD=
@@ -76,9 +77,12 @@ while test -n "$1"; do
 	--prefix=*)
 		PREFIX="${1#--prefix=}"
 		;;
-	# --enable-openssl)
-		# BUILD_OPENSSL="1"
-		# ;;
+	--with-*)
+		WITH="${1#--with=}"
+		if [[ $WITH = "openssl" ]]; then
+			BUILD_OPENSSL="1"
+		fi
+		;;
 	--disable-disc)
 		BUILD_DISCS=
 		;;
