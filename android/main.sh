@@ -220,7 +220,7 @@ build_openssl() {
 
     init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
 
-    echo "MAKE_FLAGS=$(get_make_flags)" >>config.mak
+    echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
 }
 
 build_lib() {
