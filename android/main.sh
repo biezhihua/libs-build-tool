@@ -87,19 +87,16 @@ print_unknown_platform() {
 }
 
 print_enabled_architectures() {
-    echo -e "INFO: Architectures: "
-    echo $ENABLED_ARCHS
+    echo -e "INFO: Architectures: $ENABLED_ARCHS"
     echo ""
 }
 
 print_enabled_libraries() {
-    echo -e "INFO: Libraries: "
-    echo $ENABLE_LIBRARYS
+    echo -e "INFO: Libraries: $ENABLE_LIBRARYS"
     echo ""
 }
 print_with_libraries() {
-    echo -e "INFO: With Libraries: "
-    echo $WITH_LIBRARYS
+    echo -e "INFO: With Libraries: $WITH_LIBRARYS"
     echo ""
 }
 
@@ -152,12 +149,6 @@ process_args() {
             fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
-
-            case $ENABLE_LIBRARYS in
-            "openssl ")
-                clean_build
-                ;;
-            esac
             ;;
 
         --arch-all)
@@ -191,6 +182,12 @@ process_args() {
 
         shift
     done
+
+    case $ENABLE_LIBRARYS in
+    "openssl ")
+        ONLY_OPENSSL="ONLY_OPENSSL"
+        ;;
+    esac
 }
 
 build() {
@@ -286,14 +283,11 @@ build_lib() {
 
         make_toolchain
 
-        case $ENABLE_LIBRARYS in
-        "openssl ")
+        if [[ -n $ONLY_OPENSSL ]]; then
             build_openssl
-            ;;
-        *)
+        else
             build
-            ;;
-        esac
+        fi
 
         make $(get_make_flags) fetch
 
@@ -303,14 +297,9 @@ build_lib() {
 
         echo -e "INFO: Completed build for ${ARCH} on API level ${API} "
 
-        case $ENABLE_LIBRARYS in
-        "openssl ")
+        if [[ -n $ONLY_OPENSSL ]]; then
             clean_build
-            ;;
-        *)
-            build
-            ;;
-        esac
+        fi
 
     done
 

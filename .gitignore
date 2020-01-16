@@ -9,3 +9,5 @@ macos/.DS_Store
 /prebuilt/
 *.DS_Store
 /.tmp/
+
+check*
