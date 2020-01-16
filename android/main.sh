@@ -2,6 +2,7 @@
 
 . ${BASEDIR}/common/common.sh
 . ${BASEDIR}/android/common.sh
+. ${CONTRIB}/init.sh
 
 display_help() {
     COMMAND=$(echo $0 | sed -e 's/\.\///g')
@@ -193,21 +194,21 @@ build() {
 
     set_toolchain_params
 
-    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
+    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
 
     # Some libraries have arm assembly which won't build in thumb mode
     # We append -marm to the CFLAGS of these libs to disable thumb mode
-    [ $(get_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>config.mak
+    [ $(get_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>${CONTRIBE_ARCH_BUILD}/config.mak
 
-    echo "EXTRA_CFLAGS=${CFLAGS}" >>config.mak
-    echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>config.mak
-    echo "EXTRA_LDFLAGS=${LDFLAGS}" >>config.mak
-    echo "CC=${CC}" >>config.mak
-    echo "CXX=${CXX}" >>config.mak
-    echo "AR=${AR}" >>config.mak
-    echo "RANLIB=${RANLIB}" >>config.mak
-    echo "LD=${LD}" >>config.mak
-    echo "MAKE_FLAGS=$(get_make_flags)" >>config.mak
+    echo "EXTRA_CFLAGS=${CFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "EXTRA_LDFLAGS=${LDFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "CC=${CC}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "CXX=${CXX}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "AR=${AR}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "RANLIB=${RANLIB}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "LD=${LD}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
 }
 
 build_openssl() {
@@ -217,7 +218,7 @@ build_openssl() {
 
     export PATH=$(get_toolchain_path)/bin:$PATH
 
-    ../bootstrap --prefix=$BASEDIR/prebuilt/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
+    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
 
     echo "MAKE_FLAGS=$(get_make_flags)" >>config.mak
 }
@@ -275,18 +276,20 @@ build_lib() {
         echo -e "INFO: Building the contribs"
         echo ""
 
-        mkdir -p $CONTRIB/contrib-android-$(get_target_host)
-        mkdir -p $BASEDIR/prebuilt/$(get_target_host)/lib/pkgconfig
+        CONTRIBE_ARCH_BUILD=$CONTRIB/contrib-android-$(get_target_host)
 
-        cd $CONTRIB/contrib-android-$(get_target_host)
+        mkdir -p $CONTRIBE_ARCH_BUILD
+        mkdir -p $CONTRIBE_ARCH_BUILD/lib/pkgconfig
 
         make_toolchain
-
+        
         if [[ -n $ONLY_OPENSSL ]]; then
             build_openssl
         else
             build
         fi
+
+        cd $CONTRIBE_ARCH_BUILD
 
         make $(get_make_flags) fetch
 
@@ -317,6 +320,11 @@ build_env() {
 
     TMP_PWD=$(pwd)
     cd $BASEDIR/env_tools
+
+    echo "INFO: Help Info"
+	echo ""
+
+    make help
 
     make $(get_make_flags)
 

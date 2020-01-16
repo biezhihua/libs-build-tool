@@ -55,7 +55,7 @@ else
 FFMPEGCONF += --disable-encoders --disable-muxers
 endif
 
-ifdef BUILD_OPENSSL
+ifeq ($(BUILD_OPENSSL),1)
 FFMPEGCONF += --enable-protocol=https
 FFMPEGCONF += --enable-openssl
 endif
