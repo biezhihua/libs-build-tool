@@ -1,7 +1,6 @@
 repository
 .DS_Store
 .idea/
-.vscode/
 android/.DS_Store
 macos/.DS_Store
 
