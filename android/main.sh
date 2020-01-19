@@ -41,16 +41,18 @@ without any external libraries enabled. Options can be used to disable ABIs and/
 
     echo -e "Libraries:"
 
-    echo -e "  --lib-libname\t\t\tbuild with libname libraries"
+    echo -e "  --enable-libname\t\t\tbuild with libname libraries"
     echo ""
     echo -e "  \t\t\t\tsupport libs : $(get_all_pkgs)"
     echo ""
-    echo -e "  \t\t\t\tnote: Openssl library must be compiled independently"
+    echo -e "  \t\t\t\tnote: openssl library must be compiled independently"
     echo ""
 
-    echo -e "With Libraries:"
-
-    echo -e "  --with-openssl\t\tbuild with openssl for ffmpeg"
+    echo -e "FFmpeg Configs:"
+    echo -e "  --ffmpeg-config-lite\t\tbuild ffmpeg with lite config"
+    echo -e "  --ffmpeg-config-mp4\t\tbuild ffmpeg with mp4 config"
+    echo -e "  --ffmpeg-config-mp3\t\tbuild ffmpeg with mp3 config"
+    echo -e "  --ffmpeg-config-min\t\tbuild ffmpeg with min config"
     echo ""
 
     echo -e "GPL libraries:"
@@ -58,8 +60,8 @@ without any external libraries enabled. Options can be used to disable ABIs and/
     echo -e "  --lib-x265\t\t\tbuild with x265 [no]"
     echo ""
 
-    echo -e "Advanced options:"
-    echo ""
+    # echo -e "Advanced options:"
+    # echo ""
 
     echo -e "Autohr:"
     echo -e "  name\t\t\t\tbiezhihua"
@@ -94,10 +96,6 @@ print_enabled_architectures() {
 
 print_enabled_libraries() {
     echo -e "INFO: Libraries: $ENABLE_LIBRARYS"
-    echo ""
-}
-print_with_libraries() {
-    echo -e "INFO: With Libraries: $WITH_LIBRARYS"
     echo ""
 }
 
@@ -137,11 +135,7 @@ process_args() {
             exit 0
             ;;
 
-        --with-*)
-            export WITH_LIBRARYS="$WITH_LIBRARYS $1"
-            ;;
-
-        --lib-*)
+        --enable-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
             if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
                 echo -e "ERROR: openssl only alone build"
@@ -149,6 +143,10 @@ process_args() {
             fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
+            ;;
+
+        --ffmpeg-config-*)
+            FFMPEG_CONFIG=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
             ;;
 
         --arch-all)
@@ -194,7 +192,7 @@ build() {
 
     set_toolchain_params
 
-    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
+    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
 
     # Some libraries have arm assembly which won't build in thumb mode
     # We append -marm to the CFLAGS of these libs to disable thumb mode
@@ -209,6 +207,8 @@ build() {
     echo "RANLIB=${RANLIB}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "LD=${LD}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "PREBUILT=${PREBUILT}/$(get_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "FFMPEG_CONFIG=${FFMPEG_CONFIG}" >>${CONTRIBE_ARCH_BUILD}/config.mak
 }
 
 build_openssl() {
@@ -218,12 +218,14 @@ build_openssl() {
 
     export PATH=$(get_toolchain_path)/bin:$PATH
 
-    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS $WITH_LIBRARYS
+    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
 
     echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
 }
 
 build_lib() {
+
+    export FFMPEG_CONFIG=min
 
     export ORIGINAL_API=${API}
 
@@ -282,7 +284,7 @@ build_lib() {
         mkdir -p $CONTRIBE_ARCH_BUILD/lib/pkgconfig
 
         make_toolchain
-        
+
         if [[ -n $ONLY_OPENSSL ]]; then
             build_openssl
         else
@@ -322,7 +324,7 @@ build_env() {
     cd $BASEDIR/env_tools
 
     echo "INFO: Help Info"
-	echo ""
+    echo ""
 
     make help
 

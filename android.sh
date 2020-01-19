@@ -19,8 +19,6 @@ main() {
 
     print_enabled_libraries
 
-    print_with_libraries
-
     build_env
 
     build_lib

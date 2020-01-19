@@ -1,0 +1,16 @@
+FFMPEGCONF := \
+	--disable-all \
+	--enable-avcodec \
+	--enable-avformat \
+	--enable-avutil \
+	--enable-swresample \
+	--enable-swscale \
+	--enable-avfilter \
+	--enable-network \
+	--enable-decoder=mp3 \
+	--enable-demuxer=mp3 \
+    --enable-parser=aac \
+    --enable-protocol=http \
+    --enable-protocol=https \
+    --enable-openssl \
+	--disable-asm 

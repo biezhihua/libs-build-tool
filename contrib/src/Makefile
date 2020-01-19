@@ -389,6 +389,7 @@ REQUIRE_GPL =
 else
 REQUIRE_GPL = @echo "Package \"$<\" requires the GPL license." >&2; exit 1
 endif
+
 ifdef GNUV3
 REQUIRE_GNUV3 =
 else
