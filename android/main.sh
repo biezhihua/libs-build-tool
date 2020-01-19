@@ -25,10 +25,10 @@ without any external libraries enabled. Options can be used to disable ABIs and/
     echo -e "  -cb, --clean build\t\tclean build and exit"
     echo -e "  -cp, --clean prebuil\t\tclean prebuilt and exit"
 
-    echo ""
-    echo -e "Licensing options:"
+    # echo ""
+    # echo -e "Licensing options:"
 
-    echo -e "  --enable-gpl\t\t\tallow use of GPL libraries, resulting libs will be licensed under GPLv3.0 [no]\n"
+    # echo -e "  --enable-gpl\t\t\tallow use of GPL libraries, resulting libs will be licensed under GPLv3.0 [no]\n"
 
     echo -e "Platforms:"
 
