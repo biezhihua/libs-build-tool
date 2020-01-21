@@ -201,14 +201,6 @@ check_ios_arch() {
     fi
 }
 
-get_first_library() {
-    for libname in $ENABLE_LIBRARYS; do
-        echo $libname
-        return
-    done
-    echo ""
-}
-
 build() {
 
     set_ios_toolchain_params $(get_first_library)

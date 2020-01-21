@@ -1,51 +1,50 @@
 #!/bin/bash
 
-get_toolchain_path() {
-    echo ${BASEDIR}/android/ndk-toolchain-$(get_target_host)
+get_android_toolchain_path() {
+    echo ${BASEDIR}/android/ndk-toolchain-$(get_android_target_host)
 }
 
-get_toolchain_path_bin() {
-    echo $(get_toolchain_path)/bin
+get_android_toolchain_path_bin() {
+    echo $(get_android_toolchain_path)/bin
 }
 
-get_ndk_path() {
+get_android_ndk_path() {
     echo $ANDROID_NDK_ROOT
 }
 
-make_toolchain() {
-    NDK_TOOLCHAIN_PROPS=$(get_toolchain_path)/source.properties
+make_android_toolchain() {
+    NDK_TOOLCHAIN_PROPS=$(get_android_toolchain_path)/source.properties
     NDK_FORCE_ARG=
 
-    if [ "$(cat \"${NDK_TOOLCHAIN_PROPS}\" 2>/dev/null)" != "$(cat \"$(get_ndk_path)/source.properties\")" ]; then
+    if [ "$(cat \"${NDK_TOOLCHAIN_PROPS}\" 2>/dev/null)" != "$(cat \"$(get_android_ndk_path)/source.properties\")" ]; then
         echo "NDK changed, making new toolchain"
         NDK_FORCE_ARG="--force"
     fi
 
-    if [ ! -d $(get_toolchain_path) ]; then
-        $(get_ndk_path)/build/tools/make_standalone_toolchain.py \
-            --arch $(get_toolchain_arch) \
-            --api $(get_api) \
+    if [ ! -d $(get_android_toolchain_path) ]; then
+        $(get_android_ndk_path)/build/tools/make_standalone_toolchain.py \
+            --arch $(get_android_toolchain_arch) \
+            --api $(get_android_api) \
             --stl libc++ \
             ${NDK_FORCE_ARG} \
-            --install-dir $(get_toolchain_path)
+            --install-dir $(get_android_toolchain_path)
     fi
-    if [ ! -d $(get_toolchain_path) ]; then
+    if [ ! -d $(get_android_toolchain_path) ]; then
         echo "make_standalone_toolchain.py failed"
         exit 1
     fi
 
     if [ ! -z "${NDK_FORCE_ARG}" ]; then
-        cp "$(get_ndk_path)/source.properties" "$(get_toolchain_path)"
+        cp "$(get_android_ndk_path)/source.properties" "$(get_android_toolchain_path)"
     fi
 }
 
-check_api() {
+check_android_api() {
     if [[ -z ${API} ]]; then
         echo -e "(*) API not defined"
         exit 1
     fi
 }
-
 
 check_android_home() {
     if [[ -z ${ANDROID_HOME} ]]; then
@@ -54,22 +53,22 @@ check_android_home() {
     fi
 }
 
-check_ndk_root() {
+check_android_ndk_root() {
     if [[ -z ${ANDROID_NDK_ROOT} ]]; then
         echo "ANDROID_NDK_ROOT not defined"
         exit 1
     fi
 }
 
-get_api() {
+get_android_api() {
     echo $API
 }
 
-get_ndk_version() {
+get_android_ndk_version() {
     echo $(grep -Eo Revision.* ${ANDROID_NDK_ROOT}/source.properties | sed 's/Revision//g;s/=//g;s/ //g')
 }
 
-get_target_host() {
+get_android_target_host() {
     case ${ARCH} in
     armeabi-v7a | armeabi-v7a-neon)
         echo "arm-linux-androideabi"
@@ -86,7 +85,7 @@ get_target_host() {
     esac
 }
 
-get_clang_target_host() {
+get_android_clang_target_host() {
     case ${ARCH} in
     armeabi-v7a | armeabi-v7a-neon)
         echo "armv7a-linux-androideabi${API}"
@@ -103,7 +102,7 @@ get_clang_target_host() {
     esac
 }
 
-get_toolchain() {
+get_android_toolchain() {
 
     HOST_OS=$(uname -s)
 
@@ -135,7 +134,7 @@ get_toolchain() {
     echo "${HOST_OS}-${HOST_ARCH}"
 }
 
-get_cmake_target_processor() {
+get_android_cmake_target_processor() {
     case ${ARCH} in
     armeabi-v7a | armeabi-v7a-neon)
         echo "arm"
@@ -152,7 +151,7 @@ get_cmake_target_processor() {
     esac
 }
 
-get_target_build() {
+get_android_target_build() {
     case ${ARCH} in
     armeabi-v7a)
         echo "arm"
@@ -176,7 +175,7 @@ get_target_build() {
     esac
 }
 
-get_toolchain_arch() {
+get_android_toolchain_arch() {
     case ${ARCH} in
     armeabi-v7a | armeabi-v7a-neon)
         echo "arm"
@@ -227,15 +226,15 @@ get_android_arch() {
     esac
 }
 
-get_common_includes() {
-    echo "-I$(get_toolchain_path)/sysroot/usr/include -I$(get_toolchain_path)/sysroot/usr/local/include"
+get_android_common_includes() {
+    echo "-I$(get_android_toolchain_path)/sysroot/usr/include -I$(get_android_toolchain_path)/sysroot/usr/local/include"
 }
 
-get_common_cflags() {
+get_android_common_cflags() {
     echo "-fno-integrated-as -fstrict-aliasing -fPIC -DANDROID -D__ANDROID__ -D__ANDROID_API__=${API}"
 }
 
-get_arch_specific_cflags() {
+get_android_arch_specific_cflags() {
     case ${ARCH} in
     armeabi-v7a)
         echo "-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp "
@@ -255,7 +254,7 @@ get_arch_specific_cflags() {
     esac
 }
 
-get_size_optimization_cflags() {
+get_android_size_optimization_cflags() {
     if [[ -z ${NO_LINK_TIME_OPTIMIZATION} ]]; then
         local LINK_TIME_OPTIMIZATION_FLAGS="-flto"
     else
@@ -301,7 +300,7 @@ get_size_optimization_cflags() {
     echo "${ARCH_OPTIMIZATION} ${LIB_OPTIMIZATION}"
 }
 
-get_app_specific_cflags() {
+get_android_app_specific_cflags() {
 
     local APP_FLAGS=""
     case $1 in
@@ -328,21 +327,21 @@ get_app_specific_cflags() {
     echo "${APP_FLAGS}"
 }
 
-get_cflags() {
-    local ARCH_FLAGS=$(get_arch_specific_cflags)
-    local APP_FLAGS=$(get_app_specific_cflags $1)
-    local COMMON_FLAGS=$(get_common_cflags)
+get_android_cflags() {
+    local ARCH_FLAGS=$(get_android_arch_specific_cflags)
+    local APP_FLAGS=$(get_android_app_specific_cflags $1)
+    local COMMON_FLAGS=$(get_android_common_cflags)
     if [[ -z ${DEBUG} ]]; then
-        local OPTIMIZATION_FLAGS=$(get_size_optimization_cflags $1)
+        local OPTIMIZATION_FLAGS=$(get_android_size_optimization_cflags $1)
     else
         local OPTIMIZATION_FLAGS="${DEBUG}"
     fi
-    local COMMON_INCLUDES=$(get_common_includes)
+    local COMMON_INCLUDES=$(get_android_common_includes)
 
     echo "${ARCH_FLAGS} ${APP_FLAGS} ${COMMON_FLAGS} ${OPTIMIZATION_FLAGS} ${COMMON_INCLUDES}"
 }
 
-get_cxxflags() {
+get_android_cxxflags() {
     if [[ -z ${NO_LINK_TIME_OPTIMIZATION} ]]; then
         local LINK_TIME_OPTIMIZATION_FLAGS="-flto"
     else
@@ -378,8 +377,8 @@ get_cxxflags() {
     esac
 }
 
-get_common_linked_libraries() {
-    local COMMON_LIBRARY_PATHS="-L$(get_toolchain_path)/$(get_target_host)/lib -L$(get_toolchain_path)/sysroot/usr/lib -L$(get_toolchain_path)/lib"
+get_android_common_linked_libraries() {
+    local COMMON_LIBRARY_PATHS="-L$(get_android_toolchain_path)/$(get_android_target_host)/lib -L$(get_android_toolchain_path)/sysroot/usr/lib -L$(get_android_toolchain_path)/lib"
 
     case $1 in
     ffmpeg)
@@ -401,7 +400,7 @@ get_common_linked_libraries() {
     esac
 }
 
-get_size_optimization_ldflags() {
+get_android_size_optimization_ldflags() {
     if [[ -z ${NO_LINK_TIME_OPTIMIZATION} ]]; then
         local LINK_TIME_OPTIMIZATION_FLAGS="-flto"
     else
@@ -432,7 +431,7 @@ get_size_optimization_ldflags() {
     esac
 }
 
-get_arch_specific_ldflags() {
+get_android_arch_specific_ldflags() {
     case ${ARCH} in
     armeabi-v7a)
         echo "-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -Wl,--fix-cortex-a8"
@@ -452,31 +451,31 @@ get_arch_specific_ldflags() {
     esac
 }
 
-get_ldflags() {
-    local ARCH_FLAGS=$(get_arch_specific_ldflags)
+get_android_ldflags() {
+    local ARCH_FLAGS=$(get_android_arch_specific_ldflags)
     if [[ -z ${DEBUG} ]]; then
-        local OPTIMIZATION_FLAGS="$(get_size_optimization_ldflags $1)"
+        local OPTIMIZATION_FLAGS="$(get_android_size_optimization_ldflags $1)"
     else
         local OPTIMIZATION_FLAGS="${DEBUG}"
     fi
-    local COMMON_LINKED_LIBS=$(get_common_linked_libraries $1)
+    local COMMON_LINKED_LIBS=$(get_android_common_linked_libraries $1)
 
     echo "${ARCH_FLAGS} ${OPTIMIZATION_FLAGS} ${COMMON_LINKED_LIBS} -Wl,--hash-style=both -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libunwind.a"
 }
 
-set_toolchain_clang_paths() {
-    export PATH=$PATH:$(get_toolchain_path_bin)
-    export AR=$(get_toolchain_path_bin)/$(get_target_host)-ar
-    export CC=$(get_toolchain_path_bin)/$(get_target_host)-clang
-    export CXX=$(get_toolchain_path_bin)/$(get_target_host)-clang++
-    export LD=$(get_toolchain_path_bin)/$(get_target_host)-ld
-    export RANLIB=$(get_toolchain_path_bin)/$(get_target_host)-ranlib
-    export STRIP=$(get_toolchain_path_bin)/$(get_target_host)-strip
+set_android_toolchain_clang_paths() {
+    export PATH=$PATH:$(get_android_toolchain_path_bin)
+    export AR=$(get_android_toolchain_path_bin)/$(get_android_target_host)-ar
+    export CC=$(get_android_toolchain_path_bin)/$(get_android_target_host)-clang
+    export CXX=$(get_android_toolchain_path_bin)/$(get_android_target_host)-clang++
+    export LD=$(get_android_toolchain_path_bin)/$(get_android_target_host)-ld
+    export RANLIB=$(get_android_toolchain_path_bin)/$(get_android_target_host)-ranlib
+    export STRIP=$(get_android_toolchain_path_bin)/$(get_android_target_host)-strip
 
     if [ "$1" == "x264" ]; then
         export AS=${CC}
     else
-        export AS=$(get_toolchain_path_bin)/$(get_target_host)-as
+        export AS=$(get_android_toolchain_path_bin)/$(get_android_target_host)-as
     fi
 
     case ${ARCH} in
@@ -501,17 +500,17 @@ set_toolchain_clang_paths() {
     echo ""
 }
 
-set_toolchain_params() {
+set_android_toolchain_params() {
     echo -e "INFO: Building toolchain params for ${ARCH}"
     echo ""
 
-    set_toolchain_clang_paths ""
+    set_android_toolchain_clang_paths $1
 
-    export CFLAGS=$(get_cflags "")
-    export CXXFLAGS=$(get_cxxflags "")
-    export LDFLAGS=$(get_ldflags "")
+    export CFLAGS=$(get_cflags $1)
+    export CXXFLAGS=$(get_cxxflags $1)
+    export LDFLAGS=$(get_ldflags $1)
 
-    echo -e "INFO: Target host $(get_target_host)"
+    echo -e "INFO: Target host $(get_android_target_host)"
     echo ""
     echo -e "INFO: CFLAGS $CFLAGS"
     echo ""

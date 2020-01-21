@@ -11,7 +11,7 @@ main() {
 
     process_args $*
 
-    check_ndk_root
+    check_android_ndk_root
 
     check_android_home
 

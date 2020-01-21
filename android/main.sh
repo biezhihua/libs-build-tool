@@ -178,23 +178,15 @@ process_args() {
     done
 }
 
-get_first_library() {
-    for libname in $ENABLE_LIBRARYS; do
-        echo $libname
-        return
-    done
-    echo ""
-}
-
 build() {
 
-    set_toolchain_params
+    set_android_toolchain_params
 
-    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+    init_contrib --prefix=${PREBUILT}/$(get_android_target_host) --arch-name=$(get_android_arch_name) --api=$(get_android_api) --host=$(get_android_target_host) $ENABLED_LIBRARYS
 
     # Some libraries have arm assembly which won't build in thumb mode
     # We append -marm to the CFLAGS of these libs to disable thumb mode
-    [ $(get_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    [ $(get_android_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>${CONTRIBE_ARCH_BUILD}/config.mak
 
     echo "EXTRA_CFLAGS=${CFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
@@ -218,11 +210,11 @@ build_openssl() {
     echo -e "INFO: Build openssl"
     echo ""
 
-    export PATH=$(get_toolchain_path)/bin:$PATH
+    export PATH=$(get_android_toolchain_path)/bin:$PATH
 
-    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+    init_contrib --prefix=${PREBUILT}/$(get_android_target_host) --arch-name=$(get_android_arch_name) --api=$(get_android_api) --host=$(get_android_target_host) $ENABLED_LIBRARYS
 
-    echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "MAKE_FLAGS=$(get_android_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
 
     echo -e "INFO: config.mak"
     cat -n ${CONTRIBE_ARCH_BUILD}/config.mak
@@ -247,9 +239,9 @@ build_lib() {
         fi
 
         export ARCH=$run_arch
-        export TOOLCHAIN=$(get_toolchain)
-        export TOOLCHAIN_PATH=$(get_toolchain_path)
-        export TOOLCHAIN_ARCH=$(get_toolchain_arch)
+        export TOOLCHAIN=$(get_android_toolchain)
+        export TOOLCHAIN_PATH=$(get_android_toolchain_path)
+        export TOOLCHAIN_ARCH=$(get_android_toolchain_arch)
 
         echo -e "INFO: --------------------------------------------------------"
         echo ""
@@ -258,7 +250,7 @@ build_lib() {
         echo -e "INFO: Starting new build for ${ARCH} on API level ${API} "
         echo ""
 
-        echo -e "INFO: NDK_PATH $(get_ndk_path)"
+        echo -e "INFO: NDK_PATH $(get_android_ndk_path)"
         echo ""
         echo -e "INFO: ARCH $ARCH"
         echo ""
@@ -269,25 +261,25 @@ build_lib() {
         echo -e "INFO: TOOLCHAIN_ARCH $TOOLCHAIN_ARCH"
         echo ""
 
-        check_ndk_root
+        check_android_ndk_root
 
         check_android_home
 
-        check_arch
+        check_android_arch
 
         check_basedir
 
-        check_api
+        check_android_api
 
         echo -e "INFO: Building the contribs"
         echo ""
 
-        CONTRIBE_ARCH_BUILD=$CONTRIB/contrib-android-$(get_target_host)
+        CONTRIBE_ARCH_BUILD=$CONTRIB/contrib-android-$(get_android_target_host)
 
         mkdir -p $CONTRIBE_ARCH_BUILD
         mkdir -p $CONTRIBE_ARCH_BUILD/lib/pkgconfig
 
-        make_toolchain
+        make_android_toolchain
 
         if [[ $(get_first_library) = "openssl" ]]; then
             build_openssl
@@ -305,8 +297,10 @@ build_lib() {
 
         echo -e "INFO: Completed build for ${ARCH} on API level ${API} "
 
-        if [[ -n $ONLY_OPENSSL ]]; then
+        if [[ $(get_first_library) = "openssl" ]]; then
             clean_build
+        else
+            build
         fi
 
     done
