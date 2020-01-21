@@ -343,7 +343,7 @@ UNPACK = $(RM) -R $@ \
 	$(foreach f,$(filter %.tar.gz %.tgz,$^), && tar xvzfo $(f)) \
 	$(foreach f,$(filter %.tar.bz2,$^), && tar xvjfo $(f)) \
 	$(foreach f,$(filter %.tar.xz,$^), && tar xvJfo $(f)) \
-	$(foreach f,$(filter %.zip,$^), && unzip $(f))
+	$(foreach f,$(filter %.zip,$^), && unzip $(f)) >/dev/null 2>&1
 
 UNPACK_DIR = $(patsubst %.tar,%,$(basename $(notdir $<)))
 

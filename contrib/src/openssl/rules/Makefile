@@ -20,7 +20,7 @@ endif
 	touch $@
 
 openssl: openssl-$(OPENSSL_VERSION).tar.gz .sum-openssl
-	$(UNPACK) >/dev/null 2>&1
+	$(UNPACK)
 	mv openssl-OpenSSL_$(OPENSSL_VERSION) $@ && touch $@
 
 ifdef HAVE_ANDROID

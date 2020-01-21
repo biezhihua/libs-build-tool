@@ -246,7 +246,7 @@ get_ios_app_specific_cflags() {
     soxr | snappy)
         APP_FLAGS="-std=gnu99 -Wno-unused-function -DPIC"
         ;;
-    openh264 | x265)
+    openssl | openh264 | x265)
         APP_FLAGS="-Wno-unused-function"
         ;;
     *)
@@ -393,7 +393,7 @@ get_ios_ldflags() {
 
 set_ios_toolchain_clang_paths() {
     TARGET_HOST=$(get_ios_target_host)
-    
+
     export AR="$(xcrun --sdk $(get_ios_sdk_name) -f ar)"
     export CC="clang"
     export OBJC="$(xcrun --sdk $(get_ios_sdk_name) -f clang)"
@@ -403,26 +403,26 @@ set_ios_toolchain_clang_paths() {
     LOCAL_GAS_PREPROCESSOR="gas-preprocessor.pl"
 
     case ${ARCH} in
-        armv7 | armv7s)
-            if [ "$1" == "x265" ]; then
-                export AS="${LOCAL_GAS_PREPROCESSOR}"
-                export AS_ARGUMENTS="-arch arm"
-                export ASM_FLAGS="${LOCAL_ASMFLAGS}"
-            else
-                export AS="${LOCAL_GAS_PREPROCESSOR} -arch arm -- ${CC} ${LOCAL_ASMFLAGS}"
-            fi
+    armv7 | armv7s)
+        if [ "$1" == "x265" ]; then
+            export AS="${LOCAL_GAS_PREPROCESSOR}"
+            export AS_ARGUMENTS="-arch arm"
+            export ASM_FLAGS="${LOCAL_ASMFLAGS}"
+        else
+            export AS="${LOCAL_GAS_PREPROCESSOR} -arch arm -- ${CC} ${LOCAL_ASMFLAGS}"
+        fi
         ;;
-        arm64 | arm64e)
-            if [ "$1" == "x265" ]; then
-                export AS="${LOCAL_GAS_PREPROCESSOR}"
-                export AS_ARGUMENTS="-arch aarch64"
-                export ASM_FLAGS="${LOCAL_ASMFLAGS}"
-            else
-                export AS="${LOCAL_GAS_PREPROCESSOR} -arch aarch64 -- ${CC} ${LOCAL_ASMFLAGS}"
-            fi
+    arm64 | arm64e)
+        if [ "$1" == "x265" ]; then
+            export AS="${LOCAL_GAS_PREPROCESSOR}"
+            export AS_ARGUMENTS="-arch aarch64"
+            export ASM_FLAGS="${LOCAL_ASMFLAGS}"
+        else
+            export AS="${LOCAL_GAS_PREPROCESSOR} -arch aarch64 -- ${CC} ${LOCAL_ASMFLAGS}"
+        fi
         ;;
-        *)
-            export AS="${CC} ${LOCAL_ASMFLAGS}"
+    *)
+        export AS="${CC} ${LOCAL_ASMFLAGS}"
         ;;
     esac
 
@@ -450,16 +450,15 @@ set_ios_toolchain_clang_paths() {
     echo ""
 }
 
-
 set_ios_toolchain_params() {
-    echo -e "INFO: Building params for ${ARCH}"
+    echo -e "INFO: Building params for ${ARCH} and for lib ${1}"
     echo ""
 
-    set_ios_toolchain_clang_paths ""
+    set_ios_toolchain_clang_paths $1
 
-    export CFLAGS=$(get_ios_cflags "")
-    export CXXFLAGS=$(get_ios_cxxflags "")
-    export LDFLAGS=$(get_ios_ldflags "")
+    export CFLAGS=$(get_ios_cflags $1)
+    export CXXFLAGS=$(get_ios_cxxflags $1)
+    export LDFLAGS=$(get_ios_ldflags $1)
 
     echo -e "INFO: Target host $(get_ios_target_host)"
     echo ""
@@ -470,4 +469,3 @@ set_ios_toolchain_params() {
     echo -e "INFO: LDFLAGS $LDFLAGS"
     echo ""
 }
-
