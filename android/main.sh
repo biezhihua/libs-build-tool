@@ -137,10 +137,6 @@ process_args() {
 
         --enable-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
-            if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
-                echo -e "ERROR: openssl only alone build"
-                exit 0
-            fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
             ;;
@@ -180,12 +176,14 @@ process_args() {
 
         shift
     done
+}
 
-    case $ENABLE_LIBRARYS in
-    "openssl ")
-        ONLY_OPENSSL="ONLY_OPENSSL"
-        ;;
-    esac
+get_first_library() {
+    for libname in $ENABLE_LIBRARYS; do
+        echo $libname
+        return
+    done
+    echo ""
 }
 
 build() {
@@ -291,7 +289,7 @@ build_lib() {
 
         make_toolchain
 
-        if [[ -n $ONLY_OPENSSL ]]; then
+        if [[ $(get_first_library) = "openssl" ]]; then
             build_openssl
         else
             build
