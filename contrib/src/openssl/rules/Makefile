@@ -20,7 +20,7 @@ endif
 	touch $@
 
 openssl: openssl-$(OPENSSL_VERSION).tar.gz .sum-openssl
-	$(UNPACK)
+	$(UNPACK) 
 	mv openssl-OpenSSL_$(OPENSSL_VERSION) $@ && touch $@
 
 OPENSSL_ARCH=$(shell $(SRC)/openssl/arch.sh $(ANDROID_ABI))

@@ -8,11 +8,10 @@
             "type": "bashdb",
             "request": "launch",
             "name": "Bash-Debug (simplest configuration)",
-            "program": "${workspaceFolder}/android.sh",
+            "program": "${workspaceFolder}/ios.sh",
             "args": [
-                "--lib-ffmpeg",
-                "--with-openssl",
-                "--arch-armeabi-v7a"
+                "--enable-ffmpeg",
+                "--arch-arm64"
             ],
         }
     ]

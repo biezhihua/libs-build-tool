@@ -1,6 +1,7 @@
 #! /bin/sh
 
 . ${BASEDIR}/common/common.sh
+. ${BASEDIR}/ios/common.sh
 
 contrib_usage() {
 	echo "Usage: $0 [--build=BUILD] [--host=HOST] [--prefix=PREFIX]"
@@ -30,19 +31,17 @@ contrib_add_make_enabled() {
 }
 
 contrib_check_ios_sdk() {
-	if test "$VLCSDKROOT"; then
-		SDKROOT="$VLCSDKROOT"
+	if test -z "$SDKROOT"; then
+		SDKROOT=$(get_ios_sdk_path)
+		echo "INFO: SDKROOT not specified, assuming $SDKROOT"
+		echo ""
 	else
-		if test -z "$SDKROOT"; then
-			SDKROOT=$(xcode-select -print-path)/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}${SDK_VERSION}.sdk
-			echo "INFO: SDKROOT not specified, assuming $SDKROOT"
-		else
-			SDKROOT="$SDKROOT"
-		fi
+		SDKROOT="$SDKROOT"
 	fi
 
 	if [ ! -d "${SDKROOT}" ]; then
 		echo "ERROR: *** ${SDKROOT} does not exist, please install required SDK, or set SDKROOT manually. ***"
+		echo ""
 		exit 1
 	fi
 	contrib_add_make "IOS_SDK=${SDKROOT}"
@@ -52,25 +51,30 @@ contrib_check_macosx_sdk() {
 	if [ -z "${OSX_VERSION}" ]; then
 		OSX_VERSION=$(xcrun --show-sdk-version)
 		echo "INFO: OSX_VERSION not specified, assuming $OSX_VERSION"
+		echo ""
 	fi
 	if test -z "$SDKROOT"; then
 		SDKROOT=$(xcode-select -print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$OSX_VERSION.sdk
 		echo "INFO: SDKROOT not specified, assuming $SDKROOT"
+		echo ""
 	fi
 
 	if [ ! -d "${SDKROOT}" ]; then
 		SDKROOT_NOT_FOUND=$(xcode-select -print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$OSX_VERSION.sdk
 		SDKROOT=$(xcode-select -print-path)/SDKs/MacOSX$OSX_VERSION.sdk
 		echo "INFO: SDKROOT not found at $SDKROOT_NOT_FOUND, trying $SDKROOT"
+		echo ""
 	fi
 	if [ ! -d "${SDKROOT}" ]; then
 		SDKROOT_NOT_FOUND="$SDKROOT"
 		SDKROOT=$(xcrun --show-sdk-path)
 		echo "INFO: SDKROOT not found at $SDKROOT_NOT_FOUND, trying $SDKROOT"
+		echo ""
 	fi
 
 	if [ ! -d "${SDKROOT}" ]; then
 		echo "ERROR: *** ${SDKROOT} does not exist, please install required SDK, or set SDKROOT manually. ***"
+		echo ""
 		exit 1
 	fi
 
@@ -222,8 +226,6 @@ init_contrib() {
 	echo "INFO: Creating configuration file... config.mak"
 	exec 3>$CONTRIBE_ARCH_BUILD/config.mak || exit $?
 	cat >&3 <<EOF
-# This file was automatically generated.
-# Any change will be overwritten if init_contrib is run again.
 BUILD := $BUILD
 HOST := $HOST
 PKGS_DISABLE := $PKGS_DISABLE

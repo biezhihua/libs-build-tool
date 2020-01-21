@@ -1,16 +1,5 @@
 #!/bin/bash
 
-get_all_pkgs() {
-    local ALL_PKGS=""
-    for filepath in $CONTRIB_SRC/*; do
-        if [[ -d $filepath && -d ${filepath}/rules ]]; then
-            name=${filepath##*/}
-            ALL_PKGS="$ALL_PKGS $name"
-        fi
-    done
-    echo $ALL_PKGS
-}
-
 get_toolchain_path() {
     echo ${BASEDIR}/android/ndk-toolchain-$(get_target_host)
 }
@@ -50,13 +39,6 @@ make_toolchain() {
     fi
 }
 
-check_basedir() {
-    if [[ -z ${BASEDIR} ]]; then
-        echo -e "(*) BASEDIR not defined"
-        exit 1
-    fi
-}
-
 check_api() {
     if [[ -z ${API} ]]; then
         echo -e "(*) API not defined"
@@ -64,12 +46,6 @@ check_api() {
     fi
 }
 
-check_arch() {
-    if [[ -z ${ARCH} ]]; then
-        echo -e "(*) ARCH not defined"
-        exit 1
-    fi
-}
 
 check_android_home() {
     if [[ -z ${ANDROID_HOME} ]]; then
@@ -91,26 +67,6 @@ get_api() {
 
 get_ndk_version() {
     echo $(grep -Eo Revision.* ${ANDROID_NDK_ROOT}/source.properties | sed 's/Revision//g;s/=//g;s/ //g')
-}
-
-get_make_flags() {
-    echo -j$(get_cpu_count)
-}
-
-get_cpu_count() {
-    if [ "$(uname)" == "Darwin" ]; then
-        echo $(sysctl -n hw.physicalcpu)
-    else
-        echo $(nproc)
-    fi
-}
-
-prepare_inline_sed() {
-    if [ "$(uname)" == "Darwin" ]; then
-        export SED_INLINE="sed -i .tmp"
-    else
-        export SED_INLINE="sed -i"
-    fi
 }
 
 get_target_host() {

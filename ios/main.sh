@@ -1,13 +1,13 @@
 #!/bin/bash
 
 . ${BASEDIR}/common/common.sh
-. ${BASEDIR}/android/common.sh
+. ${BASEDIR}/ios/common.sh
 . ${CONTRIB}/init.sh
 
 display_help() {
     COMMAND=$(echo $0 | sed -e 's/\.\///g')
 
-    echo -e "\n'"$COMMAND"' builds some lib for Android platform. By default five Android ABIs (armeabi-v7a, armeabi-v7a-neon, arm64-v8a, x86 and x86_64) are built \
+    echo -e "\n'"$COMMAND"' builds some lib for iOS platform. By default six architectures (armv7, armv7s, arm64, arm64e, i386 and x86-64) are built \
 without any external libraries enabled. Options can be used to disable ABIs and/or enable external libraries. "
     echo ""
 
@@ -32,16 +32,17 @@ without any external libraries enabled. Options can be used to disable ABIs and/
 
     echo -e "Platforms:"
 
-    echo -e "  --arch-all\t\t\tdo build armeabi-v7a, armeabi-v7a-neon, arm64-v8a, x86 and x86_64 platform [yes]"
-    echo -e "  --arch-armeabi-v7a\t\tdo build armeabi-v7a platform [yes]"
-    echo -e "  --arch-armeabi-v7a-neon\tdo build armeabi-v7a-neon platform [yes]"
-    echo -e "  --arch-arm64-v8a\t\tdo build arm64-v8a platform [yes]"
-    echo -e "  --arch-x86\t\t\tdo build x86 platform [yes]"
+    echo -e "  --arch-all\t\t\tdo build armv7, armv7s, arm64, arm64e, i386 and x86_64 platform [yes]"
+    echo -e "  --arch-armv7\t\t\tdo build armv7 platform [yes]"
+    echo -e "  --arch-armv7s\t\t\tdo build armv7s platform [yes]"
+    echo -e "  --arch-arm64\t\t\tdo build arm64 platform [yes]"
+    echo -e "  --arch-arm64e\t\t\tdo build arm64e platform [yes]"
+    echo -e "  --arch-i386\t\t\tdo build i386 platform [yes]\n"
     echo -e "  --arch-x86-64\t\t\tdo build x86-64 platform [yes]\n"
 
     echo -e "Libraries:"
 
-    echo -e "  --enable-libname\t\t\tbuild with libname libraries"
+    echo -e "  --enable-libname\t\tbuild with libname libraries"
     echo ""
     echo -e "  \t\t\t\tsupport libs : $(get_all_pkgs)"
     echo ""
@@ -107,7 +108,7 @@ clean() {
 
 clean_build() {
     echo -e "INFO: Clean build files and directories "
-    rm -rf $BASEDIR/android/ndk-*
+    # rm -rf $BASEDIR/android/ndk-*
     rm -rf $BASEDIR/contrib/contrib-*
 }
 
@@ -150,7 +151,7 @@ process_args() {
             ;;
 
         --arch-all)
-            export ENABLED_ARCHS="armeabi-v7a arm64-v8a x86 x86_64"
+            export ENABLED_ARCHS="armv7 armv7s arm64 arm64e i386 x86-64"
             ;;
 
         --arch-*)
@@ -180,23 +181,33 @@ process_args() {
 
         shift
     done
+}
 
-    case $ENABLE_LIBRARYS in
-    "openssl ")
-        ONLY_OPENSSL="ONLY_OPENSSL"
-        ;;
-    esac
+check_ios_arch() {
+    # DISABLE 32-bit architectures on newer IOS versions
+    if [[ $(get_ios_sdk_veresion) == 11* ]] || [[ $(get_ios_sdk_veresion) == 12* ]] || [[ $(get_ios_sdk_veresion) == 13* ]]; then
+        if [[ $ENABLED_ARCHS =~ "armv7" ]]; then
+            echo -e "ERROR: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
+            exit 0
+        fi
+        if [[ $ENABLED_ARCHS =~ "armv7s" ]]; then
+            echo -e "ERROR: Disabled armv7s architecture which is not supported on SDK $(get_ios_sdk_veresion)"
+            exit 0
+        fi
+        if [[ $ENABLED_ARCHS =~ "i386" ]]; then
+            echo -e "ERROR: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
+            exit 0
+        fi
+    fi
 }
 
 build() {
 
-    set_toolchain_params
+    set_ios_toolchain_params
 
-    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
+    BUILDFORIOS="1"
 
-    # Some libraries have arm assembly which won't build in thumb mode
-    # We append -marm to the CFLAGS of these libs to disable thumb mode
-    [ $(get_target_host) = "armeabi-v7a" ] && echo "NOTHUMB := -marm" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    init_contrib --prefix=${PREBUILT}/$(get_ios_target_build_directory) --host=$(get_ios_target_host) $ENABLED_LIBRARYS
 
     echo "EXTRA_CFLAGS=${CFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
@@ -206,26 +217,17 @@ build() {
     echo "AR=${AR}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "RANLIB=${RANLIB}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "LD=${LD}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "AS=${AS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "PREBUILT=${PREBUILT}/$(get_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "PREBUILT=${PREBUILT}/$(get_ios_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "FFMPEG_CONFIG=${FFMPEG_CONFIG}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-}
 
-build_openssl() {
-
-    echo -e "INFO: Build openssl"
+    echo -e "INFO: config.mak"
+    cat -n ${CONTRIBE_ARCH_BUILD}/config.mak
     echo ""
-
-    export PATH=$(get_toolchain_path)/bin:$PATH
-
-    init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
-
-    echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
 }
 
 build_lib() {
-
-    export ORIGINAL_API=${API}
 
     CURRENT_PWD=$(pwd)
 
@@ -233,61 +235,47 @@ build_lib() {
 
         cd $CURRENT_PWD
 
-        if [[ ${run_arch} -eq "arm64-v8a" || ${run_arch} -eq "x86_64" && ${API} < 21 ]]; then
-            # 64 bit ABIs supported after API 21
-            export API=21
-        else
-            export API=${ORIGINAL_API}
-        fi
-
         export ARCH=$run_arch
-        export TOOLCHAIN=$(get_toolchain)
-        export TOOLCHAIN_PATH=$(get_toolchain_path)
-        export TOOLCHAIN_ARCH=$(get_toolchain_arch)
+        export TARGET_SDK=$(get_ios_target_sdk)
+        export SDK_PATH=$(get_ios_sdk_path)
+        export SDK_NAME=$(get_ios_sdk_name)
+        export LIPO="$(xcrun --sdk $(get_ios_sdk_name) -f lipo)"
 
         echo -e "INFO: --------------------------------------------------------"
         echo ""
-        echo -e "INFO: Building ${ARCH} platform on API level ${API}"
-        echo ""
-        echo -e "INFO: Starting new build for ${ARCH} on API level ${API} "
+        echo -e "INFO: Building ${ARCH} platform"
         echo ""
 
-        echo -e "INFO: NDK_PATH $(get_ndk_path)"
-        echo ""
         echo -e "INFO: ARCH $ARCH"
         echo ""
-        echo -e "INFO: TOOLCHAIN $TOOLCHAIN"
+        echo -e "INFO: TARGET_SDK $TARGET_SDK"
         echo ""
-        echo -e "INFO: TOOLCHAIN_PATH $TOOLCHAIN_PATH"
+        echo -e "INFO: SDK_PATH $SDK_PATH"
         echo ""
-        echo -e "INFO: TOOLCHAIN_ARCH $TOOLCHAIN_ARCH"
+        echo -e "INFO: SDK_NAME $SDK_NAME"
+        echo ""
+        echo -e "INFO: LIPO $LIPO"
         echo ""
 
-        check_ndk_root
+        check_ios_sdk_path
 
-        check_android_home
+        check_ios_target_sdk
 
-        check_arch
+        check_ios_arch
 
         check_basedir
 
-        check_api
+        check_ios_min_version
 
         echo -e "INFO: Building the contribs"
         echo ""
 
-        CONTRIBE_ARCH_BUILD=$CONTRIB/contrib-android-$(get_target_host)
+        CONTRIBE_ARCH_BUILD=$CONTRIB/contrib-ios-$(get_ios_target_host)
 
         mkdir -p $CONTRIBE_ARCH_BUILD
         mkdir -p $CONTRIBE_ARCH_BUILD/lib/pkgconfig
 
-        make_toolchain
-
-        if [[ -n $ONLY_OPENSSL ]]; then
-            build_openssl
-        else
-            build
-        fi
+        build
 
         cd $CONTRIBE_ARCH_BUILD
 
@@ -297,14 +285,7 @@ build_lib() {
 
         make $(get_make_flags)
 
-        echo -e "INFO: Completed build for ${ARCH} on API level ${API} "
-
-        if [[ -n $ONLY_OPENSSL ]]; then
-            clean_build
-        fi
+        echo -e "INFO: Completed build for ${ARCH}"
 
     done
-
-    export API=${ORIGINAL_API}
-
 }
