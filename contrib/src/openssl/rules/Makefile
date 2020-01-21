@@ -20,10 +20,29 @@ endif
 	touch $@
 
 openssl: openssl-$(OPENSSL_VERSION).tar.gz .sum-openssl
-	$(UNPACK) 
+	$(UNPACK) >/dev/null 2>&1
 	mv openssl-OpenSSL_$(OPENSSL_VERSION) $@ && touch $@
 
-OPENSSL_ARCH=$(shell $(SRC)/openssl/arch.sh $(ANDROID_ABI))
+ifdef HAVE_ANDROID
+
+OPENSSL_ARCH := 
+
+ifeq ($(ANDROID_ABI), armeabi-v7a)
+	OPENSSL_ARCH =  android-arm
+endif
+
+ifeq ($(ANDROID_ABI), arm64-v8a)
+	OPENSSL_ARCH = android-arm64
+endif
+
+ifeq ($(ANDROID_ABI), x86)
+	OPENSSL_ARCH = android-x86 no-asm
+endif
+
+ifeq ($(ANDROID_ABI), x86_64)
+	OPENSSL_ARCH = android-x86_64
+endif
+
 .openssl: openssl
 	@echo ""
 	@echo "INFO: Openssl"
@@ -34,3 +53,39 @@ OPENSSL_ARCH=$(shell $(SRC)/openssl/arch.sh $(ANDROID_ABI))
 	cd $< && ../../../contrib/src/pkg-static.sh openssl.pc
 	cd $< && $(MAKE) $(MAKE_FLAGS) install
 	touch $@
+endif
+
+ifdef HAVE_IOS
+
+OPENSSL_ARCH := 
+
+ifeq ($(PLATFORM_SHORT_ARCH), armv7)
+	OPENSSL_ARCH = iphoneos-cross
+endif
+
+ifeq ($(PLATFORM_SHORT_ARCH), armv7s)
+	OPENSSL_ARCH = iphoneos-cross
+endif
+
+ifeq ($(PLATFORM_SHORT_ARCH), arm64)
+	OPENSSL_ARCH = iphoneos-cross
+endif
+
+ifeq ($(PLATFORM_SHORT_ARCH), i386)
+	OPENSSL_ARCH = darwin-i386-cc
+endif
+
+ifeq ($(PLATFORM_SHORT_ARCH), x86_64)
+	OPENSSL_ARCH = darwin64-x86_64-cc
+endif
+
+.openssl: openssl
+	@echo ""
+	@echo "INFO: Openssl"
+	@echo ""
+	cd $< && ./Configure no-shared no-unit-test $(OPENSSL_ARCH) --prefix=$(PREFIX)
+	cd $< && $(MAKE) $(MAKE_FLAGS)
+	cd $< && ../../../contrib/src/pkg-static.sh openssl.pc
+	cd $< && $(MAKE) $(MAKE_FLAGS) install
+	touch $@
+endif
