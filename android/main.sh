@@ -209,6 +209,10 @@ build() {
     echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "PREBUILT=${PREBUILT}/$(get_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "FFMPEG_CONFIG=${FFMPEG_CONFIG}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+
+    echo -e "INFO: config.mak"
+    cat -n ${CONTRIBE_ARCH_BUILD}/config.mak
+    echo ""
 }
 
 build_openssl() {
@@ -221,6 +225,10 @@ build_openssl() {
     init_contrib --prefix=${PREBUILT}/$(get_target_host) --arch-name=$(get_android_arch_name) --api=$(get_api) --host=$(get_target_host) $ENABLED_LIBRARYS
 
     echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+
+    echo -e "INFO: config.mak"
+    cat -n ${CONTRIBE_ARCH_BUILD}/config.mak
+    echo ""
 }
 
 build_lib() {

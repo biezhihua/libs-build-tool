@@ -27,19 +27,19 @@ ifdef HAVE_ANDROID
 
 OPENSSL_ARCH := 
 
-ifeq ($(ANDROID_ABI), armeabi-v7a)
+ifeq ($(PLATFORM_SHORT_ARCH), arm)
 	OPENSSL_ARCH =  android-arm
 endif
 
-ifeq ($(ANDROID_ABI), arm64-v8a)
+ifeq ($(PLATFORM_SHORT_ARCH), arm64)
 	OPENSSL_ARCH = android-arm64
 endif
 
-ifeq ($(ANDROID_ABI), x86)
+ifeq ($(PLATFORM_SHORT_ARCH), x86)
 	OPENSSL_ARCH = android-x86 no-asm
 endif
 
-ifeq ($(ANDROID_ABI), x86_64)
+ifeq ($(PLATFORM_SHORT_ARCH), x86_64)
 	OPENSSL_ARCH = android-x86_64
 endif
 
