@@ -7,6 +7,7 @@
 
 main() {
 
+    export DEFAULT_IOS_ARCHS="armv7 armv7s arm64 arm64e i386 x86-64"
     export IOS_MIN_VERSION=12.1
 
     process_args $*
@@ -20,6 +21,7 @@ main() {
     build_env
 
     build_lib
+    
 }
 
 main $*

@@ -8,10 +8,9 @@
             "type": "bashdb",
             "request": "launch",
             "name": "Bash-Debug (simplest configuration)",
-            "program": "${workspaceFolder}/android.sh",
+            "program": "${workspaceFolder}/ios.sh",
             "args": [
-                "--enable-libdsm",
-                "--arch-armeabi-v7a"
+                "--fat-all",
             ],
         }
     ]

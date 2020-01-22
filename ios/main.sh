@@ -139,7 +139,15 @@ process_args() {
             display_version
             exit 0
             ;;
-
+        --fat-all)
+            fat_libraies
+            exit 0
+            ;;
+        --fat-*)
+            FAT_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
+            create_static_fat_library $FAT_LIBRARY
+            exit 0
+            ;;
         --enable-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
             if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
@@ -188,20 +196,19 @@ process_args() {
 }
 
 check_ios_arch() {
-    # DISABLE 32-bit architectures on newer IOS versions
     if [[ $(get_ios_sdk_veresion) == 11* ]] || [[ $(get_ios_sdk_veresion) == 12* ]] || [[ $(get_ios_sdk_veresion) == 13* ]]; then
+        echo "INFO: DISABLE 32-bit architectures on newer IOS versions"
         if [[ $ENABLED_ARCHS =~ "armv7" ]]; then
-            echo -e "ERROR: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 0
+            echo -e "WARNING: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
         fi
         if [[ $ENABLED_ARCHS =~ "armv7s" ]]; then
-            echo -e "ERROR: Disabled armv7s architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 0
+            echo -e "WARNING: Disabled armv7s architecture which is not supported on SDK $(get_ios_sdk_veresion)"
         fi
         if [[ $ENABLED_ARCHS =~ "i386" ]]; then
-            echo -e "ERROR: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 0
+            echo -e "WARNING: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
         fi
+        export ENABLED_ARCHS="arm64 arm64e x86-64"
+        echo ""
     fi
 }
 
@@ -228,6 +235,62 @@ build() {
 
     echo -e "INFO: config.mak"
     cat -n ${CONTRIBE_ARCH_BUILD}/config.mak
+    echo ""
+}
+
+fat_libraies() {
+    FAT_LIBRAIES=
+    for TARGET_ARCH in $DEFAULT_IOS_ARCHS; do
+        local archLib=${PREBUILT}/ios-${TARGET_ARCH}-apple-darwin/lib
+        if [[ -d $archLib ]]; then
+            for LIB in $(ls $archLib/*.a); do
+                FAT_LIBRAIES+="$(basename $LIB .a) "
+            done
+            echo "INFO: $FAT_LIBRAIES"
+            echo ""
+            break
+        fi
+    done
+
+    for LIB in $FAT_LIBRAIES; do
+        create_static_fat_library $LIB
+
+        create_static_fat_include
+    done
+}
+
+create_static_fat_include() {
+    local FAT_INCLUDE_PATH=${PREBUILT}/ios-universal/include
+
+    mkdir -p ${FAT_INCLUDE_PATH}
+
+    for TARGET_ARCH in $DEFAULT_IOS_ARCHS; do
+        local targetInclude=${PREBUILT}/ios-${TARGET_ARCH}-apple-darwin/include
+        if [[ -d $targetInclude ]]; then
+            cp -R $targetInclude $FAT_INCLUDE_PATH
+        fi
+    done
+}
+
+create_static_fat_library() {
+    local FAT_LIBRARY_PATH=${PREBUILT}/ios-universal
+
+    mkdir -p ${FAT_LIBRARY_PATH}/lib
+
+    LIPO_COMMAND=" -create "
+
+    for TARGET_ARCH in $DEFAULT_IOS_ARCHS; do
+        local targetLib=${PREBUILT}/ios-${TARGET_ARCH}-apple-darwin/lib
+        if [[ -f $targetLib/$1.a ]]; then
+            LIPO_COMMAND+=$targetLib/$1.a
+        fi
+    done
+
+    LIPO_COMMAND+=" -output ${FAT_LIBRARY_PATH}/lib/$1.a"
+
+    echo -e "INFO: Merge $LIPO_COMMAND"
+    xcrun lipo $LIPO_COMMAND
+    xcrun lipo -info ${FAT_LIBRARY_PATH}/lib/$1.a
     echo ""
 }
 
@@ -292,4 +355,6 @@ build_lib() {
         echo -e "INFO: Completed build for ${ARCH}"
 
     done
+
+    fat_libraies
 }
