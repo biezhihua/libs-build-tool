@@ -506,9 +506,9 @@ set_android_toolchain_params() {
 
     set_android_toolchain_clang_paths $1
 
-    export CFLAGS=$(get_cflags $1)
-    export CXXFLAGS=$(get_cxxflags $1)
-    export LDFLAGS=$(get_ldflags $1)
+    export CFLAGS=$(get_android_cflags $1)
+    export CXXFLAGS=$(get_android_cxxflags $1)
+    export LDFLAGS=$(get_android_ldflags $1)
 
     echo -e "INFO: Target host $(get_android_target_host)"
     echo ""

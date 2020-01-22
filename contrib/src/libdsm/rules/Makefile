@@ -17,6 +17,7 @@ LIBDSM_CONF = $(HOSTCONF)
 ifndef WITH_OPTIMIZATION
 LIBDSM_CONF += --enable-debug
 endif
+
 .sum-libdsm: libdsm-$(LIBDSM_VERSION).tar.gz
 
 libdsm: libdsm-$(LIBDSM_VERSION).tar.gz .sum-libdsm
@@ -34,8 +35,11 @@ endif
 
 .libdsm: libdsm
 	$(RECONF)
+	@echo ""
+	@echo "INFO: Config $(LIBDSM_CONF)"
+	@echo ""
 	cd $< && $(HOSTVARS_PIC) ./configure --disable-programs $(LIBDSM_CONF)
-	cd $< && $(MAKE) $(MAKE_FLAGS)
+	cd $< && $(MAKE) 
 	cd $< && ../../../contrib/src/pkg-static.sh libdsm.pc
 	cd $< && $(MAKE) install
 	touch $@

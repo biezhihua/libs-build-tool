@@ -197,7 +197,7 @@ build() {
     echo "RANLIB=${RANLIB}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "LD=${LD}" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "PREBUILT=${PREBUILT}/$(get_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "PREBUILT=${PREBUILT}/$(get_android_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
     echo "FFMPEG_CONFIG=${FFMPEG_CONFIG}" >>${CONTRIBE_ARCH_BUILD}/config.mak
 
     echo -e "INFO: config.mak"
@@ -296,11 +296,9 @@ build_lib() {
         make $(get_make_flags)
 
         echo -e "INFO: Completed build for ${ARCH} on API level ${API} "
-
+        echo ""
         if [[ $(get_first_library) = "openssl" ]]; then
             clean_build
-        else
-            build
         fi
 
     done

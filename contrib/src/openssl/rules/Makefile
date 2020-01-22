@@ -83,9 +83,9 @@ endif
 	@echo ""
 	@echo "INFO: Openssl"
 	@echo ""
-	cd $< && ./Configure no-shared no-unit-test $(OPENSSL_ARCH) --prefix=$(PREFIX)
+	cd $< && $(HOSTVARS_PIC) ./Configure no-shared no-unit-test $(OPENSSL_ARCH) --prefix=$(PREFIX)
 	cd $< && $(MAKE) $(MAKE_FLAGS)
 	cd $< && ../../../contrib/src/pkg-static.sh openssl.pc
-	cd $< && $(MAKE) $(MAKE_FLAGS) install
+	cd $< && $(MAKE) install
 	touch $@
 endif

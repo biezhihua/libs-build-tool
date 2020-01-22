@@ -254,7 +254,7 @@ ffmpeg-$(FFMPEG_VERSION).tar.gz:
 	touch $@
 
 ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.gz .sum-ffmpeg
-	$(UNPACK)
+	$(UNPACK) 
 	mv FFmpeg-n$(FFMPEG_VERSION) $@ && touch $@
 
 .ffmpeg: ffmpeg

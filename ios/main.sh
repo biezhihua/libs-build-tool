@@ -108,7 +108,6 @@ clean() {
 
 clean_build() {
     echo -e "INFO: Clean build files and directories "
-    # rm -rf $BASEDIR/android/ndk-*
     rm -rf $BASEDIR/contrib/contrib-*
 }
 
