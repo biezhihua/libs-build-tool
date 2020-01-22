@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # 引入公共模块
 . $(pwd)/common/common.sh
 . ${BASEDIR}/ios/common.sh

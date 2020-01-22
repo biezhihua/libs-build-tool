@@ -70,8 +70,6 @@ build_env() {
     echo "INFO: Help Info"
     echo ""
 
-    make help
-
     make $(get_make_flags)
 
     make $(get_make_flags) .gas || make $(get_make_flags) .buildgas

@@ -245,7 +245,7 @@ ifeq ($(call need_pkg, "FFMPEG >= 4.2.2" ),)
 	PKGS_FOUND += ffmpeg
 endif
 
-FFMPEGCONF += --nm="$(NM)" --ar="$(AR)"
+FFMPEGCONF += --nm="$(NM)" --ar="$(AR)" --ranlib="$(RANLIB)" --strip="$(STRIP)" 
 
 ffmpeg-$(FFMPEG_VERSION).tar.gz:
 	$(call download_pkg,$(FFMPEG_URL),ffmpeg)
@@ -257,6 +257,19 @@ ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.gz .sum-ffmpeg
 	$(UNPACK) 
 	mv FFmpeg-n$(FFMPEG_VERSION) $@ && touch $@
 
+ifdef HAVE_IOS
+.ffmpeg: ffmpeg
+	@echo ""
+	@echo "INFO: Config $(FFMPEGCONF)"
+	@echo ""
+	cd $< && $(HOSTVARS_PIC) ./configure \
+		--extra-ldflags="$(LDFLAGS)" $(FFMPEGCONF) \
+		--prefix="$(PREFIX)" --enable-static --disable-shared
+	cd $< && $(MAKE) install $(MAKE_FLAGS)
+	touch $@
+endif
+
+ifdef HAVE_ANDROID
 .ffmpeg: ffmpeg
 	@echo ""
 	@echo "INFO: Config $(FFMPEGCONF)"
@@ -264,5 +277,6 @@ ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.gz .sum-ffmpeg
 	cd $< && $(HOSTVARS) ./configure \
 		--extra-ldflags="$(LDFLAGS)" $(FFMPEGCONF) \
 		--prefix="$(PREFIX)" --enable-static --disable-shared
-	cd $< && $(MAKE) $(MAKE_FLAGS) install-libs install-headers
+	cd $< && $(MAKE) install $(MAKE_FLAGS)
 	touch $@
+endif

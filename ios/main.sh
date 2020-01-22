@@ -110,6 +110,7 @@ clean() {
 
 clean_build() {
     echo -e "INFO: Clean build files and directories "
+    echo ""
     rm -rf $BASEDIR/contrib/contrib-*
 }
 
@@ -122,26 +123,26 @@ process_args() {
 
     if [[ $# -eq 0 ]]; then
         display_help
-        exit 1
+        exit 0
     fi
 
     while [ ! $# -eq 0 ]; do
         case $1 in
         -h | --help)
             display_help
-            exit 1
+            exit 0
             ;;
 
         -v | --version)
             display_version
-            exit 1
+            exit 0
             ;;
 
         --enable-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
             if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
                 echo -e "ERROR: openssl only alone build"
-                exit 1
+                exit 0
             fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
@@ -162,20 +163,20 @@ process_args() {
 
         -c | --clean)
             clean
-            exit 1
+            exit 0
             ;;
 
         -cb | --clean-build)
             clean_build
-            exit 1
+            exit 0
             ;;
         -cp | --clean-prebuilt)
             clean_prebuilt
-            exit 1
+            exit 0
             ;;
         *)
             print_unknown_option
-            exit 1
+            exit 0
             ;;
 
         esac
@@ -189,15 +190,15 @@ check_ios_arch() {
     if [[ $(get_ios_sdk_veresion) == 11* ]] || [[ $(get_ios_sdk_veresion) == 12* ]] || [[ $(get_ios_sdk_veresion) == 13* ]]; then
         if [[ $ENABLED_ARCHS =~ "armv7" ]]; then
             echo -e "ERROR: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 1
+            exit 0
         fi
         if [[ $ENABLED_ARCHS =~ "armv7s" ]]; then
             echo -e "ERROR: Disabled armv7s architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 1
+            exit 0
         fi
         if [[ $ENABLED_ARCHS =~ "i386" ]]; then
             echo -e "ERROR: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 1
+            exit 0
         fi
     fi
 }
@@ -210,18 +211,18 @@ build() {
 
     init_contrib --prefix=${PREBUILT}/$(get_ios_target_build_directory) --host=$(get_ios_target_host) $ENABLED_LIBRARYS
 
-    echo "EXTRA_CFLAGS=${CFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "EXTRA_CXXFLAGS=${CXXFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "EXTRA_LDFLAGS=${LDFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "CC=${CC}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "CXX=${CXX}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "AR=${AR}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "RANLIB=${RANLIB}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "LD=${LD}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "AS=${AS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "MAKE_FLAGS=$(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "PREBUILT=${PREBUILT}/$(get_ios_target_host)" >>${CONTRIBE_ARCH_BUILD}/config.mak
-    echo "FFMPEG_CONFIG=${FFMPEG_CONFIG}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "EXTRA_CFLAGS := ${CFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "EXTRA_CXXFLAGS := ${CXXFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "EXTRA_LDFLAGS := ${LDFLAGS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "CC := ${CC}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "CXX := ${CXX}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "AR := ${AR}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "RANLIB := ${RANLIB}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "LD := ${LD}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "AS := ${AS}" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "MAKE_FLAGS := $(get_make_flags)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "PREBUILT := ${PREBUILT}/$(get_ios_target_build_directory)" >>${CONTRIBE_ARCH_BUILD}/config.mak
+    echo "FFMPEG_CONFIG := ${FFMPEG_CONFIG}" >>${CONTRIBE_ARCH_BUILD}/config.mak
 
     echo -e "INFO: config.mak"
     cat -n ${CONTRIBE_ARCH_BUILD}/config.mak
