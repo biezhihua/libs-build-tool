@@ -19,6 +19,6 @@ before_script:
   - export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
   - export ANDROID_NDK_HOME=$ANDROID_NDK
 script:
-  - ./android.sh -cb &&  ./android.sh --enable-libdsm --arch-armeabi-v7a
-  - ./android.sh -cb &&  ./android.sh --enable-openssl --arch-armeabi-v7a
-  - ./android.sh -cb &&  ./android.sh --enable-ffmpeg --arch-armeabi-v7a
+  - ./android.sh -cb &&  ./android.sh --enable-libdsm --arch-all
+  - ./android.sh -cb &&  ./android.sh --enable-openssl --arch-all
+  - ./android.sh -cb &&  ./android.sh --enable-ffmpeg --arch-all
