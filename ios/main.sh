@@ -241,7 +241,7 @@ build() {
 fat_libraies() {
     FAT_LIBRAIES=
     for TARGET_ARCH in $DEFAULT_IOS_ARCHS; do
-        local archLib=${PREBUILT}/ios-${TARGET_ARCH}-apple-darwin/lib
+        local archLib=${PREBUILT}/$(get_ios_target_build_directory_params $TARGET_ARCH)/lib
         if [[ -d $archLib ]]; then
             for LIB in $(ls $archLib/*.a); do
                 FAT_LIBRAIES+="$(basename $LIB .a) "
@@ -265,7 +265,7 @@ create_static_fat_include() {
     mkdir -p ${FAT_INCLUDE_PATH}
 
     for TARGET_ARCH in $DEFAULT_IOS_ARCHS; do
-        local targetInclude=${PREBUILT}/ios-${TARGET_ARCH}-apple-darwin/include
+        local targetInclude=${PREBUILT}/$(get_ios_target_build_directory_params $TARGET_ARCH)/include
         if [[ -d $targetInclude ]]; then
             cp -R $targetInclude $FAT_INCLUDE_PATH
         fi
@@ -280,9 +280,9 @@ create_static_fat_library() {
     LIPO_COMMAND=" -create "
 
     for TARGET_ARCH in $DEFAULT_IOS_ARCHS; do
-        local targetLib=${PREBUILT}/ios-${TARGET_ARCH}-apple-darwin/lib
+        local targetLib=${PREBUILT}/$(get_ios_target_build_directory_params $TARGET_ARCH)/lib
         if [[ -f $targetLib/$1.a ]]; then
-            LIPO_COMMAND+=$targetLib/$1.a
+            LIPO_COMMAND+="$targetLib/$1.a "
         fi
     done
 

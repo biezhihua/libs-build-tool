@@ -46,6 +46,20 @@ get_ios_target_sdk() {
     echo "$(get_ios_target_arch)-apple-ios${IOS_MIN_VERSION}"
 }
 
+get_ios_target_arch_params() {
+    case ${1} in
+    arm64 | arm64e)
+        echo "aarch64"
+        ;;
+    x86-64)
+        echo "x86_64"
+        ;;
+    *)
+        echo "${1}"
+        ;;
+    esac
+}
+
 get_ios_target_arch() {
     case ${ARCH} in
     arm64 | arm64e)
@@ -88,6 +102,17 @@ get_ios_sdk_path() {
 
 get_ios_target_host() {
     echo "$(get_ios_target_arch)-ios-darwin"
+}
+
+get_ios_target_build_directory_params() {
+    case ${1} in
+    x86-64)
+        echo "ios-x86_64-apple-darwin"
+        ;;
+    *)
+        echo "ios-${1}-apple-darwin"
+        ;;
+    esac
 }
 
 get_ios_target_build_directory() {

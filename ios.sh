@@ -5,10 +5,10 @@
 . ${BASEDIR}/ios/common.sh
 . ${BASEDIR}/ios/main.sh
 
-main() {
+export DEFAULT_IOS_ARCHS="armv7 armv7s arm64 arm64e i386 x86-64"
+export IOS_MIN_VERSION=12.1
 
-    export DEFAULT_IOS_ARCHS="armv7 armv7s arm64 arm64e i386 x86-64"
-    export IOS_MIN_VERSION=12.1
+main() {
 
     process_args $*
 
