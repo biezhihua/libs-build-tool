@@ -3,6 +3,11 @@
 #
 # This file is under the same license as the vlc package.
 
+# Print var example
+# $(error   VAR is $(VAR))
+# $(warning VAR is $(VAR))
+# $(info    VAR is $(VAR))
+
 all: install
 
 # bootstrap configuration
@@ -37,130 +42,157 @@ BUILDPREFIX ?= $(TOPDST)
 BUILDPREFIX := $(abspath $(BUILDPREFIX))
 BUILDBINDIR ?= $(BUILDPREFIX)/bin
 
+$(info   INFO: HOST is $(HOST))
+$(info   INFO: BUILD is $(BUILD))
+
 ifneq ($(HOST),$(BUILD))
-HAVE_CROSS_COMPILE = 1
+	HAVE_CROSS_COMPILE = 1
 endif
 
 ARCH := $(shell $(SRC)/get-arch.sh $(HOST))
 
 ifeq ($(ARCH)-$(HAVE_WIN32),x86_64-1)
-HAVE_WIN64 := 1
+	HAVE_WIN64 := 1
 endif
+
 ifeq ($(ARCH)-$(HAVE_WIN32),aarch64-1)
-HAVE_WIN64 := 1
+	HAVE_WIN64 := 1
 endif
 
 ifdef HAVE_CROSS_COMPILE
-need_pkg = 1
+	need_pkg = 1
 else
-need_pkg = $(shell $(PKG_CONFIG) $(1) || echo 1)
+	need_pkg = $(shell $(PKG_CONFIG) $(1) || echo 1)
 endif
 
 #
 # Default values for tools
 #
 ifndef HAVE_CROSS_COMPILE
-ifneq ($(findstring $(origin CC),undefined default),)
-CC := gcc
-endif
-ifneq ($(findstring $(origin CXX),undefined default),)
-CXX := g++
-endif
-ifneq ($(findstring $(origin LD),undefined default),)
-LD := ld
-endif
-ifneq ($(findstring $(origin AR),undefined default),)
-AR := ar
-endif
-ifneq ($(findstring $(origin RANLIB),undefined default),)
-RANLIB := ranlib
-endif
-ifneq ($(findstring $(origin STRIP),undefined default),)
-STRIP := strip
-endif
-ifneq ($(findstring $(origin WIDL),undefined default),)
-WIDL := widl
-endif
-ifneq ($(findstring $(origin WINDRES),undefined default),)
-WINDRES := windres
-endif
+	
+	ifneq ($(findstring $(origin CC),undefined default),)
+		CC := gcc
+	endif
+
+	ifneq ($(findstring $(origin CXX),undefined default),)
+		CXX := g++
+	endif
+
+	ifneq ($(findstring $(origin LD),undefined default),)
+		LD := ld
+	endif
+
+	ifneq ($(findstring $(origin AR),undefined default),)
+		AR := ar
+	endif
+
+	ifneq ($(findstring $(origin RANLIB),undefined default),)
+		RANLIB := ranlib
+	endif
+
+	ifneq ($(findstring $(origin STRIP),undefined default),)
+		STRIP := strip
+	endif
+
+	ifneq ($(findstring $(origin WIDL),undefined default),)
+		WIDL := widl
+	endif
+
+	ifneq ($(findstring $(origin WINDRES),undefined default),)
+		WINDRES := windres
+	endif
 else
-ifneq ($(findstring $(origin CC),undefined default),)
-CC := $(HOST)-gcc
-endif
-ifneq ($(findstring $(origin CXX),undefined default),)
-CXX := $(HOST)-g++
-endif
-ifneq ($(findstring $(origin LD),undefined default),)
-LD := $(HOST)-ld
-endif
-ifneq ($(findstring $(origin AR),undefined default),)
-AR := $(HOST)-ar
-endif
-ifneq ($(findstring $(origin RANLIB),undefined default),)
-RANLIB := $(HOST)-ranlib
-endif
-ifneq ($(findstring $(origin STRIP),undefined default),)
-STRIP := $(HOST)-strip
-endif
-ifneq ($(findstring $(origin WIDL),undefined default),)
-WIDL := $(HOST)-widl
-endif
-ifneq ($(findstring $(origin WINDRES),undefined default),)
-WINDRES := $(HOST)-windres
-endif
+	ifneq ($(findstring $(origin CC),undefined default),)
+		CC := $(HOST)-gcc
+	endif
+
+	ifneq ($(findstring $(origin CXX),undefined default),)
+		CXX := $(HOST)-g++
+	endif
+
+	ifneq ($(findstring $(origin LD),undefined default),)
+		LD := $(HOST)-ld
+	endif
+
+	ifneq ($(findstring $(origin AR),undefined default),)
+		AR := $(HOST)-ar
+	endif
+
+	ifneq ($(findstring $(origin RANLIB),undefined default),)
+		RANLIB := $(HOST)-ranlib
+	endif
+
+	ifneq ($(findstring $(origin STRIP),undefined default),)
+		STRIP := $(HOST)-strip
+	endif
+
+	ifneq ($(findstring $(origin WIDL),undefined default),)
+		WIDL := $(HOST)-widl
+	endif
+
+	ifneq ($(findstring $(origin WINDRES),undefined default),)
+		WINDRES := $(HOST)-windres
+	endif
+
 endif
 
 ifdef HAVE_ANDROID
-ifneq ($(findstring $(origin CC),undefined default),)
-CC :=  clang
-endif
-ifneq ($(findstring $(origin CXX),undefined default),)
-CXX := clang++
-endif
+	
+	ifneq ($(findstring $(origin CC),undefined default),)
+		CC :=  clang
+	endif
+
+	ifneq ($(findstring $(origin CXX),undefined default),)
+		CXX := clang++
+	endif
+
 endif
 
 ifdef HAVE_MACOSX
-EXTRA_CXXFLAGS += -stdlib=libc++
-ifeq ($(ARCH),x86_64)
-EXTRA_CFLAGS += -m64
-EXTRA_LDFLAGS += -m64
-else
-EXTRA_CFLAGS += -m32
-EXTRA_LDFLAGS += -m32
-endif
+	
+	EXTRA_CXXFLAGS += -stdlib=libc++
+	
+	ifeq ($(ARCH),x86_64)
+		EXTRA_CFLAGS += -m64
+		EXTRA_LDFLAGS += -m64
+	else
+		EXTRA_CFLAGS += -m32
+		EXTRA_LDFLAGS += -m32
+	endif
 
-XCODE_FLAGS += -arch $(ARCH)
+	XCODE_FLAGS += -arch $(ARCH)
 
 endif
 
 CCAS=$(CC) -c
 
 ifdef HAVE_IOS
-ifdef HAVE_NEON
-AS=perl $(abspath ../../env_tools/build/bin/gas-preprocessor.pl) $(CC)
-CCAS=gas-preprocessor.pl $(CC) -c
-endif
-EXTRA_CFLAGS += $(CFLAGS)
+	ifdef HAVE_NEON
+		AS=perl $(abspath ../../env_tools/build/bin/gas-preprocessor.pl) $(CC)
+		CCAS=gas-preprocessor.pl $(CC) -c
+	endif
+
+	EXTRA_CFLAGS += $(CFLAGS)
 endif
 
 ifdef HAVE_WIN32
-ifneq ($(shell $(CC) $(CFLAGS) -E -dM -include _mingw.h - < /dev/null | grep -E __MINGW64_VERSION_MAJOR),)
-HAVE_MINGW_W64 := 1
-endif
-ifneq ($(findstring clang, $(shell $(CC) --version)),)
-HAVE_CLANG := 1
-endif
+	ifneq ($(shell $(CC) $(CFLAGS) -E -dM -include _mingw.h - < /dev/null | grep -E __MINGW64_VERSION_MAJOR),)
+		HAVE_MINGW_W64 := 1
+	endif
+
+	ifneq ($(findstring clang, $(shell $(CC) --version)),)
+		HAVE_CLANG := 1
+	endif
 endif
 
 ifdef HAVE_SOLARIS
-ifeq ($(ARCH),x86_64)
-EXTRA_CFLAGS += -m64
-EXTRA_LDFLAGS += -m64
-else
-EXTRA_CFLAGS += -m32
-EXTRA_LDFLAGS += -m32
-endif
+	ifeq ($(ARCH),x86_64)
+		EXTRA_CFLAGS += -m64
+		EXTRA_LDFLAGS += -m64
+	else
+		EXTRA_CFLAGS += -m32
+		EXTRA_LDFLAGS += -m32
+	endif
 endif
 
 cppcheck = $(shell $(CC) $(CFLAGS) -E -dM - < /dev/null | grep -E $(1))
@@ -172,27 +204,27 @@ CXXFLAGS := $(CXXFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CXXFLAGS) -g
 LDFLAGS := $(LDFLAGS) -L$(PREFIX)/lib $(EXTRA_LDFLAGS)
 
 ifndef WITH_OPTIMIZATION
-CFLAGS := $(CFLAGS) -O0
-CXXFLAGS := $(CXXFLAGS) -O0
+	CFLAGS := $(CFLAGS) -O0
+	CXXFLAGS := $(CXXFLAGS) -O0
 else
-CFLAGS := $(CFLAGS) -O2
-CXXFLAGS := $(CXXFLAGS) -O2
+	CFLAGS := $(CFLAGS) -O2
+	CXXFLAGS := $(CXXFLAGS) -O2
 endif
 
 # Do not export those! Use HOSTVARS.
 
 # Do the FPU detection, after we have figured out our compilers and flags.
 ifneq ($(findstring $(ARCH),aarch64 i386 ppc ppc64 sparc sparc64 x86_64),)
-# This should be consistent with include/vlc_cpu.h
-HAVE_FPU = 1
+	# This should be consistent with include/vlc_cpu.h
+	HAVE_FPU = 1
 else ifneq ($(findstring $(ARCH),arm),)
-ifneq ($(call cppcheck, __VFP_FP__)),)
-ifeq ($(call cppcheck, __SOFTFP__),)
-HAVE_FPU = 1
-endif
-endif
+	ifneq ($(call cppcheck, __VFP_FP__)),)
+		ifeq ($(call cppcheck, __SOFTFP__),)
+			HAVE_FPU = 1
+		endif
+	endif
 else ifneq ($(call cppcheck, __mips_hard_float),)
-HAVE_FPU = 1
+	HAVE_FPU = 1
 endif
 
 ACLOCAL_AMFLAGS += -I$(PREFIX)/share/aclocal
@@ -203,69 +235,73 @@ export ACLOCAL_AMFLAGS
 #########
 
 PKG_CONFIG ?= pkg-config
+
 ifdef HAVE_CROSS_COMPILE
-# This inhibits .pc file from within the cross-compilation toolchain sysroot.
-# Hopefully, nobody ever needs that.
-PKG_CONFIG_PATH := /usr/share/pkgconfig
-PKG_CONFIG_LIBDIR := /usr/$(HOST)/lib/pkgconfig
-export PKG_CONFIG_LIBDIR
+	# This inhibits .pc file from within the cross-compilation toolchain sysroot.
+	# Hopefully, nobody ever needs that.
+	PKG_CONFIG_PATH := /usr/share/pkgconfig
+	PKG_CONFIG_LIBDIR := /usr/$(HOST)/lib/pkgconfig
+	export PKG_CONFIG_LIBDIR
 endif
+
 PKG_CONFIG_PATH := $(PREFIX)/lib/pkgconfig:$(PKG_CONFIG_PATH)
 export PKG_CONFIG_PATH
 
 ifndef GIT
-ifeq ($(shell git --version >/dev/null 2>&1 || echo FAIL),)
-GIT = git
+	ifeq ($(shell git --version >/dev/null 2>&1 || echo FAIL),)
+		GIT = git
+	endif
 endif
-endif
+
 GIT ?= $(error git not found!)
 
 ifndef SVN
-ifeq ($(shell svn --version >/dev/null 2>&1 || echo FAIL),)
-SVN = svn
+	ifeq ($(shell svn --version >/dev/null 2>&1 || echo FAIL),)
+		SVN = svn
+	endif
 endif
-endif
+
 SVN ?= $(error subversion client (svn) not found!)
 
 ifeq ($(shell curl --version >/dev/null 2>&1 || echo FAIL),)
-download = curl -f -L -- "$(1)" > "$@"
+	download = curl -f -L -- "$(1)" > "$@"
 else ifeq ($(shell wget --version >/dev/null 2>&1 || echo FAIL),)
-download = (rm -f $@.tmp && \
-	wget --passive -c -p -O $@.tmp "$(1)" && \
-	touch $@.tmp && \
-	mv $@.tmp $@ )
+	download = (rm -f $@.tmp && \
+		wget --passive -c -p -O $@.tmp "$(1)" && \
+		touch $@.tmp && \
+		mv $@.tmp $@ )
 else ifeq ($(which fetch >/dev/null 2>&1 || echo FAIL),)
-download = (rm -f $@.tmp && \
-	fetch -p -o $@.tmp "$(1)" && \
-	touch $@.tmp && \
-	mv $@.tmp $@)
+	download = (rm -f $@.tmp && \
+		fetch -p -o $@.tmp "$(1)" && \
+		touch $@.tmp && \
+		mv $@.tmp $@)
 else
-download = $(error Neither curl nor wget found!)
+	download = $(error Neither curl nor wget found!)
 endif
 
 download_pkg = $(call download,$(CONTRIB_VIDEOLAN)/$(2)/$(lastword $(subst /, ,$(@)))) || \
 	( $(call download,$(1)) && echo "Please upload this package $(lastword $(subst /, ,$(@))) to our FTP" )
 
 ifeq ($(shell which xz >/dev/null 2>&1 || echo FAIL),)
-XZ = xz
+	XZ = xz
 else
-XZ ?= $(error XZ (LZMA) compressor not found!)
+	XZ ?= $(error XZ (LZMA) compressor not found!)
 endif
 
 ifeq ($(shell sha512sum --version >/dev/null 2>&1 || echo FAIL),)
-SHA512SUM = sha512sum --check
+	SHA512SUM = sha512sum --check
 else ifeq ($(shell shasum --version >/dev/null 2>&1 || echo FAIL),)
-SHA512SUM = shasum -a 512 --check
+	SHA512SUM = shasum -a 512 --check
 else ifeq ($(shell openssl version >/dev/null 2>&1 || echo FAIL),)
-SHA512SUM = openssl dgst -sha512
+	SHA512SUM = openssl dgst -sha512
 else
-SHA512SUM = $(error SHA-512 checksumming not found!)
+	SHA512SUM = $(error SHA-512 checksumming not found!)
 endif
 
 ifeq ($(shell protoc --version >/dev/null 2>&1 || echo FAIL),)
-PROTOC = protoc
+	PROTOC = protoc
 else
-PROTOC ?= $(error Protobuf compiler (protoc) not found!)
+	PROTOC ?= $(error Protobuf compiler (protoc) not found!)
 endif
 
 #
@@ -280,12 +316,13 @@ HOSTCONF += --program-prefix=""
 
 # libtool stuff:
 HOSTCONF += --enable-static --disable-shared --disable-dependency-tracking
+
 ifdef HAVE_WIN32
-HOSTCONF += --without-pic
-PIC :=
+	HOSTCONF += --without-pic
+	PIC :=
 else
-HOSTCONF += --with-pic
-PIC := -fPIC
+	HOSTCONF += --with-pic
+	PIC := -fPIC
 endif
 
 HOSTTOOLS := \
@@ -363,10 +400,11 @@ UPDATE_AUTOCONFIG = for dir in $(AUTOMAKE_DATA_DIRS); do \
 	done
 
 ifdef HAVE_DARWIN_OS
-AUTORECONF = AUTOPOINT=true autoreconf
+	AUTORECONF = AUTOPOINT=true autoreconf
 else
-AUTORECONF = autoreconf
+	AUTORECONF = autoreconf
 endif
+
 RECONF = mkdir -p -- $(PREFIX)/share/aclocal && \
 	cd $< && $(AUTORECONF) -fiv $(ACLOCAL_AMFLAGS)
 CMAKE = cmake . -DCMAKE_TOOLCHAIN_FILE=$(abspath toolchain.cmake) \
@@ -374,43 +412,45 @@ CMAKE = cmake . -DCMAKE_TOOLCHAIN_FILE=$(abspath toolchain.cmake) \
 
 MESON = meson --default-library static --prefix "$(PREFIX)" --backend ninja \
 	-Dlibdir=lib
+
 ifndef WITH_OPTIMIZATION
-MESON += --buildtype debug
+	MESON += --buildtype debug
 else
-MESON += --buildtype release
+	MESON += --buildtype release
 endif
 
 ifdef HAVE_CROSS_COMPILE
-MESON += --cross-file $(abspath crossfile.meson)
+	MESON += --cross-file $(abspath crossfile.meson)
 endif
 
 ifdef GPL
-REQUIRE_GPL =
+	REQUIRE_GPL =
 else
-REQUIRE_GPL = @echo "Package \"$<\" requires the GPL license." >&2; exit 1
+	REQUIRE_GPL = @echo "Package \"$<\" requires the GPL license." >&2; exit 1
 endif
 
 ifdef GNUV3
-REQUIRE_GNUV3 =
+	REQUIRE_GNUV3 =
 else
-REQUIRE_GNUV3 = \
-	@echo "Package \"$<\" requires the version 3 of GNU licenses." >&2; \
-	exit 1
+	REQUIRE_GNUV3 = \
+		@echo "Package \"$<\" requires the version 3 of GNU licenses." >&2; \
+		exit 1
 endif
 
 #
 # Per-package build rules
 #
 PKGS_FOUND :=
+
 include $(SRC)/*/rules/Makefile
 
 ifeq ($(PKGS_DISABLE), all)
-PKGS :=
+	PKGS :=
 endif
 
 # Targets
 ifneq ($(filter $(PKGS_DISABLE),$(PKGS_ENABLE)),)
-$(error Same package(s) disabled and enabled at the same time)
+	$(error Same package(s) disabled and enabled at the same time)
 endif
 
 # Apply automatic selection (= remove distro packages):
