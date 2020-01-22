@@ -353,6 +353,7 @@ build_lib() {
         make $(get_make_flags)
 
         echo -e "INFO: Completed build for ${ARCH}"
+        echo ""
 
     done
 
