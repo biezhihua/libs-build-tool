@@ -1,6 +1,12 @@
 
 # Introduction
 
+[![Build Status](https://api.travis-ci.org/biezhihua/libs-build-tool.svg?branch=master)](https://travis-ci.org/biezhihua/libs-build-tool)
+
+[![License](https://img.shields.io/badge/license-GPL-blue)](https://github.com/biezhihua/libs-build-tool/blob/master/LICENSE)
+
+[![Version](https://img.shields.io/github/v/release/biezhihua/libs-build-tool)](https://github.com/biezhihua/libs-build-tool/releases)
+
 Convenient and fast library building tools.
 
 # Target Platform
