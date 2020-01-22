@@ -11,7 +11,7 @@ get_android_toolchain_path_bin() {
 }
 
 get_android_ndk_path() {
-    echo $ANDROID_NDK_ROOT
+    echo $ANDROID_NDK
 }
 
 make_android_toolchain() {
@@ -56,8 +56,8 @@ check_android_home() {
 }
 
 check_android_ndk_root() {
-    if [[ -z ${ANDROID_NDK_ROOT} ]]; then
-        echo "ANDROID_NDK_ROOT not defined"
+    if [[ -z ${ANDROID_NDK} ]]; then
+        echo "ANDROID_NDK not defined"
         exit 1
     fi
 }
@@ -67,7 +67,7 @@ get_android_api() {
 }
 
 get_android_ndk_version() {
-    echo $(grep -Eo Revision.* ${ANDROID_NDK_ROOT}/source.properties | sed 's/Revision//g;s/=//g;s/ //g')
+    echo $(grep -Eo Revision.* ${ANDROID_NDK}/source.properties | sed 's/Revision//g;s/=//g;s/ //g')
 }
 
 get_android_target_host() {

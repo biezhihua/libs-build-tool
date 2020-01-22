@@ -16,8 +16,8 @@ install:
   - echo y | sdkmanager "cmake;3.6.4111459"
   - echo y | sdkmanager "cmake;3.10.2.4988404"
 before_script:
-  - export ANDROID_NDK_ROOT=$ANDROID_HOME/ndk-bundle
-  - export ANDROID_NDK_HOME=$ANDROID_NDK_ROOT
+  - export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
+  - export ANDROID_NDK_HOME=$ANDROID_NDK
 script:
   - ./android.sh -cb &&  ./android.sh --enable-libdsm --arch-armeabi-v7a
   - ./android.sh -cb &&  ./android.sh --enable-openssl --arch-armeabi-v7a
