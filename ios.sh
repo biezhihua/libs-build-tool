@@ -22,6 +22,7 @@ main() {
 
     build_lib
     
+    exit 0
 }
 
 main $*

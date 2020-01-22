@@ -251,7 +251,7 @@ get_android_arch_specific_cflags() {
         echo "-march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32 "
         ;;
     x86_64)
-        echo "-march=x86_64 -msse4.2 -mpopcnt -m64 -mtune=intel "
+        echo "-march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel "
         ;;
     esac
 }
@@ -448,7 +448,7 @@ get_android_arch_specific_ldflags() {
         echo "-march=i686"
         ;;
     x86_64)
-        echo "-march=x86_64"
+        echo "-march=x86-64"
         ;;
     esac
 }

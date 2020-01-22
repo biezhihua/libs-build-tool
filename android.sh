@@ -24,6 +24,8 @@ main() {
     build_env
 
     build_lib
+
+    exit 0
 }
 
 main $*

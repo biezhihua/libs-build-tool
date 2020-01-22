@@ -39,7 +39,7 @@ without any external libraries enabled. Options can be used to disable ABIs and/
     echo -e "  --arch-armeabi-v7a-neon\tdo build armeabi-v7a-neon platform [yes]"
     echo -e "  --arch-arm64-v8a\t\tdo build arm64-v8a platform [yes]"
     echo -e "  --arch-x86\t\t\tdo build x86 platform [yes]"
-    echo -e "  --arch-x86-64\t\t\tdo build x86-64 platform [yes]\n"
+    echo -e "  --arch-x86_64\t\t\tdo build x86_64 platform [yes]\n"
 
     echo -e "Libraries:"
 
