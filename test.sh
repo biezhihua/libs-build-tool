@@ -4,6 +4,6 @@
 ./ios.sh -cb && ./ios.sh --arch-all --enable-openssl
 ./ios.sh -cb && ./ios.sh --arch-all --enable-ffmpeg
 
-./android.sh -cb &&  ./android.sh --enable-libdsm --arch-all
-./android.sh -cb &&  ./android.sh --enable-openssl --arch-all
-./android.sh -cb &&  ./android.sh --enable-ffmpeg --arch-all
+./android.sh -cb &&  ./android.sh --arch-all --enable-libdsm 
+./android.sh -cb &&  ./android.sh --arch-all --enable-openssl
+./android.sh -cb &&  ./android.sh --arch-all --enable-ffmpeg 

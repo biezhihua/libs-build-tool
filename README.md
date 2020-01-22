@@ -12,6 +12,7 @@ Convenient and fast library building tools.
 # Target Platform
 
 * Support Android
+* Support iOS
 
 # Android Guide Start
 
