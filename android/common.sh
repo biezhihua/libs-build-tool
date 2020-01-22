@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 get_android_toolchain_path() {
     echo ${BASEDIR}/android/ndk-toolchain-$(get_android_target_host)
 }

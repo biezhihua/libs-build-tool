@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 check_ios_sdk_path() {
     if [[ -z ${SDK_PATH} ]]; then
         echo -e "(*) SDK_PATH not defined"

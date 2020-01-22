@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 export BASEDIR=$(pwd)
 export CONTRIB=$(pwd)/contrib
 export CONTRIB_SRC=$(pwd)/contrib/src

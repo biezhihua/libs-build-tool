@@ -4,6 +4,8 @@
 . ${BASEDIR}/android/common.sh
 . ${CONTRIB}/init.sh
 
+set -e
+
 display_help() {
     COMMAND=$(echo $0 | sed -e 's/\.\///g')
 
@@ -120,19 +122,19 @@ process_args() {
 
     if [[ $# -eq 0 ]]; then
         display_help
-        exit 0
+        exit 1
     fi
 
     while [ ! $# -eq 0 ]; do
         case $1 in
         -h | --help)
             display_help
-            exit 0
+            exit 1
             ;;
 
         -v | --version)
             display_version
-            exit 0
+            exit 1
             ;;
 
         --enable-*)
@@ -156,20 +158,20 @@ process_args() {
 
         -c | --clean)
             clean
-            exit 0
+            exit 1
             ;;
 
         -cb | --clean-build)
             clean_build
-            exit 0
+            exit 1
             ;;
         -cp | --clean-prebuilt)
             clean_prebuilt
-            exit 0
+            exit 1
             ;;
         *)
             print_unknown_option
-            exit 0
+            exit 1
             ;;
 
         esac
@@ -265,7 +267,7 @@ build_lib() {
 
         check_android_home
 
-        check_android_arch
+        check_arch
 
         check_basedir
 

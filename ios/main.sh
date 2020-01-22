@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 . ${BASEDIR}/common/common.sh
 . ${BASEDIR}/ios/common.sh
 . ${CONTRIB}/init.sh
@@ -120,26 +122,26 @@ process_args() {
 
     if [[ $# -eq 0 ]]; then
         display_help
-        exit 0
+        exit 1
     fi
 
     while [ ! $# -eq 0 ]; do
         case $1 in
         -h | --help)
             display_help
-            exit 0
+            exit 1
             ;;
 
         -v | --version)
             display_version
-            exit 0
+            exit 1
             ;;
 
         --enable-*)
             ENABLED_LIBRARY=$(echo $1 | sed -e 's/^--[A-Za-z]*-//g')
             if [[ -n $ENABLE_LIBRARYS && $ENABLE_LIBRARYS =~ "openssl" ]]; then
                 echo -e "ERROR: openssl only alone build"
-                exit 0
+                exit 1
             fi
             export ENABLE_LIBRARYS="$ENABLED_LIBRARY ${ENABLE_LIBRARYS}"
             export ENABLED_LIBRARYS="${ENABLED_LIBRARYS} --enable-$ENABLED_LIBRARY"
@@ -160,20 +162,20 @@ process_args() {
 
         -c | --clean)
             clean
-            exit 0
+            exit 1
             ;;
 
         -cb | --clean-build)
             clean_build
-            exit 0
+            exit 1
             ;;
         -cp | --clean-prebuilt)
             clean_prebuilt
-            exit 0
+            exit 1
             ;;
         *)
             print_unknown_option
-            exit 0
+            exit 1
             ;;
 
         esac
@@ -187,15 +189,15 @@ check_ios_arch() {
     if [[ $(get_ios_sdk_veresion) == 11* ]] || [[ $(get_ios_sdk_veresion) == 12* ]] || [[ $(get_ios_sdk_veresion) == 13* ]]; then
         if [[ $ENABLED_ARCHS =~ "armv7" ]]; then
             echo -e "ERROR: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 0
+            exit 1
         fi
         if [[ $ENABLED_ARCHS =~ "armv7s" ]]; then
             echo -e "ERROR: Disabled armv7s architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 0
+            exit 1
         fi
         if [[ $ENABLED_ARCHS =~ "i386" ]]; then
             echo -e "ERROR: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-            exit 0
+            exit 1
         fi
     fi
 }

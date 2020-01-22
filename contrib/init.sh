@@ -3,6 +3,8 @@
 . ${BASEDIR}/common/common.sh
 . ${BASEDIR}/ios/common.sh
 
+set -e
+
 contrib_usage() {
 	echo "Usage: $0 [--build=BUILD] [--host=HOST] [--prefix=PREFIX]"
 	echo "  --build=BUILD    configure for building on BUILD"
@@ -141,7 +143,7 @@ init_contrib() {
 			;;
 		--help | -h)
 			contrib_usage
-			exit 0
+			exit 1
 			;;
 		--host=*)
 			HOST="${1#--host=}"
