@@ -55,6 +55,7 @@ contrib_check_macosx_sdk() {
 		echo "INFO: OSX_VERSION not specified, assuming $OSX_VERSION"
 		echo ""
 	fi
+
 	if test -z "$SDKROOT"; then
 		SDKROOT=$(xcode-select -print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$OSX_VERSION.sdk
 		echo "INFO: SDKROOT not specified, assuming $SDKROOT"
@@ -67,6 +68,7 @@ contrib_check_macosx_sdk() {
 		echo "INFO: SDKROOT not found at $SDKROOT_NOT_FOUND, trying $SDKROOT"
 		echo ""
 	fi
+
 	if [ ! -d "${SDKROOT}" ]; then
 		SDKROOT_NOT_FOUND="$SDKROOT"
 		SDKROOT=$(xcrun --show-sdk-path)
@@ -86,37 +88,68 @@ contrib_check_macosx_sdk() {
 
 contrib_check_android_sdk() {
 
-	[ -z "${ANDROID_NDK}" ] && echo "ERROR: You must set ANDROID_NDK environment variable" && exit 1
+	if [ -z "${ANDROID_NDK}" ]; then
+		echo "ERROR: You must set ANDROID_NDK environment variable"
+		exit 1
+	fi
 
 	contrib_add_make "ANDROID_NDK := ${ANDROID_NDK}"
 
-	[ -z "${ANDROID_ABI}" ] && echo "ERROR: You must set ANDROID_ABI environment variable" && exit 1
+	if [ -z "${ANDROID_ABI}" ]; then
+		echo "ERROR: You must set ANDROID_ABI environment variable"
+		exit 1
+	fi
 
 	contrib_add_make "ANDROID_ABI := ${ANDROID_ABI}"
 
-	[ -z "${ANDROID_API}" ] && echo "ERROR: You should set ANDROID_API environment variable (using default android-9)" && ANDROID_API := android-9
+	if [ -z "${ANDROID_API}" ]; then
+		echo "ERROR: You should set ANDROID_API environment variable (using default android-9)"
+		ANDROID_API := android-9
+	fi
 
 	contrib_add_make "ANDROID_API := ${ANDROID_API}"
 
-	[ ${ANDROID_ABI} = "armeabi-v7a" ] && contrib_add_make_enabled "HAVE_NEON"
-	[ ${ANDROID_ABI} = "armeabi-v7a" ] && contrib_add_make_enabled "HAVE_ARMV7A"
-	[ ${ANDROID_ABI} = "arm64-v8a" ] && contrib_add_make_enabled "HAVE_NEON"
-	[ ${ANDROID_ABI} = "arm64-v8a" ] && contrib_add_make_enabled "HAVE_ARMV8A"
-	[ ${ANDROID_ABI} = "armeabi" -a -z "${NO_ARMV6}" ] && contrib_add_make_enabled "HAVE_ARMV6"
+	case "${ANDROID_ABI}" in
+	armeabi-v7a)
+		contrib_add_make_enabled "HAVE_NEON"
+		contrib_add_make_enabled "HAVE_ARMV7A"
+		;;
+	arm64-v8a)
+		contrib_add_make_enabled "HAVE_NEON"
+		contrib_add_make_enabled "HAVE_ARMV8A"
+		;;
+	armeabi)
+		if [ -z "${NO_ARMV6}" ]; then
+			contrib_add_make_enabled "HAVE_ARMV6"
+		fi
+		;;
+	esac
 }
 
 contrib_check_tizen_sdk() {
 
-	[ -z "${TIZEN_SDK}" ] && echo "ERROR: You must set TIZEN_SDK environment variable" && exit 1
+	if [ -z "${TIZEN_SDK}" ]; then
+		"ERROR: You must set TIZEN_SDK environment variable"
+		exit 1
+	fi
 
 	contrib_add_make "TIZEN_SDK := ${TIZEN_SDK}"
 
-	[ -z "${TIZEN_ABI}" ] && echo "ERROR: You must set TIZEN_ABI environment variable" && exit 1
+	if [ -z "${TIZEN_ABI}" ]; then
+		"ERROR: You must set TIZEN_ABI environment variable"
+		exit 1
+	fi
 
 	contrib_add_make "TIZEN_ABI := ${TIZEN_ABI}"
 
-	[ ${TIZEN_ABI} = "armv7l" ] && contrib_add_make_enabled "HAVE_NEON"
-	[ ${TIZEN_ABI} = "armv7l" ] && contrib_add_make_enabled "HAVE_ARMV7A"
+	if [ ${TIZEN_ABI} = "armv7l" ]; then
+		contrib_add_make_enabled "HAVE_NEON"
+	fi
+
+	if [ ${TIZEN_ABI} = "armv7l" ]; then
+		contrib_add_make_enabled "HAVE_NEON"
+		contrib_add_make_enabled "HAVE_ARMV7A"
+	fi
 }
 
 BUILD=

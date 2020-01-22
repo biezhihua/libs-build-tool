@@ -103,18 +103,21 @@ print_enabled_libraries() {
 
 clean() {
     echo -e "INFO: Clean build and prebuilt files and directories "
+    echo ""
     clean_build
     clean_prebuilt
 }
 
 clean_build() {
     echo -e "INFO: Clean build files and directories "
+    echo ""
     rm -rf $BASEDIR/android/ndk-*
     rm -rf $BASEDIR/contrib/contrib-*
 }
 
 clean_prebuilt() {
     echo -e "INFO: Clean pre built files and directories "
+    echo ""
     rm -rf $BASEDIR/prebuilt/*
 }
 
@@ -122,19 +125,19 @@ process_args() {
 
     if [[ $# -eq 0 ]]; then
         display_help
-        exit 1
+        exit 0
     fi
 
     while [ ! $# -eq 0 ]; do
         case $1 in
         -h | --help)
             display_help
-            exit 1
+            exit 0
             ;;
 
         -v | --version)
             display_version
-            exit 1
+            exit 0
             ;;
 
         --enable-*)
@@ -158,20 +161,20 @@ process_args() {
 
         -c | --clean)
             clean
-            exit 1
+            exit 0
             ;;
 
         -cb | --clean-build)
             clean_build
-            exit 1
+            exit 0
             ;;
         -cp | --clean-prebuilt)
             clean_prebuilt
-            exit 1
+            exit 0
             ;;
         *)
             print_unknown_option
-            exit 1
+            exit 0
             ;;
 
         esac

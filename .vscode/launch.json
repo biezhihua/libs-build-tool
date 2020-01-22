@@ -10,7 +10,7 @@
             "name": "Bash-Debug (simplest configuration)",
             "program": "${workspaceFolder}/android.sh",
             "args": [
-                "--enable-openssl",
+                "--enable-libdsm",
                 "--arch-armeabi-v7a"
             ],
         }

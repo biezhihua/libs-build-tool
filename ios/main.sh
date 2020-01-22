@@ -104,6 +104,7 @@ print_enabled_libraries() {
 
 clean() {
     echo -e "INFO: Clean build and prebuilt files and directories "
+    echo ""
     clean_build
     clean_prebuilt
 }
@@ -116,6 +117,7 @@ clean_build() {
 
 clean_prebuilt() {
     echo -e "INFO: Clean pre built files and directories "
+    echo ""
     rm -rf $BASEDIR/prebuilt/*
 }
 
