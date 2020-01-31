@@ -207,7 +207,7 @@ check_ios_arch() {
         if [[ $ENABLED_ARCHS =~ "i386" ]]; then
             echo -e "WARNING: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
         fi
-        export ENABLED_ARCHS="arm64 arm64e x86-64"
+        # export ENABLED_ARCHS="arm64 arm64e x86-64"
         echo ""
     fi
 }
@@ -355,6 +355,10 @@ build_lib() {
         echo -e "INFO: Completed build for ${ARCH}"
         echo ""
 
+        # Fix: arm64e not build
+        if [[ $run_arch -eq arm64e ]]; then
+            clean_build
+        fi
     done
 
     fat_libraies
