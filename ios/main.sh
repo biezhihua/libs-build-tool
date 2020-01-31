@@ -195,19 +195,34 @@ process_args() {
     done
 }
 
+remove_armv7s(){
+    echo $ENABLED_ARCHS | sed -e "s/armv7s//g"
+}
+
+remove_armv7(){
+    echo $ENABLED_ARCHS | sed -e "s/armv7//g"
+}
+
+remove_i386(){
+    echo $ENABLED_ARCHS | sed -e "s/i386//g"
+}
+
 check_ios_arch() {
     if [[ $(get_ios_sdk_veresion) == 11* ]] || [[ $(get_ios_sdk_veresion) == 12* ]] || [[ $(get_ios_sdk_veresion) == 13* ]]; then
         echo "INFO: DISABLE 32-bit architectures on newer IOS versions"
-        if [[ $ENABLED_ARCHS =~ "armv7" ]]; then
-            echo -e "WARNING: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
-        fi
         if [[ $ENABLED_ARCHS =~ "armv7s" ]]; then
             echo -e "WARNING: Disabled armv7s architecture which is not supported on SDK $(get_ios_sdk_veresion)"
+            ENABLED_ARCHS=$(remove_armv7s)
+        fi
+        if [[ $ENABLED_ARCHS =~ "armv7" ]]; then
+            echo -e "WARNING: Disabled armv7 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
+            ENABLED_ARCHS=$(remove_armv7)
         fi
         if [[ $ENABLED_ARCHS =~ "i386" ]]; then
             echo -e "WARNING: Disabled i386 architecture which is not supported on SDK $(get_ios_sdk_veresion)"
+            ENABLED_ARCHS=$(remove_i386)
         fi
-        # export ENABLED_ARCHS="arm64 arm64e x86-64"
+        echo "INFO: ARCHS $ENABLED_ARCHS"
         echo ""
     fi
 }
