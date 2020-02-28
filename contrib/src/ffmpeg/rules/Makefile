@@ -175,7 +175,7 @@ ifdef HAVE_ANDROID
 
 	# broken text relocations
 	ifeq ($(ANDROID_ABI), x86)
-	F	FMPEGCONF +=  --disable-mmx --disable-mmxext --disable-inline-asm
+		FMPEGCONF +=  --disable-mmx --disable-mmxext --disable-inline-asm
 	endif
 
 	ifeq ($(ANDROID_ABI), x86_64)
