@@ -264,17 +264,17 @@ endif
 SVN ?= $(error subversion client (svn) not found!)
 
 ifeq ($(shell curl --version >/dev/null 2>&1 || echo FAIL),)
-	download = curl -f -L -- "$(1)" > "$@"
+	download = curl -f -L -- "$(1)" > "$(VPATH)/$@"
 else ifeq ($(shell wget --version >/dev/null 2>&1 || echo FAIL),)
-	download = (rm -f $@.tmp && \
-		wget --passive -c -p -O $@.tmp "$(1)" && \
-		touch $@.tmp && \
-		mv $@.tmp $@ )
+	download = (rm -f $(VPATH)/$@.tmp && \
+		wget --passive -c -p -O $(VPATH)/$@.tmp "$(1)" && \
+		touch $(VPATH)/$@.tmp && \
+		mv $(VPATH)/$@.tmp $(VPATH)/$@ )
 else ifeq ($(which fetch >/dev/null 2>&1 || echo FAIL),)
-	download = (rm -f $@.tmp && \
-		fetch -p -o $@.tmp "$(1)" && \
-		touch $@.tmp && \
-		mv $@.tmp $@)
+	download = (rm -f $(VPATH)/$@.tmp && \
+		fetch -p -o $(VPATH)/$@.tmp "$(1)" && \
+		touch $(VPATH)/$@.tmp && \
+		mv $(VPATH)/$@.tmp $(VPATH)/$@)
 else
 	download = $(error Neither curl nor wget found!)
 endif
