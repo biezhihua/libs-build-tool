@@ -49,15 +49,25 @@ check_android_api() {
 }
 
 check_android_home() {
+    echo "INFO: ${ANDROID_HOME}"
     if [[ -z ${ANDROID_HOME} ]]; then
         echo "ANDROID_HOME not defined"
+        exit 1
+    fi
+    if [[ ! -d ${ANDROID_HOME} ]]; then
+        echo "ANDROID_HOME not exist"
         exit 1
     fi
 }
 
 check_android_ndk_root() {
+    echo "INFO: ${ANDROID_NDK}"
     if [[ -z ${ANDROID_NDK} ]]; then
         echo "ANDROID_NDK not defined"
+        exit 1
+    fi
+    if [[ ! -d ${ANDROID_NDK} ]]; then
+        echo "ANDROID_NDK not exist"
         exit 1
     fi
 }
