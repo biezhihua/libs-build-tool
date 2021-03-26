@@ -1,9 +1,0 @@
-./build
-.gas
-gas*
-Makefile
-m4
-bison
-*.tar.gz
-*.tar.xz
-build/*
