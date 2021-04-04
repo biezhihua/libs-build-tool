@@ -10,5 +10,3 @@ macos/.DS_Store
 /.tmp/
 
 check*
-
-/env_tools/*
