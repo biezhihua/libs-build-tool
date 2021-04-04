@@ -77,13 +77,13 @@ Autohr:
 ## Build FFmpeg with min config
 
 ```
-/android.sh --lib-ffmpeg --ffmpeg-config-min --arch-armeabi-v7a
+./android.sh  --enable-ffmpeg --ffmpeg-config-min --arch-armeabi-v7a
 ```
 
 ## Build Openssl lib
 
 ```
-./android.sh --lib-openssl --arch-armeabi-v7a
+./android.sh --enable-openssl --arch-armeabi-v7a
 ```
 
 ## Clean All
