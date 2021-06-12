@@ -6,6 +6,7 @@
 
 set -e
 
+# 显示帮助说明
 display_help() {
     COMMAND=$(echo $0 | sed -e 's/\.\///g')
 
@@ -71,36 +72,44 @@ without any external libraries enabled. Options can be used to disable ABIs and/
     echo ""
 }
 
+# 提示版本
 display_version() {
     COMMAND=$(echo $0 | sed -e 's/\.\///g')
     echo -e "INFO: display_version"
 }
 
+# 提示未知操作
+# shellcheck disable=SC2120
 print_unknown_option() {
     echo -e "INFO: Unknown option \"$1\".\nSee $0 --help for available options."
     exit 1
 }
 
+# 提示不支持的库
 print_unknown_library() {
     echo -e "INFO: Unknown library \"$1\".\nSee $0 --help for available libraries."
     exit 1
 }
 
+# 提示不支持的平台
 print_unknown_platform() {
     echo -e "INFO: Unknown platform \"$1\".\nSee $0 --help for available platforms."
     exit 1
 }
 
+# 提示支持的架构
 print_enabled_architectures() {
     echo -e "INFO: Architectures: $ENABLED_ARCHS"
     echo ""
 }
 
+# 提示构建的库
 print_enabled_libraries() {
     echo -e "INFO: Libraries: $ENABLE_LIBRARYS"
     echo ""
 }
 
+# 清除缓存
 clean() {
     echo -e "INFO: Clean build and prebuilt files and directories "
     echo ""
@@ -108,19 +117,22 @@ clean() {
     clean_prebuilt
 }
 
+# 清除构建模板
 clean_build() {
     echo -e "INFO: Clean build files and directories "
     echo ""
-    rm -rf $BASEDIR/android/ndk-*
-    rm -rf $BASEDIR/contrib/contrib-*
+    rm -rf "$BASEDIR"/android/ndk-*
+    rm -rf "$BASEDIR"/contrib/contrib-*
 }
 
+# 清除产物目录
 clean_prebuilt() {
     echo -e "INFO: Clean pre built files and directories "
     echo ""
-    rm -rf $BASEDIR/prebuilt/*
+    rm -rf "$BASEDIR"/prebuilt/*
 }
 
+# 解析脚本参数
 process_args() {
 
     if [[ $# -eq 0 ]]; then
@@ -187,7 +199,8 @@ build() {
 
     set_android_toolchain_params
 
-    init_contrib --prefix=${PREBUILT}/$(get_android_target_host) --arch-name=$(get_android_arch_name) --api=$(get_android_api) --host=$(get_android_target_host) $ENABLED_LIBRARYS
+    # 初始化三方依赖库
+    init_contrib --prefix="${PREBUILT}"/$(get_android_target_host) --arch-name=$(get_android_arch_name) --api=$(get_android_api) --host=$(get_android_target_host) "$ENABLED_LIBRARYS"
 
     # Some libraries have arm assembly which won't build in thumb mode
     # We append -marm to the CFLAGS of these libs to disable thumb mode
@@ -236,6 +249,7 @@ build_lib() {
 
         cd $CURRENT_PWD
 
+        # shellcheck disable=SC2071
         if [[ ${run_arch} -eq "arm64-v8a" || ${run_arch} -eq "x86_64" && ${API} < 21 ]]; then
             # 64 bit ABIs supported after API 21
             export API=21
@@ -298,6 +312,7 @@ build_lib() {
 
         make list
 
+        # 构建目标库
         make $(get_make_flags)
 
         echo -e "INFO: Completed build for ${ARCH} on API level ${API} "

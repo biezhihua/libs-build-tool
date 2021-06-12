@@ -10,3 +10,14 @@ macos/.DS_Store
 /.tmp/
 
 check*
+check_sed
+check_sed-e
+
+env_tools/.bison
+env_tools/.cmake
+env_tools/.libtool
+env_tools/.m4
+env_tools/.protoc
+
+env_tools/bison-3.0.4.tar.xz.tmp
+env_tools/m4-1.4.18.tar.gz.tmp

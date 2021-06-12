@@ -2,18 +2,22 @@
 
 set -e
 
+# 获取AndroidNDK工具链路径
 get_android_toolchain_path() {
     echo ${BASEDIR}/android/ndk-toolchain-$(get_android_target_host)
 }
 
+# 获取AndroidNDK工具链的可执行文件路径
 get_android_toolchain_path_bin() {
     echo $(get_android_toolchain_path)/bin
 }
 
+# 获取AndroidNDK路径
 get_android_ndk_path() {
     echo $ANDROID_NDK
 }
 
+# 交叉编译目标库
 make_android_toolchain() {
     NDK_TOOLCHAIN_PROPS=$(get_android_toolchain_path)/source.properties
     NDK_FORCE_ARG=
@@ -41,6 +45,7 @@ make_android_toolchain() {
     fi
 }
 
+# 检查API
 check_android_api() {
     if [[ -z ${API} ]]; then
         echo -e "(*) API not defined"
@@ -48,6 +53,7 @@ check_android_api() {
     fi
 }
 
+# 检查ANDROID_HOME
 check_android_home() {
     echo "INFO: ${ANDROID_HOME}"
     if [[ -z ${ANDROID_HOME} ]]; then
@@ -60,6 +66,7 @@ check_android_home() {
     fi
 }
 
+# 检查ANDROID_NDK_ROOT
 check_android_ndk_root() {
     echo "INFO: ${ANDROID_NDK}"
     if [[ -z ${ANDROID_NDK} ]]; then
@@ -72,14 +79,17 @@ check_android_ndk_root() {
     fi
 }
 
+# 获取API
 get_android_api() {
     echo $API
 }
 
+# 获取NDK版本
 get_android_ndk_version() {
     echo $(grep -Eo Revision.* ${ANDROID_NDK}/source.properties | sed 's/Revision//g;s/=//g;s/ //g')
 }
 
+# 根据目标架构获取NDK的编译HOST
 get_android_target_host() {
     case ${ARCH} in
     armeabi-v7a | armeabi-v7a-neon)
@@ -97,6 +107,7 @@ get_android_target_host() {
     esac
 }
 
+# 根据目标架构获取NDK-CLANG的编译HOST
 get_android_clang_target_host() {
     case ${ARCH} in
     armeabi-v7a | armeabi-v7a-neon)
@@ -266,6 +277,7 @@ get_android_arch_specific_cflags() {
     esac
 }
 
+# 获取ANDROID编译优化标记
 get_android_size_optimization_cflags() {
     if [[ -z ${NO_LINK_TIME_OPTIMIZATION} ]]; then
         local LINK_TIME_OPTIMIZATION_FLAGS="-flto"
@@ -339,20 +351,27 @@ get_android_app_specific_cflags() {
     echo "${APP_FLAGS}"
 }
 
+# 获取ANDROID的C编译器的选项
 get_android_cflags() {
+
     local ARCH_FLAGS=$(get_android_arch_specific_cflags)
+
     local APP_FLAGS=$(get_android_app_specific_cflags $1)
+
     local COMMON_FLAGS=$(get_android_common_cflags)
+
     if [[ -z ${DEBUG} ]]; then
         local OPTIMIZATION_FLAGS=$(get_android_size_optimization_cflags $1)
     else
         local OPTIMIZATION_FLAGS="${DEBUG}"
     fi
+
     local COMMON_INCLUDES=$(get_android_common_includes)
 
     echo "${ARCH_FLAGS} ${APP_FLAGS} ${COMMON_FLAGS} ${OPTIMIZATION_FLAGS} ${COMMON_INCLUDES}"
 }
 
+# 获取ANDROID的C++编译器选项
 get_android_cxxflags() {
     if [[ -z ${NO_LINK_TIME_OPTIMIZATION} ]]; then
         local LINK_TIME_OPTIMIZATION_FLAGS="-flto"
@@ -389,6 +408,7 @@ get_android_cxxflags() {
     esac
 }
 
+# 获取ANDROIDNDK的公共库链接标记
 get_android_common_linked_libraries() {
     local COMMON_LIBRARY_PATHS="-L$(get_android_toolchain_path)/$(get_android_target_host)/lib -L$(get_android_toolchain_path)/sysroot/usr/lib -L$(get_android_toolchain_path)/lib"
 
@@ -463,6 +483,7 @@ get_android_arch_specific_ldflags() {
     esac
 }
 
+# 获取ANDROID-NDK的优化参数
 get_android_ldflags() {
     local ARCH_FLAGS=$(get_android_arch_specific_ldflags)
     if [[ -z ${DEBUG} ]]; then
@@ -512,14 +533,30 @@ set_android_toolchain_clang_paths() {
     echo ""
 }
 
+# 设置ANDROID-NDK工具链的参数
 set_android_toolchain_params() {
     echo -e "INFO: Building toolchain params for ${ARCH}"
     echo ""
 
     set_android_toolchain_clang_paths $1
 
+    # https://blog.csdn.net/aa804738534/article/details/99643960
+
+    # CFLAGS、CXXFLAGS，这两个变量实际上涵盖了编译和汇编两个步骤。
+
+    # CFLAGS： 指定头文件（.h文件）的路径，如：CFLAGS=-I/usr/include -I/path/include。
+    # 同样地，安装一个包时会在安装路径下建立一个include目录，当安装过程中出现问题时，试着把以前安装的包的include目录加入到该变量中来。
+
+    # LDFLAGS：gcc 等编译器会用到的一些优化参数，也可以在里面指定库文件的位置。
+    # 用法：LDFLAGS=-L/usr/lib -L/path/to/your/lib。每安装一个包都几乎一定的会在安装目录里建立一个lib目录。
+
+    # CFLAGS表示用于C编译器的选项
     export CFLAGS=$(get_android_cflags $1)
+
+    # CXXFLAGS表示用于C++编译器的选项
     export CXXFLAGS=$(get_android_cxxflags $1)
+
+    # LDFLAGS表示GCC等编译器会用到的一些优化参数，也可以在里面指定库文件的位置。
     export LDFLAGS=$(get_android_ldflags $1)
 
     echo -e "INFO: Target host $(get_android_target_host)"
