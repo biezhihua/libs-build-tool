@@ -15,7 +15,7 @@ main() {
 
   # 解析脚本参数
   # 初始化环境配置
-  process_args "$*"
+  process_args $*
 
   # 检查前置条件 - NDK
   check_android_ndk_root

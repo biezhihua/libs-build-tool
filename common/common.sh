@@ -70,7 +70,6 @@ check_arch() {
 
 # 构建编译环境
 build_env() {
-
     export PATH="$BASEDIR/env_tools/build/bin:$PATH"
 
     echo -e "INFO: Building env_tools"
