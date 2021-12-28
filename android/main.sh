@@ -200,7 +200,7 @@ build() {
     set_android_toolchain_params
 
     # 初始化三方依赖库
-    init_contrib --prefix="${PREBUILT}"/$(get_android_target_host) --arch-name=$(get_android_arch_name) --api=$(get_android_api) --host=$(get_android_target_host) "$ENABLED_LIBRARYS"
+    init_contrib --prefix="${PREBUILT}"/$(get_android_target_host) --arch-name=$(get_android_arch_name) --api=$(get_android_api) --host=$(get_android_target_host) $ENABLED_LIBRARYS
 
     # Some libraries have arm assembly which won't build in thumb mode
     # We append -marm to the CFLAGS of these libs to disable thumb mode
